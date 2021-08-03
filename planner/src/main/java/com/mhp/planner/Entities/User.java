@@ -33,11 +33,11 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_fk", referencedColumnName = "id", nullable = false)
 
-    private Role role_fk;
+    private Role role;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "department_fk", referencedColumnName = "id", nullable = false)
 
-    private Department department_fk;
+    private Department department;
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
 
-    @Mapping(target = "id", ignore = true)
+
     RoleDto entity2Dto (Role role);
 
     Role dto2entity (RoleDto episodeDto);

@@ -6,8 +6,6 @@ import lombok.Data;
 @Data
 public class DepartmentDto {
 
-    @JsonIgnore
-    private Long id;
 
     private String name;
 }
