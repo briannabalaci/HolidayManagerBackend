@@ -17,9 +17,9 @@ public class UserDto {
 
     private String password;
 
-    private RoleDto role_fk;
+    private RoleDto role;
 
-    private DepartmentDto department_fk;
+    private DepartmentDto department;
 
 
 
