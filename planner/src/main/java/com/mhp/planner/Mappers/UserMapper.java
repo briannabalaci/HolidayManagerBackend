@@ -10,14 +10,17 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = {RoleMapper.class,DepartmentMapper.class})
 public interface UserMapper {
 
-    UserDto entity2Dto (User episode);
+    @Mapping(target = "role", expression = "java( user.getRole().getName())")
+    @Mapping(target = "department", expression = "java( user.getDepartment().getName())")
+    UserDto entity2Dto (User user);
 
-
-    User dto2entity (UserDto episodeDto);
+//    @Mapping(target = "role", expression = "java( new Role(userDto.getId(),userDto.getName()))")
+//    @Mapping(target = "department", expression = "java( new Department(userDto.getId(),userDto.getName()))")
+//    User dto2entity (UserDto userDto);
 
 
     List<UserDto> entities2dtos(List<User> userList);
 
 
-    List<User> dtos2entities(List<UserDto> userDtos);
+//    List<User> dtos2entities(List<UserDto> userDtos);
 }
