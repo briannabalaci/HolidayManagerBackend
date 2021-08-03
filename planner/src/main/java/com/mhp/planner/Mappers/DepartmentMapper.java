@@ -13,7 +13,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DepartmentMapper {
 
-    @Mapping(target = "id", ignore = true)
     DepartmentDto entity2Dto (Department episode);
 
     Department dto2entity (DepartmentDto episodeDto);

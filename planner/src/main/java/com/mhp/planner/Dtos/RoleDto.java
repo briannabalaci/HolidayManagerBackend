@@ -6,8 +6,7 @@ import lombok.Data;
 @Data
 public class RoleDto {
 
-    @JsonIgnore
-    private Long id;
+
 
     private String name;
 }
