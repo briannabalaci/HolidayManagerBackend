@@ -17,9 +17,9 @@ public class UserDto {
 
     private String password;
 
-    private RoleDto role;
+    private String role;
 
-    private DepartmentDto department;
+    private String department;
 
 
 
