@@ -27,7 +27,22 @@ public class UserServiceImpl implements UserService {
         System.out.println(userList);
 
         return userMapper.entities2dtos(userList);
+    }
 
+    @Override
+    public UserDto findUser(UserDto userDto) {
+        User user = userRepository.findByEmail(userDto.getEmail());
 
+        if (user == null)
+            userDto.setEmail(null);
+        else
+        {
+            if (!user.getPassword().equals(userDto.getPassword()))
+                userDto.setPassword(null);
+            else
+                userDto = userMapper.entity2Dto(user);
+        }
+
+        return userDto;
     }
 }
