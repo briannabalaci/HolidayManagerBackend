@@ -6,5 +6,10 @@
     <include file="liquibase/logs/20210803-user-changelog.xml" />
     <include file="liquibase/logs/20210803-role-changelog.xml" />
     <include file="liquibase/logs/20210803-department-changelog.xml" />
+    <include file="liquibase/logs/20210809-event-changelog.xml" />
+    <include file="liquibase/logs/20210809-question-changelog.xml" />
+    <include file="liquibase/logs/20210809-answer-changelog.xml" />
+    <include file="liquibase/logs/20210809-invite-changelog.xml" />
+    <include file="liquibase/logs/20210809-invite_question_response-changelog.xml" />
 
 </databaseChangeLog>
