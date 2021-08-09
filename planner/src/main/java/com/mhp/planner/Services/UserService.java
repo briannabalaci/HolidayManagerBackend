@@ -7,5 +7,5 @@ public interface UserService {
 
     List<UserDto> getAllUsers();
     UserDto findUser(UserDto userDto);
-    Object createUser(UserDto userDto);
+    UserDto createUser(UserDto userDto);
 }
