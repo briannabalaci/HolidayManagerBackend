@@ -8,7 +8,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {RoleMapper.class,DepartmentMapper.class, RoleRepository.class, DepartmentRepository.class})
+
+@Mapper(componentModel = "spring", uses = {RoleMapper.class, EventMapper.class})
+
 public interface UserMapper {
 
     @Mapping(target = "role", expression = "java( user.getRole().getName())")

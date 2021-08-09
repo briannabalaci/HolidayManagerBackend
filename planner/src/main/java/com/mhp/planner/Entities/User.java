@@ -3,6 +3,8 @@ package com.mhp.planner.Entities;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
+
 
 @Entity
 @Table(name = "users")
@@ -33,7 +35,10 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "department_fk", referencedColumnName = "id", nullable = false)
-
     private Department department;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
+    private List<Event> events;
 
 }

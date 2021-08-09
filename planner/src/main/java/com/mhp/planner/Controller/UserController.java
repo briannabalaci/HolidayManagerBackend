@@ -1,5 +1,6 @@
 package com.mhp.planner.Controller;
 
+import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Services.UserService;
 import lombok.AllArgsConstructor;
@@ -46,4 +47,5 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.createUser(userDto));
     }
+
 }
