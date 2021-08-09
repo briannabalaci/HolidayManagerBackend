@@ -1,4 +1,11 @@
 package com.mhp.planner.Dtos;
 
-public class AnswerDto {
+import lombok.Data;
+
+@Data
+public class AnswersDto {
+
+    private long id;
+
+    private String text;
 }

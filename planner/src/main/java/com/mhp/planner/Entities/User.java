@@ -1,10 +1,8 @@
 package com.mhp.planner.Entities;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -37,7 +35,10 @@ public class User {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "department_fk", referencedColumnName = "id", nullable = false)
-
     private Department department;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
+    private List<Event> events;
 
 }

@@ -1,4 +1,7 @@
 package com.mhp.planner.Mappers;
 
-public interface AnswerMapper {
+import org.mapstruct.Mapper;
+
+@Mapper(componentModel = "spring")
+public interface AnswersMapper {
 }

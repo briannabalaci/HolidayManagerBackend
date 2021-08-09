@@ -1,4 +1,20 @@
 package com.mhp.planner.Entities;
 
-public class Answer {
+import lombok.Data;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "answer")
+@Data
+public class Answers {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private long id;
+
+    @Column(name = "text")
+    private String text;
+
 }
