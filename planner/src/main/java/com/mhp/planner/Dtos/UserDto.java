@@ -1,7 +1,5 @@
 package com.mhp.planner.Dtos;
 
-import com.mhp.planner.Entities.Department;
-import com.mhp.planner.Entities.Role;
 import lombok.Data;
 
 @Data
@@ -20,7 +18,5 @@ public class UserDto {
     private String role;
 
     private String department;
-
-
 
 }

@@ -3,10 +3,12 @@ package com.mhp.planner.Controller;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Services.UserService;
 import lombok.AllArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -38,5 +40,10 @@ public class UserController {
             else
                 return ResponseEntity.ok(user);
         }
+    }
+
+    @PostMapping("/create-user")
+    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.createUser(userDto));
     }
 }

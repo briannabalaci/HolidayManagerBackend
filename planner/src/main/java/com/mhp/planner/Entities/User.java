@@ -1,11 +1,8 @@
 package com.mhp.planner.Entities;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -28,7 +25,6 @@ public class User {
 
     @Column(name = "password")
     private String password;
-
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "role_fk", referencedColumnName = "id", nullable = false)

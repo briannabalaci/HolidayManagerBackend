@@ -41,4 +41,8 @@
                                  referencedColumnNames="ID" />
     </changeSet>
 
+    <changeSet id="20210809-001" author="zjakab">
+        <addUniqueConstraint tableName="USERS" columnNames="EMAIL" />
+    </changeSet>
+
 </databaseChangeLog>
