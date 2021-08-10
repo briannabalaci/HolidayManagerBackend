@@ -1,5 +1,6 @@
 package com.mhp.planner.Dtos;
 
+import com.mhp.planner.Entities.Event;
 import lombok.Data;
 
 import java.util.List;
@@ -20,10 +21,6 @@ public class UserDto {
     private String role;
 
     private String department;
-
-    private List<EventDto> events;
-
-    private List<InvitesDto> invites;
 
 
 }

@@ -6,10 +6,12 @@ import org.mapstruct.Mapper;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {InvitesMapper.class, QuestionMapper.class})
+@Mapper(componentModel = "spring", uses = {InvitesMapper.class, QuestionMapper.class, UserMapper.class})
 public interface EventMapper {
 
     EventDto entity2dto(Event event);
+
+    Event dto2entity(EventDto eventDto);
 
     List<EventDto> entities2dtos (List<Event> event);
 }

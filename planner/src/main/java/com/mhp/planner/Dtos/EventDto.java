@@ -24,4 +24,6 @@ public class EventDto {
     private List<InvitesDto> invites;
 
     private List<QuestionDto> questions;
+
+    private UserDto organizer;
 }

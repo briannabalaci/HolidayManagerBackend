@@ -31,7 +31,11 @@ public class EventServiceImpl implements EventService{
     }
 
     @Override
-    public EventDto addEvent(EventDto eventDto) {
-        return null;
+    public EventDto createEvent(EventDto eventDto) {
+        Event event = eventMapper.dto2entity(eventDto);
+        System.out.println(event);
+        Event createdEvent = eventRepository.save(event);
+        return eventMapper.entity2dto(createdEvent);
     }
+
 }

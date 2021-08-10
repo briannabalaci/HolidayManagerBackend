@@ -9,5 +9,6 @@ public interface EventService {
 
 
     List<EventDto> getAllEvents();
-    EventDto addEvent(EventDto eventDto);
+
+    EventDto createEvent(EventDto eventDto);
 }
