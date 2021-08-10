@@ -4,9 +4,12 @@ import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.UserMapper;
 import com.mhp.planner.Repository.UserRepository;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,4 +58,14 @@ public class UserServiceImpl implements UserService {
         return userMapper.entity2Dto(createdUser);
     }
 
+    @Override
+    public void deleteUser(Long id) throws NotFoundException {
+        Optional<User> userOptional = userRepository.findById(id);
+        if(userOptional.isEmpty()) {
+            throw new NotFoundException("User with id " + id + " not found!");
+        }
+        else {
+            userRepository.deleteById(id);
+        }
+    }
 }

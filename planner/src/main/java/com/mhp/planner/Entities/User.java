@@ -28,17 +28,16 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_fk", referencedColumnName = "id", nullable = false)
-
     private Role role;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_fk", referencedColumnName = "id", nullable = false)
     private Department department;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
-    private List<Event> events;
+//    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
+//    private List<Event> events;
 
 }
