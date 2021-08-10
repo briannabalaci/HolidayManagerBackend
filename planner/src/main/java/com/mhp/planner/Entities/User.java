@@ -37,8 +37,5 @@ public class User {
     @JoinColumn(name = "department_fk", referencedColumnName = "id", nullable = false)
     private Department department;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
-    private List<Event> events;
 
 }

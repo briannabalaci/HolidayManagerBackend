@@ -33,10 +33,15 @@ public class Event {
 //    private byte[] coverImage;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "event_fk")
+    @JoinColumn(name = "event_fk", referencedColumnName = "id", nullable = false)
     private List<Invite> invites;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "event_fk", referencedColumnName = "id", nullable = false)
     private List<Question> questions;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
+    private User organizer;
+
 }
