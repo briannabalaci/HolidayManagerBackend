@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -31,7 +32,8 @@ public class EventServiceImpl implements EventService{
     }
 
     @Override
-    public EventDto createEvent(EventDto eventDto) {
+    public EventDto createEvent(EventDto eventDto) throws IOException {
+
         Event event = eventMapper.dto2entity(eventDto);
         System.out.println(event);
         Event createdEvent = eventRepository.save(event);

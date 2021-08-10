@@ -5,9 +5,12 @@ import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Services.EventService;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,8 +30,10 @@ public class EventController {
         return ResponseEntity.ok(eventDtos);
     }
 
-    @PostMapping("/addEvent")
-    public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) {
+    @PostMapping(value = "/addEvent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventDto> createEvent(@RequestPart EventDto eventDto, @RequestPart MultipartFile file) throws IOException {
+        byte[] cover_image = file.getBytes();
+        eventDto.setCover_image(cover_image);
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
 }
