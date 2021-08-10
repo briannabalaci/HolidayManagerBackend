@@ -1,7 +1,9 @@
+
 package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Entities.Event;
+import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Repository.EventRepository;
 import lombok.AllArgsConstructor;
@@ -19,8 +21,13 @@ public class EventServiceImpl implements EventService{
     private final EventMapper eventMapper;
 
     @Override
-    public List<EventDto> getEvents() {
-        return null;
+    public List<EventDto> getAllEvents() {
+
+        List<Event> eventList = eventRepository.findAll();
+
+        System.out.println(eventList);
+
+        return eventMapper.entities2dtos(eventList);
     }
 
     @Override

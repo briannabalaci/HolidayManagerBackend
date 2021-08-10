@@ -19,7 +19,7 @@ public class Question {
     private String text;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "answers_fk", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "question_fk", referencedColumnName = "id", nullable = false)
     private List<Answers> answers;
 
 }

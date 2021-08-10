@@ -28,15 +28,15 @@ public class Event {
     @Column(name = "dress_code")
     private String dressCode;
 
-    @Column(name = "cover_image")
-    @Lob
-    private byte[] coverImage;
+//    @Column(name = "cover_image")
+//    @Lob
+//    private byte[] coverImage;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "invites_fk", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "event_fk")
     private List<Invite> invites;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "question_fk", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "event_fk", referencedColumnName = "id", nullable = false)
     private List<Question> questions;
 }

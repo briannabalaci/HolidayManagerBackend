@@ -8,6 +8,6 @@ import java.util.List;
 public interface EventService {
 
 
-    List<EventDto> getEvents();
+    List<EventDto> getAllEvents();
     EventDto addEvent(EventDto eventDto);
 }

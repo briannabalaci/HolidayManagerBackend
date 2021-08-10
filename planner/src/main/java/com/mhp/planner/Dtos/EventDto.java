@@ -19,7 +19,7 @@ public class EventDto {
 
     private String dressCode;
 
-    private byte[] coverImage;
+//    private byte[] coverImage;
 
     private List<InvitesDto> invites;
 
