@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
+import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +48,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUser(UserDto userDto) throws NotFoundException {
         if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
-            throw new RuntimeException("User with this email already exists!");
+            throw new NotFoundException("User with this email already exists!");
         }
 
         User user = userMapper.dto2entity(userDto);
