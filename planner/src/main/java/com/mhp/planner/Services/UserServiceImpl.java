@@ -75,4 +75,13 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userRepository.save(user);
         return userMapper.entity2Dto(updatedUser);
     }
+
+    @Override
+    public UserDto changePasswordUser(UserDto userDto) {
+        User user = userRepository.getOne(userDto.getId());
+        user.setPassword(userDto.getPassword());
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.entity2Dto(updatedUser);
+    }
 }
