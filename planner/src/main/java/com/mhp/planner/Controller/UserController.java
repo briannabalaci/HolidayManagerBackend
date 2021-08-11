@@ -43,8 +43,13 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.createUser(userDto));
+    public ResponseEntity<?> createUser(@RequestBody UserDto userDto) {
+        try {
+            userService.createUser(userDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>("User with this email already exists!", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
