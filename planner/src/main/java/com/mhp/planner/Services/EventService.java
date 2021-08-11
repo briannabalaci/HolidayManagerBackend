@@ -11,5 +11,7 @@ public interface EventService {
 
     List<EventDto> getAllEvents();
 
+    EventDto getImageBasedOnEvent(Long id);
+
     EventDto createEvent(EventDto eventDto) throws IOException;
 }
