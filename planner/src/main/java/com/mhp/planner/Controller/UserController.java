@@ -1,6 +1,7 @@
 package com.mhp.planner.Controller;
 
 import com.mhp.planner.Dtos.UserDto;
+import com.mhp.planner.Dtos.UserPasswordDto;
 import com.mhp.planner.Services.UserService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -68,8 +69,8 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<HttpStatus> changePassword(@RequestBody UserDto userDto) {
-        userService.changePasswordUser(userDto);
+    public ResponseEntity<HttpStatus> changePassword(@RequestBody UserPasswordDto userPasswordDto) {
+        userService.changePasswordUser(userPasswordDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

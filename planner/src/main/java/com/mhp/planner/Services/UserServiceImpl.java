@@ -1,6 +1,7 @@
 package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.UserDto;
+import com.mhp.planner.Dtos.UserPasswordDto;
 import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.UserMapper;
 import com.mhp.planner.Repository.UserRepository;
@@ -77,9 +78,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto changePasswordUser(UserDto userDto) {
-        User user = userRepository.getOne(userDto.getId());
-        user.setPassword(userDto.getPassword());
+    public UserDto changePasswordUser(UserPasswordDto userPasswordDto) {
+        Optional<User> optionalUser = userRepository.findByEmail(userPasswordDto.getEmail());
+        User user = optionalUser.get();
+        user.setPassword(userPasswordDto.getNewPassword());
         User updatedUser = userRepository.save(user);
 
         return userMapper.entity2Dto(updatedUser);
