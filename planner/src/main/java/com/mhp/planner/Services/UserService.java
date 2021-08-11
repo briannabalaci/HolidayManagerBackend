@@ -1,6 +1,7 @@
 package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.UserDto;
+import com.mhp.planner.Dtos.UserPasswordDto;
 import javassist.NotFoundException;
 
 import javax.naming.AuthenticationException;
@@ -13,5 +14,5 @@ public interface UserService {
     UserDto createUser(UserDto userDto) throws NotFoundException;
     void deleteUser(Long id) throws NotFoundException;
     UserDto updateUser(UserDto userDto);
-    UserDto changePasswordUser(UserDto userDto);
+    UserDto changePasswordUser(UserPasswordDto userPasswordDto);
 }
