@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InvitesRepository extends JpaRepository<Invite,Long> {
-    findBy
+    
 }

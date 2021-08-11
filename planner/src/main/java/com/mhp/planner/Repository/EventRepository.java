@@ -12,5 +12,7 @@ import java.util.List;
 @Repository
 @Transactional
 public interface EventRepository extends JpaRepository<Event,Long> {
-    List<Event> findAllByEventDateAfter(LocalDateTime date);
+    List<Event> findAllByInvites_UserInvited_Id(Long id);
+    List<Event> findAllByInvites_UserInvited_IdAndEventDateAfter(Long id, LocalDateTime date);
+    List<Event> findAllByInvites_UserInvited_IdAndInvites_Status(Long id, String status);
 }

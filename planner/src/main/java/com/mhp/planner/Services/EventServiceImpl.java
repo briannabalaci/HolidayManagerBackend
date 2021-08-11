@@ -41,18 +41,23 @@ public class EventServiceImpl implements EventService{
         return eventMapper.entity2dto(createdEvent);
     }
 
-    public List<EventDto> getEventsBy(String filter) {
+    public List<EventDto> getEventsBy(Long id, String filter) {
         switch (filter) {
             case "all_events": {
-                List<Event> events = eventRepository.findAll();
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_Id(id);
                 return eventMapper.entities2dtos(events);
             }
             case "future_events": {
-                List<Event> events = eventRepository.findAllByEventDateAfter(LocalDateTime.now());
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_IdAndEventDateAfter(id, LocalDateTime.now());
                 return eventMapper.entities2dtos(events);
             }
             case "accepted": {
-//                List<Event> events
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_IdAndInvites_Status(id, "accepted");
+                return eventMapper.entities2dtos(events);
+            }
+            case "declined": {
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_IdAndInvites_Status(id, "declined");
+                return eventMapper.entities2dtos(events);
             }
         }
         return null;

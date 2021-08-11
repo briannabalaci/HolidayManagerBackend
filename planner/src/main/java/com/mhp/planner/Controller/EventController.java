@@ -37,8 +37,8 @@ public class EventController {
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
 
-    @GetMapping("/getBy/{filter}")
-    public ResponseEntity<List<EventDto>> getEventsBy(@PathVariable("filter") String filter) {
-        return ResponseEntity.ok(eventService.getEventsBy(filter));
+    @GetMapping("/getAllBy")
+    public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("id") Long id, @RequestParam(name="filter") String filter) {
+        return ResponseEntity.ok(eventService.getEventsBy(id, filter));
     }
 }
