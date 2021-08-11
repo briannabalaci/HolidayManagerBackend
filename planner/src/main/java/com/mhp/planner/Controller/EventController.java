@@ -37,9 +37,14 @@ public class EventController {
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
 
+
     @GetMapping("/getImage/{id}")
-    public ResponseEntity<byte[]> getEventImage (@PathVariable Long id)
-    {
+    public ResponseEntity<byte[]> getEventImage (@PathVariable Long id) {
         return ResponseEntity.ok(this.eventService.getImageBasedOnEvent(id).getCover_image());
+    }
+
+    @GetMapping("/getAllBy")
+    public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("id") Long id, @RequestParam(name="filter") String filter) {
+        return ResponseEntity.ok(eventService.getEventsBy(id, filter));
     }
 }

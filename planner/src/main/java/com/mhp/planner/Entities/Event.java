@@ -1,6 +1,7 @@
 package com.mhp.planner.Entities;
 
 import lombok.Data;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

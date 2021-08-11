@@ -14,4 +14,6 @@ public interface EventService {
     EventDto getImageBasedOnEvent(Long id);
 
     EventDto createEvent(EventDto eventDto) throws IOException;
+
+    List<EventDto> getEventsBy(Long id, String filter);
 }

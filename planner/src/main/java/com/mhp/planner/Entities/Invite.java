@@ -18,6 +18,10 @@ public class Invite {
     @Column(name = "status")
     private String status;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "user_invited_fk", referencedColumnName = "id", nullable = false)
+    private User userInvited;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "invite_question_response_fk", referencedColumnName = "id", nullable = false)
     private List<InviteQuestionResponse> inviteQuestionResponses;

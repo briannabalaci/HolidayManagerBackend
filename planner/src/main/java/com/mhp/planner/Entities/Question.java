@@ -20,6 +20,6 @@ public class Question {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "question_fk", referencedColumnName = "id", nullable = false)
-    private List<Answers> answers;
+    private List<Answers> answerList;
 
 }
