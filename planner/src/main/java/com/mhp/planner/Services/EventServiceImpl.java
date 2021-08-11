@@ -32,6 +32,12 @@ public class EventServiceImpl implements EventService{
     }
 
     @Override
+    public EventDto getImageBasedOnEvent(Long id) {
+        Event event = eventRepository.findById(id).get();
+        return eventMapper.entity2dto(event);
+    }
+
+    @Override
     public EventDto createEvent(EventDto eventDto) throws IOException {
 
         Event event = eventMapper.dto2entity(eventDto);

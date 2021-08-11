@@ -36,4 +36,10 @@ public class EventController {
         eventDto.setCover_image(cover_image);
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
+
+    @GetMapping("/getImage/{id}")
+    public ResponseEntity<byte[]> getEventImage (@PathVariable Long id)
+    {
+        return ResponseEntity.ok(this.eventService.getImageBasedOnEvent(id).getCover_image());
+    }
 }
