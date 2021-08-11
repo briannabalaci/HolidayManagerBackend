@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,6 +39,23 @@ public class EventServiceImpl implements EventService{
         System.out.println(event);
         Event createdEvent = eventRepository.save(event);
         return eventMapper.entity2dto(createdEvent);
+    }
+
+    public List<EventDto> getEventsBy(String filter) {
+        switch (filter) {
+            case "all_events": {
+                List<Event> events = eventRepository.findAll();
+                return eventMapper.entities2dtos(events);
+            }
+            case "future_events": {
+                List<Event> events = eventRepository.findAllByEventDateAfter(LocalDateTime.now());
+                return eventMapper.entities2dtos(events);
+            }
+            case "accepted": {
+//                List<Event> events
+            }
+        }
+        return null;
     }
 
 }

@@ -36,4 +36,9 @@ public class EventController {
         eventDto.setCover_image(cover_image);
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
+
+    @GetMapping("/getBy/{filter}")
+    public ResponseEntity<List<EventDto>> getEventsBy(@PathVariable("filter") String filter) {
+        return ResponseEntity.ok(eventService.getEventsBy(filter));
+    }
 }
