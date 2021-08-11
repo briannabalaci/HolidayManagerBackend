@@ -11,5 +11,5 @@ public class QuestionDto {
 
     private String text;
 
-    private List<AnswersDto> answers;
+    private List<AnswersDto> answerList;
 }

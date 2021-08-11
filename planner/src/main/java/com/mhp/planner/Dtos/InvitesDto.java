@@ -11,7 +11,7 @@ public class InvitesDto {
 
     private String status;
 
-    private UserDto userInvited;
+    private String email;
 
     private List<InviteQuestionResponseDto> inviteQuestionResponse;
 }
