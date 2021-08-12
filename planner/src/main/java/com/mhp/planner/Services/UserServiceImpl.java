@@ -33,12 +33,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto findUser(UserDto userDto) {
-        Optional<User> user = userRepository.findByEmail(userDto.getEmail());
+        User user = userRepository.findByEmail(userDto.getEmail());
 
-        if (user.isEmpty())
+        if (user == null)
             userDto.setEmail(null);
         else {
-            User u = user.get();
+            User u = user;
             if (!u.getPassword().equals(userDto.getPassword()))
                 userDto.setPassword(null);
             else
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) throws NotFoundException {
-        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(userDto.getEmail()) != null) {
             throw new NotFoundException("User with this email already exists!");
         }
 
