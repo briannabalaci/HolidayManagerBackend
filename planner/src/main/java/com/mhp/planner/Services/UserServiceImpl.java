@@ -82,7 +82,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto changePasswordUser(UserPasswordDto userPasswordDto) {
         User user = userRepository.findByEmail(userPasswordDto.getEmail());
+
         user.setPassword(encoder.encode(new String(Base64.getDecoder().decode(userPasswordDto.getNewPassword()))));
+
         User updatedUser = userRepository.save(user);
 
         return userMapper.entity2Dto(updatedUser);

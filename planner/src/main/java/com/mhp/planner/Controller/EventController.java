@@ -53,7 +53,7 @@ public class EventController {
     @AllowOrganizer
     @AllowAttendee
     @GetMapping("/getAllBy")
-    public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("id") Long id, @RequestParam(name="filter") String filter) {
-        return ResponseEntity.ok(eventService.getEventsBy(id, filter));
+    public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("email") String email, @RequestParam(name="filter") String filter) {
+        return ResponseEntity.ok(eventService.getEventsBy(email, filter));
     }
 }

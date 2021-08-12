@@ -88,7 +88,7 @@ public class UserController {
 
     private final JwtTokenService jwtTokenService;
 
-    @PostMapping("/login")
+    @PostMapping(value="/login", produces="text/plain")
     @SneakyThrows
     public ResponseEntity<String> login(@RequestBody UserPasswordDto userPasswordDto) {
 

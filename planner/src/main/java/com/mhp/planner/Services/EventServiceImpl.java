@@ -3,7 +3,6 @@ package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Entities.Event;
-import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Repository.EventRepository;
 import lombok.AllArgsConstructor;
@@ -47,22 +46,22 @@ public class EventServiceImpl implements EventService{
         return eventMapper.entity2dto(createdEvent);
     }
 
-    public List<EventDto> getEventsBy(Long id, String filter) {
+    public List<EventDto> getEventsBy(String email, String filter) {
         switch (filter) {
-            case "all_events": {
-                List<Event> events = eventRepository.findAllByInvites_UserInvited_Id(id);
+            case "All Events": {
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_Email(email);
                 return eventMapper.entities2dtos(events);
             }
-            case "future_events": {
-                List<Event> events = eventRepository.findAllByInvites_UserInvited_IdAndEventDateAfter(id, LocalDateTime.now());
+            case "Future Events": {
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndEventDateAfter(email, LocalDateTime.now());
                 return eventMapper.entities2dtos(events);
             }
-            case "accepted": {
-                List<Event> events = eventRepository.findAllByInvites_UserInvited_IdAndInvites_Status(id, "accepted");
+            case "Accepted": {
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndInvites_Status(email, "accepted");
                 return eventMapper.entities2dtos(events);
             }
-            case "declined": {
-                List<Event> events = eventRepository.findAllByInvites_UserInvited_IdAndInvites_Status(id, "declined");
+            case "Declined": {
+                List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndInvites_Status(email, "declined");
                 return eventMapper.entities2dtos(events);
             }
         }

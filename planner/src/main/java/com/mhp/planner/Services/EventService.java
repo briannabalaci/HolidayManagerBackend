@@ -15,5 +15,5 @@ public interface EventService {
 
     EventDto createEvent(EventDto eventDto) throws IOException;
 
-    List<EventDto> getEventsBy(Long id, String filter);
+    List<EventDto> getEventsBy(String email, String filter);
 }
