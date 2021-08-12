@@ -8,9 +8,11 @@ import com.mhp.planner.Repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +23,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder encoder;
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -32,20 +35,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findUser(UserDto userDto) {
-        User user = userRepository.findByEmail(userDto.getEmail());
-
+    public UserDto findUser(UserPasswordDto userPasswordDto) {
+        User user = userRepository.findByEmail(userPasswordDto.getEmail());
+        UserDto u;
         if (user == null)
-            userDto.setEmail(null);
+            return null;
         else {
-            User u = user;
-            if (!u.getPassword().equals(userDto.getPassword()))
-                userDto.setPassword(null);
-            else
-                userDto = userMapper.entity2Dto(u);
+            u = userMapper.entity2Dto(user);
+            if (!encoder.matches(new String(Base64.getDecoder().decode(userPasswordDto.getPassword())), user.getPassword()))
+                u.setPassword(null);
         }
-
-        return userDto;
+        return u;
     }
 
     @Override
@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userMapper.dto2entity(userDto);
+        user.setPassword(encoder.encode(new String(Base64.getDecoder().decode(user.getPassword()))));
         User createdUser = userRepository.save(user);
         return userMapper.entity2Dto(createdUser);
     }
@@ -73,15 +74,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto) {
         User user = userMapper.dto2entity(userDto);
+        user.setPassword(encoder.encode(new String(Base64.getDecoder().decode(userDto.getPassword()))));
         User updatedUser = userRepository.save(user);
         return userMapper.entity2Dto(updatedUser);
     }
 
     @Override
     public UserDto changePasswordUser(UserPasswordDto userPasswordDto) {
-        Optional<User> optionalUser = userRepository.findByEmail(userPasswordDto.getEmail());
-        User user = optionalUser.get();
-        user.setPassword(userPasswordDto.getNewPassword());
+        User user = userRepository.findByEmail(userPasswordDto.getEmail());
+        user.setPassword(encoder.encode(new String(Base64.getDecoder().decode(userPasswordDto.getNewPassword()))));
         User updatedUser = userRepository.save(user);
 
         return userMapper.entity2Dto(updatedUser);

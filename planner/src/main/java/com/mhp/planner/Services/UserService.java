@@ -10,7 +10,7 @@ import java.util.List;
 public interface UserService {
 
     List<UserDto> getAllUsers();
-    UserDto findUser(UserDto userDto);
+    UserDto findUser(UserPasswordDto userPasswordDto);
     UserDto createUser(UserDto userDto) throws NotFoundException;
     void deleteUser(Long id) throws NotFoundException;
     UserDto updateUser(UserDto userDto);

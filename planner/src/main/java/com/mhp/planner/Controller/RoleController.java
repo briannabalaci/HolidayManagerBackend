@@ -2,6 +2,7 @@ package com.mhp.planner.Controller;
 
 import com.mhp.planner.Dtos.RoleDto;
 import com.mhp.planner.Services.RoleService;
+import com.mhp.planner.Util.Annotations.AllowAdmin;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,6 +19,7 @@ import java.util.List;
 public class RoleController {
     private final RoleService roleService;
 
+    @AllowAdmin
     @GetMapping("/getAll")
     public ResponseEntity<List<RoleDto>> getAllRoles()
     {

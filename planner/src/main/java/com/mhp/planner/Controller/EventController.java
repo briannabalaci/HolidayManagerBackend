@@ -3,6 +3,8 @@ package com.mhp.planner.Controller;
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Services.EventService;
+import com.mhp.planner.Util.Annotations.AllowAttendee;
+import com.mhp.planner.Util.Annotations.AllowOrganizer;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.MediaType;
@@ -21,6 +23,8 @@ public class EventController {
 
     private final EventService eventService;
 
+    @AllowOrganizer
+    @AllowAttendee
     @GetMapping("/getAll")
     public ResponseEntity<List<EventDto>> getAllEvents()
     {
@@ -30,6 +34,7 @@ public class EventController {
         return ResponseEntity.ok(eventDtos);
     }
 
+    @AllowOrganizer
     @PostMapping(value = "/addEvent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EventDto> createEvent(@RequestPart EventDto eventDto, @RequestPart MultipartFile file) throws IOException {
         byte[] cover_image = file.getBytes();
@@ -38,11 +43,15 @@ public class EventController {
     }
 
 
+    @AllowOrganizer
+    @AllowAttendee
     @GetMapping("/getImage/{id}")
     public ResponseEntity<byte[]> getEventImage (@PathVariable Long id) {
         return ResponseEntity.ok(this.eventService.getImageBasedOnEvent(id).getCover_image());
     }
 
+    @AllowOrganizer
+    @AllowAttendee
     @GetMapping("/getAllBy")
     public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("id") Long id, @RequestParam(name="filter") String filter) {
         return ResponseEntity.ok(eventService.getEventsBy(id, filter));
