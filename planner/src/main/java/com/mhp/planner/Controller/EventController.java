@@ -4,6 +4,7 @@ import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Services.EventService;
 import com.mhp.planner.Util.Annotations.AllowAttendee;
+import com.mhp.planner.Util.Annotations.AllowNormalUser;
 import com.mhp.planner.Util.Annotations.AllowOrganizer;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
@@ -23,8 +24,7 @@ public class EventController {
 
     private final EventService eventService;
 
-    @AllowOrganizer
-    @AllowAttendee
+    @AllowNormalUser
     @GetMapping("/getAll")
     public ResponseEntity<List<EventDto>> getAllEvents()
     {
@@ -43,15 +43,13 @@ public class EventController {
     }
 
 
-    @AllowOrganizer
-    @AllowAttendee
+    @AllowNormalUser
     @GetMapping("/getImage/{id}")
     public ResponseEntity<byte[]> getEventImage (@PathVariable Long id) {
         return ResponseEntity.ok(this.eventService.getImageBasedOnEvent(id).getCover_image());
     }
 
-    @AllowOrganizer
-    @AllowAttendee
+    @AllowNormalUser
     @GetMapping("/getAllBy")
     public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("email") String email, @RequestParam(name="filter") String filter) {
         return ResponseEntity.ok(eventService.getEventsBy(email, filter));

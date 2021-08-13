@@ -5,7 +5,9 @@ import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Dtos.UserPasswordDto;
 import com.mhp.planner.Services.UserService;
 import com.mhp.planner.Util.Annotations.AllowAdmin;
+import com.mhp.planner.Util.Annotations.AllowAdminOrganizer;
 import com.mhp.planner.Util.Annotations.AllowAll;
+import com.mhp.planner.Util.Annotations.AllowOrganizer;
 import com.mhp.planner.Util.Enums.EAppRoles;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ public class UserController {
     private final PasswordEncoder encoder;
 
     @GetMapping("/getAll")
-    @AllowAdmin
+    @AllowAdminOrganizer
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> userDtos = userService.getAllUsers();
 

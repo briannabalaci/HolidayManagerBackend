@@ -28,5 +28,5 @@ public class EventDto {
 
     private List<QuestionDto> questions;
 
-    private UserDto organizer;
+    private String organizer;
 }

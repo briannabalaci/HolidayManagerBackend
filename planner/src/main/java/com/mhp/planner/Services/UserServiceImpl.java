@@ -74,7 +74,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto updateUser(UserDto userDto) {
         User user = userMapper.dto2entity(userDto);
-        user.setPassword(encoder.encode(new String(Base64.getDecoder().decode(userDto.getPassword()))));
+        if (user.getPassword().equals(""))
+        {
+            user.setPassword(userRepository.findByEmail(user.getEmail()).getPassword());
+        }
+        else {
+            user.setPassword(encoder.encode(new String(Base64.getDecoder().decode(userDto.getPassword()))));
+        }
         User updatedUser = userRepository.save(user);
         return userMapper.entity2Dto(updatedUser);
     }
