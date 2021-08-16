@@ -6,8 +6,10 @@ import com.mhp.planner.Services.EventService;
 import com.mhp.planner.Util.Annotations.AllowAttendee;
 import com.mhp.planner.Util.Annotations.AllowNormalUser;
 import com.mhp.planner.Util.Annotations.AllowOrganizer;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,17 @@ public class EventController {
         System.out.println(eventDtos);
 
         return ResponseEntity.ok(eventDtos);
+    }
+
+    @AllowNormalUser
+    @GetMapping("{id}")
+    public ResponseEntity<?> getEvent(@PathVariable("id") Long id) {
+        try {
+            return ResponseEntity.ok(eventService.getEvent(id));
+        }
+        catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @AllowOrganizer
