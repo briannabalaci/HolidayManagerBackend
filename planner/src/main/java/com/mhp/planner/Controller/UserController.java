@@ -1,8 +1,10 @@
 package com.mhp.planner.Controller;
 
 import com.mhp.planner.Config.JwtTokenService;
+import com.mhp.planner.Dtos.DepartmentDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Dtos.UserPasswordDto;
+import com.mhp.planner.Entities.Department;
 import com.mhp.planner.Services.UserService;
 import com.mhp.planner.Util.Annotations.AllowAdmin;
 import com.mhp.planner.Util.Annotations.AllowAdminOrganizer;
@@ -36,6 +38,13 @@ public class UserController {
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> userDtos = userService.getAllUsers();
 
+        return ResponseEntity.ok(userDtos);
+    }
+
+    @GetMapping("/getByDepartment/{department}")
+    @AllowOrganizer
+    public ResponseEntity<List<UserDto>> getByDepartment(@PathVariable("department") String departmentName) {
+        List<UserDto> userDtos = userService.getByDepartment(departmentName);
         return ResponseEntity.ok(userDtos);
     }
 

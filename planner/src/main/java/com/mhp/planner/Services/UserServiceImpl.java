@@ -1,9 +1,12 @@
 package com.mhp.planner.Services;
 
+import com.mhp.planner.Dtos.DepartmentDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Dtos.UserPasswordDto;
 import com.mhp.planner.Entities.User;
+import com.mhp.planner.Mappers.DepartmentMapper;
 import com.mhp.planner.Mappers.UserMapper;
+import com.mhp.planner.Repository.DepartmentRepository;
 import com.mhp.planner.Repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -23,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final DepartmentRepository departmentRepository;
     private final PasswordEncoder encoder;
 
     @Override
@@ -30,6 +34,13 @@ public class UserServiceImpl implements UserService {
         List<User> userList = userRepository.findAll();
 
         System.out.println(userList);
+
+        return userMapper.entities2dtos(userList);
+    }
+
+    @Override
+    public List<UserDto> getByDepartment(String departmentName) {
+        List<User> userList = userRepository.findByDepartment(departmentRepository.findByName(departmentName));
 
         return userMapper.entities2dtos(userList);
     }
