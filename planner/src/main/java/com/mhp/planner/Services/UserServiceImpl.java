@@ -6,7 +6,11 @@ import com.mhp.planner.Dtos.UserPasswordDto;
 import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.DepartmentMapper;
 import com.mhp.planner.Mappers.UserMapper;
+
 import com.mhp.planner.Repository.DepartmentRepository;
+
+import com.mhp.planner.Repository.InvitesRepository;
+
 import com.mhp.planner.Repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -15,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import javax.transaction.Transactional;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +30,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final InvitesRepository invitesRepository;
     private final UserMapper userMapper;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder encoder;
@@ -72,12 +78,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) throws NotFoundException {
         Optional<User> userOptional = userRepository.findById(id);
         if(userOptional.isEmpty()) {
             throw new NotFoundException("User with id " + id + " not found!");
         }
         else {
+            invitesRepository.deleteAllByUserInvited_Id(id);
             userRepository.deleteById(id);
         }
     }
