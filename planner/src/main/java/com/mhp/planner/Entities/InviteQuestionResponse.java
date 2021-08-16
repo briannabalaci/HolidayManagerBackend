@@ -15,11 +15,11 @@ public class InviteQuestionResponse {
     @Column(name = "id")
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_fk", referencedColumnName = "id", nullable = false)
     private Question question;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "answer_fk", referencedColumnName = "id", nullable = false)
     private Answers answer;
 

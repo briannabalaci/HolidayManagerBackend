@@ -13,5 +13,5 @@ public class InvitesDto {
 
     private String userInvited;
 
-    private List<InviteQuestionResponseDto> inviteQuestionResponse;
+    private List<InviteQuestionResponseDto> inviteQuestionResponses;
 }

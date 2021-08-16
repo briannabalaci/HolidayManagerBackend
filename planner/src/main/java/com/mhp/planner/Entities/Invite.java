@@ -22,7 +22,7 @@ public class Invite {
     @JoinColumn(name = "user_invited_fk", referencedColumnName = "id", nullable = false)
     private User userInvited;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "invite_fk", referencedColumnName = "id", nullable = false)
     private List<InviteQuestionResponse> inviteQuestionResponses;
 }
