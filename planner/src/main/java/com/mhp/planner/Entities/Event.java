@@ -29,9 +29,9 @@ public class Event {
     @Column(name = "dress_code")
     private String dressCode;
 
-    @Column(name = "cover_image", columnDefinition="BLOB")
+    @Column(name = "cover_image" , columnDefinition = "TEXT")
     @Lob
-    private byte[] cover_image;
+    private String cover_image;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "event_fk", referencedColumnName = "id", nullable = false)

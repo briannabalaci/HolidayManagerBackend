@@ -45,4 +45,12 @@
         <addUniqueConstraint tableName="USERS" columnNames="EMAIL" />
     </changeSet>
 
+<!--    <changeSet id="20210817-001" author="mmehi">-->
+<!--        <modifyDataType tableName="event" columnName="cover_image" newDataType="VARCHAR(255)"/>-->
+<!--    </changeSet>-->
+
+    <changeSet id="20210817-002" author="mmehi">
+        <modifyDataType tableName="event" columnName="cover_image" newDataType="TEXT"/>
+    </changeSet>
+
 </databaseChangeLog>

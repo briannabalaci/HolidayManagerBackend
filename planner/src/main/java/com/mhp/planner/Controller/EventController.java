@@ -48,10 +48,8 @@ public class EventController {
     }
 
     @AllowOrganizer
-    @PostMapping(value = "/addEvent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<EventDto> createEvent(@RequestPart EventDto eventDto, @RequestPart MultipartFile file) throws IOException {
-        byte[] cover_image = file.getBytes();
-        eventDto.setCover_image(cover_image);
+    @PostMapping(value = "/addEvent")
+    public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) throws IOException {
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
 
@@ -67,11 +65,11 @@ public class EventController {
     }
 
 
-    @AllowNormalUser
-    @GetMapping("/getImage/{id}")
-    public ResponseEntity<byte[]> getEventImage (@PathVariable Long id) {
-        return ResponseEntity.ok(this.eventService.getImageBasedOnEvent(id).getCover_image());
-    }
+//    @AllowNormalUser
+//    @GetMapping("/getImage/{id}")
+//    public ResponseEntity<byte[]> getEventImage (@PathVariable Long id) {
+//        return ResponseEntity.ok(this.eventService.getImageBasedOnEvent(id).getCover_image());
+//    }
 
     @AllowNormalUser
     @GetMapping("/getAllBy")
