@@ -1,20 +1,16 @@
 package com.mhp.planner.Controller;
 
 import com.mhp.planner.Dtos.EventDto;
-import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Services.EventService;
-import com.mhp.planner.Util.Annotations.AllowAttendee;
 import com.mhp.planner.Util.Annotations.AllowNormalUser;
 import com.mhp.planner.Util.Annotations.AllowOrganizer;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -51,6 +47,14 @@ public class EventController {
     @PostMapping(value = "/addEvent")
     public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) throws IOException {
         return ResponseEntity.ok(eventService.createEvent(eventDto));
+    }
+
+    @AllowOrganizer
+    @PutMapping(value = "/updateEvent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventDto> updateEvent(@RequestPart EventDto eventDto, @RequestPart MultipartFile file) throws IOException, NotFoundException {
+        byte[] cover_image = file.getBytes();
+        eventDto.setCover_image(cover_image);
+        return ResponseEntity.ok(eventService.updateEvent(eventDto));
     }
 
     @AllowOrganizer

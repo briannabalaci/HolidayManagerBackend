@@ -1,14 +1,11 @@
 package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
-import com.mhp.planner.Dtos.UserDto;
 import javassist.NotFoundException;
-
 import java.io.IOException;
 import java.util.List;
 
 public interface EventService {
-
 
     List<EventDto> getAllEvents();
 
@@ -21,4 +18,6 @@ public interface EventService {
     void deleteEvent(Long id) throws NotFoundException;
 
     List<EventDto> getEventsBy(String email, String filter);
+
+    EventDto updateEvent(EventDto eventDto) throws NotFoundException;
 }
