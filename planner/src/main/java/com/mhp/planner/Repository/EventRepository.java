@@ -15,4 +15,6 @@ public interface EventRepository extends JpaRepository<Event,Long> {
     List<Event> findAllByInvites_UserInvited_Email(String email);
     List<Event> findAllByInvites_UserInvited_EmailAndEventDateAfter(String email, LocalDateTime date);
     List<Event> findAllByInvites_UserInvited_EmailAndInvites_Status(String email, String status);
+    List<Event> findAllByOrganizer_Email(String email);
+    void deleteAllByOrganizer_Id(Long id);
 }

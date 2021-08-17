@@ -91,6 +91,10 @@ public class EventServiceImpl implements EventService {
                 List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndInvites_Status(email, "declined");
                 return eventMapper.entities2dtos(events);
             }
+            case "My Events": {
+                List<Event> events = eventRepository.findAllByOrganizer_Email(email);
+                return eventMapper.entities2dtos(events);
+            }
         }
         return null;
     }

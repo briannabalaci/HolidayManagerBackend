@@ -9,9 +9,11 @@ import com.mhp.planner.Mappers.UserMapper;
 
 import com.mhp.planner.Repository.DepartmentRepository;
 
+import com.mhp.planner.Repository.EventRepository;
 import com.mhp.planner.Repository.InvitesRepository;
 
 import com.mhp.planner.Repository.UserRepository;
+import com.mhp.planner.Util.Enums.EAppRoles;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final DepartmentRepository departmentRepository;
     private final PasswordEncoder encoder;
+    private final EventRepository eventRepository;
 
     @Override
     public List<UserDto> getAllUsers() {
@@ -86,6 +89,9 @@ public class UserServiceImpl implements UserService {
         }
         else {
             invitesRepository.deleteAllByUserInvited_Id(id);
+            if(EAppRoles.valueOf(userOptional.get().getRole().getName().toUpperCase()) == EAppRoles.ORGANIZER) {
+                eventRepository.deleteAllByOrganizer_Id(id);
+            }
             userRepository.deleteById(id);
         }
     }
