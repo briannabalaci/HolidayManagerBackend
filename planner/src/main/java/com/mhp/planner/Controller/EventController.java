@@ -7,10 +7,8 @@ import com.mhp.planner.Util.Annotations.AllowOrganizer;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
@@ -50,10 +48,8 @@ public class EventController {
     }
 
     @AllowOrganizer
-    @PutMapping(value = "/updateEvent", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<EventDto> updateEvent(@RequestPart EventDto eventDto, @RequestPart MultipartFile file) throws IOException, NotFoundException {
-        byte[] cover_image = file.getBytes();
-        eventDto.setCover_image(cover_image);
+    @PutMapping("/updateEvent")
+    public ResponseEntity<EventDto> updateEvent(@RequestBody EventDto eventDto) throws NotFoundException {
         return ResponseEntity.ok(eventService.updateEvent(eventDto));
     }
 
