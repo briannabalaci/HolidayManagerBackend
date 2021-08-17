@@ -22,7 +22,7 @@ public class EventDto {
 
     private String dressCode;
 
-    private byte[] cover_image;
+    private String cover_image;
 
     private List<InvitesDto> invites;
 
