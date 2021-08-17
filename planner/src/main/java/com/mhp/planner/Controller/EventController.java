@@ -55,6 +55,17 @@ public class EventController {
         return ResponseEntity.ok(eventService.createEvent(eventDto));
     }
 
+    @AllowOrganizer
+    @DeleteMapping("/deleteEvent/{id}")
+    public ResponseEntity<HttpStatus> deleteEvent(@PathVariable("id") Long id) {
+        try {
+            eventService.deleteEvent(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     @AllowNormalUser
     @GetMapping("/getImage/{id}")

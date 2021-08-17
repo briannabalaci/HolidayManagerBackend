@@ -18,5 +18,7 @@ public interface EventService {
 
     EventDto createEvent(EventDto eventDto) throws IOException;
 
+    void deleteEvent(Long id) throws NotFoundException;
+
     List<EventDto> getEventsBy(String email, String filter);
 }

@@ -3,6 +3,7 @@ package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Entities.Event;
+import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Repository.EventRepository;
 import javassist.NotFoundException;
@@ -57,6 +58,17 @@ public class EventServiceImpl implements EventService{
         System.out.println(event);
         Event createdEvent = eventRepository.save(event);
         return eventMapper.entity2dto(createdEvent);
+    }
+
+    @Override
+    public void deleteEvent(Long id) throws NotFoundException {
+        Optional<Event> eventOptional = eventRepository.findById(id);
+        if(eventOptional.isEmpty()) {
+            throw new NotFoundException("Event with id " + id + " not found!");
+        }
+        else {
+            eventRepository.deleteById(id);
+        }
     }
 
     public List<EventDto> getEventsBy(String email, String filter) {
