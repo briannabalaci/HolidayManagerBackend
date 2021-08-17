@@ -6,8 +6,10 @@ import com.mhp.planner.Services.EventService;
 import com.mhp.planner.Util.Annotations.AllowAttendee;
 import com.mhp.planner.Util.Annotations.AllowNormalUser;
 import com.mhp.planner.Util.Annotations.AllowOrganizer;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +42,17 @@ public class EventController {
         byte[] cover_image = file.getBytes();
         eventDto.setCover_image(cover_image);
         return ResponseEntity.ok(eventService.createEvent(eventDto));
+    }
+
+    @AllowOrganizer
+    @DeleteMapping("/deleteEvent/{id}")
+    public ResponseEntity<HttpStatus> deleteEvent(@PathVariable("id") Long id) {
+        try {
+            eventService.deleteEvent(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 
