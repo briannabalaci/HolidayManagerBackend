@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class QuestionDto {
 
-    private long id;
+    private Long id;
 
     private String text;
 

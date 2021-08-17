@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface InvitesRepository extends JpaRepository<Invite,Long> {
 
     void deleteAllByUserInvited_Id(Long id);
+
     
 }

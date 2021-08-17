@@ -7,6 +7,8 @@ import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Mappers.InvitesMapper;
 import com.mhp.planner.Mappers.QuestionMapper;
 import com.mhp.planner.Repository.EventRepository;
+import com.mhp.planner.Repository.InvitesRepository;
+import com.mhp.planner.Repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import java.util.Optional;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final InvitesRepository invitesRepository;
+    private final UserRepository userRepository;
     private final EventMapper eventMapper;
     private final InvitesMapper invitesMapper;
     private final QuestionMapper questionMapper;
@@ -113,11 +117,15 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(eventDto.getEventDate());
             event.setLocation(eventDto.getLocation());
             event.setDressCode(eventDto.getDressCode());
-            event.setCover_image(eventDto.getCover_image());
 
             //set invites
-            event.getInvites().clear();
-            event.getInvites().addAll(invitesMapper.dtos2entities(eventDto.getInvites()));
+            for(var invite: eventDto.getInvites())
+            {
+                    if(invite.getId() == null)
+                    {
+                        event.getInvites().add(invitesMapper.dto2entity(invite));
+                    }
+            }
 
             //set questions
             event.getQuestions().clear();

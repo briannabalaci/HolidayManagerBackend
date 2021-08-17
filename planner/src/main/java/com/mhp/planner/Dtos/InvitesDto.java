@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class InvitesDto {
 
-    private long id;
+    private Long id;
 
     private String status;
 
