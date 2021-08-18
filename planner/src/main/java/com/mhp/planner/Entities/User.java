@@ -37,6 +37,8 @@ public class User {
     @JoinColumn(name = "department_fk", referencedColumnName = "id", nullable = false)
     private Department department;
 
-
+    public String getFullName() {
+        return getForename() + " " + getSurname();
+    }
 
 }

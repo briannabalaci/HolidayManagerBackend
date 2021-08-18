@@ -1,15 +1,23 @@
 package com.mhp.planner.Controller;
 
+import com.itextpdf.text.Document;
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Services.EventService;
+import com.mhp.planner.Services.StatisticsService;
 import com.mhp.planner.Util.Annotations.AllowNormalUser;
 import com.mhp.planner.Util.Annotations.AllowOrganizer;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -19,6 +27,7 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final StatisticsService statisticsService;
 
     @AllowNormalUser
     @GetMapping("/getAll")
@@ -75,5 +84,24 @@ public class EventController {
     @GetMapping("/getAllBy")
     public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("email") String email, @RequestParam(name="filter") String filter) {
         return ResponseEntity.ok(eventService.getEventsBy(email, filter));
+    }
+
+    @AllowOrganizer
+    @GetMapping("{id}/statistics")
+    public ResponseEntity<?> getStatistics(@PathVariable("id") Long id) {
+        ByteArrayInputStream pdf = statisticsService.generatePDF(id);
+        if(pdf == null) {
+            return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
+        }
+        else {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-Disposition", String.format("inline; filename=event%2d.pdf", id));
+
+            return ResponseEntity
+                    .ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(new InputStreamResource(pdf));
+        }
     }
 }
