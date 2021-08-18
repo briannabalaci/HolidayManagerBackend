@@ -45,4 +45,7 @@ public class Event {
     @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
     private User organizer;
 
+    @Column(name = "time_limit")
+    private int time_limit;
+
 }

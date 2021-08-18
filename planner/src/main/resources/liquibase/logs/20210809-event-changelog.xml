@@ -34,4 +34,12 @@
                                  referencedTableName="USERS"
                                  referencedColumnNames="ID" />
     </changeSet>
+
+    <changeSet id="20210818" author="asuciu">
+        <addColumn tableName="EVENT">
+            <column name="TIME_LIMIT" type="INT">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

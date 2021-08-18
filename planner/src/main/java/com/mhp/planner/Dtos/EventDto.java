@@ -29,4 +29,6 @@ public class EventDto {
     private List<QuestionDto> questions;
 
     private String organizer;
+
+    private int time_limit;
 }
