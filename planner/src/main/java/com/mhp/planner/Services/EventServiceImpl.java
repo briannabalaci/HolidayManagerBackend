@@ -8,12 +8,14 @@ import com.mhp.planner.Mappers.InvitesMapper;
 import com.mhp.planner.Mappers.QuestionMapper;
 import com.mhp.planner.Repository.EventRepository;
 import com.mhp.planner.Repository.InvitesRepository;
+import com.mhp.planner.Repository.QuestionRepository;
 import com.mhp.planner.Repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,6 +29,7 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final InvitesRepository invitesRepository;
     private final UserRepository userRepository;
+    private final QuestionRepository questionRepository;
     private final EventMapper eventMapper;
     private final InvitesMapper invitesMapper;
     private final QuestionMapper questionMapper;
@@ -104,6 +107,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventDto updateEvent(EventDto eventDto) throws NotFoundException {
         Optional<Event> eventOptional = eventRepository.findById(eventDto.getId());
 
@@ -128,6 +132,10 @@ public class EventServiceImpl implements EventService {
             }
 
             //set questions
+            for(var question: event.getQuestions())
+            {
+                questionRepository.deleteById(question.getId());
+            }
             event.getQuestions().clear();
             event.getQuestions().addAll(questionMapper.dtos2entities(eventDto.getQuestions()));
 
