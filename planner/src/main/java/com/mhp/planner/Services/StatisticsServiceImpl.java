@@ -16,9 +16,12 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
@@ -115,26 +118,51 @@ public class StatisticsServiceImpl implements StatisticsService{
         addEmptyLines(preface, 1);
         preface.add(new Paragraph("Event Statistics Report", titleFont));
         preface.add(new Phrase("Author: ", normalBold));
-        preface.add(new Phrase(event.getOrganizer().getFullName(), normalItalic));
+        preface.add(new Phrase(event.getOrganizer().getFullName() +"\n", normalItalic));
         preface.setAlignment(Element.ALIGN_CENTER);
         pdf.add(preface);
     }
 
-    void addBasicDetails(Document pdf, Event event) throws DocumentException {
-        Paragraph basicDetails = new Paragraph();
-        addEmptyLines(basicDetails, 1);
+    void addBasicDetails(Document pdf, Event event) throws DocumentException, IOException {
+        PdfPTable table = new PdfPTable(2);
+        table.setWidthPercentage(100);
 
+        Paragraph basicDetails = new Paragraph();
+
+        basicDetails.add(new Paragraph("\n\n\n"));
         addCustomParagraph(basicDetails, "Title: ", event.getTitle());
         addCustomParagraph(basicDetails, "Location: ", event.getLocation());
         addCustomParagraph(basicDetails, "Date: ", event.getEventDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
         addCustomParagraph(basicDetails, "Dress code: ", event.getDressCode());
-        pdf.add(basicDetails);
+
+        PdfPCell c1 = new PdfPCell(basicDetails);
+        c1.setHorizontalAlignment(Element.ALIGN_LEFT);
+        c1.setPadding(0);
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+
+        //add cover img to the right
+
+//        String imgSource = event.getCover_image().split("/", 4)[3];
+//        System.out.println(imgSource.substring(0, 5));
+//        Image img = Image.getInstance(imgSource.getBytes(StandardCharsets.UTF_8));
+        String onlyImg = event.getCover_image().replace("data:image/jpeg;base64,", "");
+        byte[] decodedImg = Base64.getDecoder().decode(onlyImg);
+        Image img = Image.getInstance(decodedImg);
+        c1 = new PdfPCell(img, true);
+        c1.setFixedHeight(150);
+        c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        c1.setPadding(0);
+        c1.setBorder(Rectangle.NO_BORDER);
+        table.addCell(c1);
+
+        pdf.add(table);
     }
 
     void addCustomParagraph(Paragraph pharagraph, String str1, String str2) {
         Paragraph titleParagraph = new Paragraph("", normalFont);
         titleParagraph.add(new Phrase(str1, normalBold));
-        titleParagraph.add(new Phrase(str2, normalFont));
+        titleParagraph.add(new Phrase(str2 + "\n", normalFont));
         pharagraph.add(titleParagraph);
     }
 
