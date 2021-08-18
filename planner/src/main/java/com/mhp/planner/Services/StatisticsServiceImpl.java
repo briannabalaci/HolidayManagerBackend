@@ -6,7 +6,11 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.Image;
 import com.mhp.planner.Entities.Event;
+import com.mhp.planner.Entities.Invite;
+import com.mhp.planner.Entities.InviteQuestionResponse;
+import com.mhp.planner.Entities.Question;
 import com.mhp.planner.Repository.EventRepository;
+import com.mhp.planner.Repository.InviteQuestionRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -23,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -67,8 +72,10 @@ public class StatisticsServiceImpl implements StatisticsService{
                 pdf.open();
 
                 addHeaderPage(pdf, event);
-                addTitlePage(pdf, event);
+                add3Spaces(pdf, event);
                 addBasicDetails(pdf, event);
+                add3Spaces(pdf, event);
+                addTableForStatus(pdf, event, "accepted");
 
                 pdf.close();
 
@@ -100,8 +107,8 @@ public class StatisticsServiceImpl implements StatisticsService{
         p.add("Str. Onisifor Ghibu, Nr.20A\n");
         p.add("Cluj-Napoca, România\n");
 
-        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-        String strDate = dateFormat.format(new Date() );
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
+        String strDate = dateFormat.format(new Date());
 
         p.add(strDate);
         c1 = new PdfPCell(p);
@@ -113,12 +120,10 @@ public class StatisticsServiceImpl implements StatisticsService{
         pdf.add(table);
     }
 
-    void addTitlePage(Document pdf, Event event) throws DocumentException {
+    void add3Spaces(Document pdf, Event event) throws DocumentException {
         Paragraph preface = new Paragraph();
-        addEmptyLines(preface, 1);
-        preface.add(new Paragraph("Event Statistics Report", titleFont));
-        preface.add(new Phrase("Author: ", normalBold));
-        preface.add(new Phrase(event.getOrganizer().getFullName() +"\n", normalItalic));
+        addEmptyLines(preface, 3);
+
         preface.setAlignment(Element.ALIGN_CENTER);
         pdf.add(preface);
     }
@@ -129,10 +134,13 @@ public class StatisticsServiceImpl implements StatisticsService{
 
         Paragraph basicDetails = new Paragraph();
 
+        basicDetails.add(new Paragraph("Event Statistics Report", titleFont));
+        basicDetails.add(new Phrase("\nAuthor: ", normalBold));
+        basicDetails.add(new Phrase(event.getOrganizer().getFullName() +"\n", normalItalic));
         basicDetails.add(new Paragraph("\n\n\n"));
         addCustomParagraph(basicDetails, "Title: ", event.getTitle());
         addCustomParagraph(basicDetails, "Location: ", event.getLocation());
-        addCustomParagraph(basicDetails, "Date: ", event.getEventDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy hh:mm:ss")));
+        addCustomParagraph(basicDetails, "Date: ", event.getEventDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss")));
         addCustomParagraph(basicDetails, "Dress code: ", event.getDressCode());
 
         PdfPCell c1 = new PdfPCell(basicDetails);
@@ -142,10 +150,6 @@ public class StatisticsServiceImpl implements StatisticsService{
         table.addCell(c1);
 
         //add cover img to the right
-
-//        String imgSource = event.getCover_image().split("/", 4)[3];
-//        System.out.println(imgSource.substring(0, 5));
-//        Image img = Image.getInstance(imgSource.getBytes(StandardCharsets.UTF_8));
         String onlyImg = event.getCover_image().replace("data:image/jpeg;base64,", "");
         byte[] decodedImg = Base64.getDecoder().decode(onlyImg);
         Image img = Image.getInstance(decodedImg);
@@ -155,6 +159,45 @@ public class StatisticsServiceImpl implements StatisticsService{
         c1.setPadding(0);
         c1.setBorder(Rectangle.NO_BORDER);
         table.addCell(c1);
+
+        pdf.add(table);
+    }
+
+    void addTableForStatus(Document pdf, Event event, String status) throws DocumentException {
+        Paragraph statusParagraph = new Paragraph("", normalFont);
+        addCustomParagraph(statusParagraph, "Status: ", event.getInvites().size() + " " + status +"\n");    //should display how many accepted
+        pdf.add(statusParagraph);
+
+        PdfPTable table = new PdfPTable(1 + event.getQuestions().size());
+        table.setWidthPercentage(100);
+
+        PdfPCell c1 = new PdfPCell(new Phrase("Name", smallBold));
+        c1.setPadding(3);
+        table.addCell(c1);
+
+        //add column for each question
+        for(Question q : event.getQuestions()) {
+            c1 = new PdfPCell(new Phrase(q.getText(), smallBold));
+            c1.setPadding(3);
+            table.addCell(c1);
+        }
+
+        //add row for each invite
+        //for now add all to check the result
+        List<Invite> invites = event.getInvites();
+        for(Invite invite: invites) {
+            if(invite.getStatus().equals("accepted")) {
+                c1 = new PdfPCell(new Phrase(invite.getUserInvited().getFullName(), smallFont));
+                c1.setPadding(3);
+                table.addCell(c1);
+                for(InviteQuestionResponse iqr : invite.getInviteQuestionResponses()) {
+                    c1 = new PdfPCell(new Phrase(iqr.getAnswer().getText(), smallFont));
+                    c1.setPadding(3);
+                    table.addCell(c1);
+                }
+            }
+
+        }
 
         pdf.add(table);
     }
