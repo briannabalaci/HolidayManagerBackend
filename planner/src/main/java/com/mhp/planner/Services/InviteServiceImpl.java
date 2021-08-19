@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,5 +44,11 @@ public class InviteServiceImpl implements InviteService {
 
             return invitesMapper.entity2dto(updatedEntity);
         }
+    }
+
+    @Override
+    public List<InvitesDto> findByStatus(String status) {
+        List<Invite> invites = invitesRepository.findByStatus(status);
+        return invitesMapper.entities2dtos(invites);
     }
 }

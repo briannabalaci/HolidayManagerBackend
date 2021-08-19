@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,5 +45,15 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "organizer_fk", referencedColumnName = "id", nullable = false)
     private User organizer;
+
+    public List<Invite> getInvitesByStatus(String status) {
+        List<Invite> result = new ArrayList<>();
+        for(Invite invite: invites) {
+            if(invite.getStatus().equals(status)) {
+                result.add(invite);
+            }
+        }
+        return result;
+    }
 
 }

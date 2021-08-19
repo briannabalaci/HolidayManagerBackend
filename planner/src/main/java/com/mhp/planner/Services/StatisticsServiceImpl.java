@@ -11,6 +11,7 @@ import com.mhp.planner.Entities.InviteQuestionResponse;
 import com.mhp.planner.Entities.Question;
 import com.mhp.planner.Repository.EventRepository;
 import com.mhp.planner.Repository.InviteQuestionRepository;
+import com.mhp.planner.Repository.InvitesRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -36,6 +37,7 @@ import java.util.Optional;
 public class StatisticsServiceImpl implements StatisticsService{
 
     private final EventRepository eventRepository;
+    private final InvitesRepository invitesRepository;
 
     //fonts
     private static final Font titleFont = new Font(Font.FontFamily.TIMES_ROMAN, 24,
@@ -75,7 +77,10 @@ public class StatisticsServiceImpl implements StatisticsService{
                 add3Spaces(pdf, event);
                 addBasicDetails(pdf, event);
                 add3Spaces(pdf, event);
-                addTableForStatus(pdf, event, "accepted");
+
+                addTableForAccepted(pdf, event);
+                addTableForDeclinedOrNotResponded(pdf, event, "declined");
+                addTableForDeclinedOrNotResponded(pdf, event, "not accepted");
 
                 pdf.close();
 
@@ -163,9 +168,12 @@ public class StatisticsServiceImpl implements StatisticsService{
         pdf.add(table);
     }
 
-    void addTableForStatus(Document pdf, Event event, String status) throws DocumentException {
+    void addTableForAccepted(Document pdf, Event event) throws DocumentException {
+        String status = "accepted";
+        List<Invite> invites = event.getInvitesByStatus(status);
+
         Paragraph statusParagraph = new Paragraph("", normalFont);
-        addCustomParagraph(statusParagraph, "Status: ", event.getInvites().size() + " " + status +"\n");    //should display how many accepted
+        addCustomParagraph(statusParagraph, "Status: ", invites.size() + " " + status +"\n");    //should display how many accepted
         pdf.add(statusParagraph);
 
         PdfPTable table = new PdfPTable(1 + event.getQuestions().size());
@@ -184,19 +192,41 @@ public class StatisticsServiceImpl implements StatisticsService{
 
         //add row for each invite
         //for now add all to check the result
-        List<Invite> invites = event.getInvites();
+
+
         for(Invite invite: invites) {
-            if(invite.getStatus().equals("accepted")) {
-                c1 = new PdfPCell(new Phrase(invite.getUserInvited().getFullName(), smallFont));
+            c1 = new PdfPCell(new Phrase(invite.getUserInvited().getFullName(), smallFont));
+            c1.setPadding(3);
+            table.addCell(c1);
+            for(InviteQuestionResponse iqr : invite.getInviteQuestionResponses()) {
+                c1 = new PdfPCell(new Phrase(iqr.getAnswer().getText(), smallFont));
                 c1.setPadding(3);
                 table.addCell(c1);
-                for(InviteQuestionResponse iqr : invite.getInviteQuestionResponses()) {
-                    c1 = new PdfPCell(new Phrase(iqr.getAnswer().getText(), smallFont));
-                    c1.setPadding(3);
-                    table.addCell(c1);
-                }
             }
+        }
 
+        pdf.add(table);
+    }
+
+    void addTableForDeclinedOrNotResponded(Document pdf, Event event, String status) throws DocumentException {
+        List<Invite> invites = event.getInvitesByStatus(status);
+
+        Paragraph statusParagraph = new Paragraph("", normalFont);
+        addCustomParagraph(statusParagraph, "\nStatus: ", invites.size() + " " + status +"\n");    //should display how many accepted
+        pdf.add(statusParagraph);
+
+        PdfPTable table = new PdfPTable(1);
+        table.setHorizontalAlignment(Element.ALIGN_LEFT);
+        table.setWidthPercentage(40);
+
+        PdfPCell c1 = new PdfPCell(new Phrase("Name", smallBold));
+        c1.setPadding(3);
+        table.addCell(c1);
+
+        for(Invite invite: invites) {
+            c1 = new PdfPCell(new Phrase(invite.getUserInvited().getFullName(), smallFont));
+            c1.setPadding(3);
+            table.addCell(c1);
         }
 
         pdf.add(table);
