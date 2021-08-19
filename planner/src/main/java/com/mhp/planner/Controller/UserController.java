@@ -1,10 +1,8 @@
 package com.mhp.planner.Controller;
 
 import com.mhp.planner.Config.JwtTokenService;
-import com.mhp.planner.Dtos.DepartmentDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Dtos.UserPasswordDto;
-import com.mhp.planner.Entities.Department;
 import com.mhp.planner.Services.UserService;
 import com.mhp.planner.Util.Annotations.AllowAdmin;
 import com.mhp.planner.Util.Annotations.AllowAdminOrganizer;
@@ -14,15 +12,12 @@ import com.mhp.planner.Util.Enums.EAppRoles;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/users")
@@ -46,6 +41,15 @@ public class UserController {
     public ResponseEntity<List<UserDto>> getByDepartment(@PathVariable("department") String departmentName) {
         List<UserDto> userDtos = userService.getByDepartment(departmentName);
         return ResponseEntity.ok(userDtos);
+    }
+
+    @GetMapping("/findByEmail/{email}")
+    public ResponseEntity<UserDto> findByEmail(@PathVariable("email") String email) {
+        UserDto userDto = userService.findByEmail(email);
+        if(userDto == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(userDto);
     }
 
 //    @PostMapping("/login")
