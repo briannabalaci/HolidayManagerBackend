@@ -5,6 +5,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -47,5 +48,13 @@ public class Event {
 
     @Column(name = "time_limit")
     private int time_limit;
-
+    public List<Invite> getInvitesByStatus(String status) {
+        List<Invite> result = new ArrayList<>();
+        for(Invite invite: invites) {
+            if(invite.getStatus().equals(status)) {
+                result.add(invite);
+            }
+        }
+        return result;
+    }
 }

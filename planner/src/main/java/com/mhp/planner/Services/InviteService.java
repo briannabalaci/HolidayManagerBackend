@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface InviteService {
     InvitesDto updateInvite(InvitesDto invitesDto) throws NotFoundException;
-
     List<InviteQuestionResponseDto> getQuestionResponseById(Long id) throws NotFoundException;
+    List<InvitesDto> findByStatus(String status);
 }

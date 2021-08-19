@@ -80,5 +80,8 @@ public class InviteServiceImpl implements InviteService {
         }
     }
 
-
+    public List<InvitesDto> findByStatus(String status) {
+        List<Invite> invites = invitesRepository.findByStatus(status);
+        return invitesMapper.entities2dtos(invites);
+    }
 }
