@@ -1,17 +1,12 @@
 package com.mhp.planner.Services;
 
-import com.mhp.planner.Dtos.DepartmentDto;
 import com.mhp.planner.Dtos.UserDto;
 import com.mhp.planner.Dtos.UserPasswordDto;
 import com.mhp.planner.Entities.User;
-import com.mhp.planner.Mappers.DepartmentMapper;
 import com.mhp.planner.Mappers.UserMapper;
-
 import com.mhp.planner.Repository.DepartmentRepository;
-
 import com.mhp.planner.Repository.EventRepository;
 import com.mhp.planner.Repository.InvitesRepository;
-
 import com.mhp.planner.Repository.UserRepository;
 import com.mhp.planner.Util.Enums.EAppRoles;
 import javassist.NotFoundException;
@@ -19,8 +14,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.naming.AuthenticationException;
 import javax.transaction.Transactional;
 import java.util.Base64;
 import java.util.List;
@@ -119,5 +112,11 @@ public class UserServiceImpl implements UserService {
         User updatedUser = userRepository.save(user);
 
         return userMapper.entity2Dto(updatedUser);
+    }
+
+    @Override
+    public UserDto findByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return userMapper.entity2Dto(user);
     }
 }
