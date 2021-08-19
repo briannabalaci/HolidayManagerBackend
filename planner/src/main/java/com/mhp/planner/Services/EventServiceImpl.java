@@ -1,6 +1,7 @@
 package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
+import com.mhp.planner.Dtos.QuestionDto;
 import com.mhp.planner.Entities.Event;
 import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.EventMapper;
@@ -134,7 +135,10 @@ public class EventServiceImpl implements EventService {
             //set questions
             for(var question: event.getQuestions())
             {
-                questionRepository.deleteById(question.getId());
+                if(!eventDto.getQuestions().contains(questionMapper.entity2dto(question)))
+                {
+                    questionRepository.deleteById(question.getId());
+                }
             }
             event.getQuestions().clear();
             event.getQuestions().addAll(questionMapper.dtos2entities(eventDto.getQuestions()));

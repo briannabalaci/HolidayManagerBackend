@@ -1,5 +1,6 @@
 package com.mhp.planner.Dtos;
 
+import com.mhp.planner.Entities.Question;
 import lombok.Data;
 
 import java.util.List;
@@ -12,4 +13,15 @@ public class QuestionDto {
     private String text;
 
     private List<AnswersDto> answerList;
+
+    @Override
+    public boolean equals(Object e)
+    {
+        if(e instanceof QuestionDto)
+        {
+            QuestionDto question = (QuestionDto) e;
+            return question.getId().equals(this.id);
+        }
+        return false;
+    }
 }

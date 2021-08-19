@@ -22,4 +22,6 @@ public class Question {
     @JoinColumn(name = "question_fk", referencedColumnName = "id", nullable = false)
     private List<Answers> answerList;
 
+
+
 }

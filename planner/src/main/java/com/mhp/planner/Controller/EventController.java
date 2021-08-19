@@ -2,6 +2,7 @@ package com.mhp.planner.Controller;
 
 import com.itextpdf.text.Document;
 import com.mhp.planner.Dtos.EventDto;
+import com.mhp.planner.Dtos.QuestionDto;
 import com.mhp.planner.Services.EventService;
 import com.mhp.planner.Services.StatisticsService;
 import com.mhp.planner.Util.Annotations.AllowNormalUser;
@@ -86,6 +87,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventsBy(email, filter));
     }
 
+
     @AllowOrganizer
     @GetMapping("{id}/statistics")
     public ResponseEntity<?> getStatistics(@PathVariable("id") Long id) {
@@ -104,4 +106,5 @@ public class EventController {
                     .body(new InputStreamResource(pdf));
         }
     }
+
 }

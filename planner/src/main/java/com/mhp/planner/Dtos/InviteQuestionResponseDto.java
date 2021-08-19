@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class InviteQuestionResponseDto {
 
-    private long id;
+    private Long id;
 
     private QuestionDto question;
 
