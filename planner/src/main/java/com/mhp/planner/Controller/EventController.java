@@ -1,6 +1,7 @@
 package com.mhp.planner.Controller;
 
 import com.mhp.planner.Dtos.EventDto;
+import com.mhp.planner.Dtos.QuestionDto;
 import com.mhp.planner.Services.EventService;
 import com.mhp.planner.Util.Annotations.AllowNormalUser;
 import com.mhp.planner.Util.Annotations.AllowOrganizer;
@@ -76,4 +77,7 @@ public class EventController {
     public ResponseEntity<List<EventDto>> getEventsByIdAndFilter(@RequestParam("email") String email, @RequestParam(name="filter") String filter) {
         return ResponseEntity.ok(eventService.getEventsBy(email, filter));
     }
+
+
+
 }
