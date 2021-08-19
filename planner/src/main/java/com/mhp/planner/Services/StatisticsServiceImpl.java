@@ -80,7 +80,7 @@ public class StatisticsServiceImpl implements StatisticsService{
 
                 addTableForAccepted(pdf, event);
                 addTableForDeclinedOrNotResponded(pdf, event, "declined");
-                addTableForDeclinedOrNotResponded(pdf, event, "not accepted");
+                addTableForDeclinedOrNotResponded(pdf, event, "Not Accepted");
 
                 pdf.close();
 
@@ -156,6 +156,7 @@ public class StatisticsServiceImpl implements StatisticsService{
 
         //add cover img to the right
         String onlyImg = event.getCover_image().replace("data:image/jpeg;base64,", "");
+        onlyImg = onlyImg.replace("data:image/png;base64,", "");
         byte[] decodedImg = Base64.getDecoder().decode(onlyImg);
         Image img = Image.getInstance(decodedImg);
         c1 = new PdfPCell(img, true);
