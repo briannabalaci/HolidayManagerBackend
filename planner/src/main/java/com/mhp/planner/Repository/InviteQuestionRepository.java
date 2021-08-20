@@ -12,4 +12,5 @@ public interface InviteQuestionRepository extends JpaRepository<InviteQuestionRe
 
     @Transactional
     void deleteById(Long id);
+    void deleteByQuestion_Id(Long id);
 }

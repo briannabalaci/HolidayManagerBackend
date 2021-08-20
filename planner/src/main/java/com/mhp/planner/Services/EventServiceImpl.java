@@ -3,14 +3,13 @@ package com.mhp.planner.Services;
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Dtos.QuestionDto;
 import com.mhp.planner.Entities.Event;
+import com.mhp.planner.Entities.Invite;
+import com.mhp.planner.Entities.InviteQuestionResponse;
 import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Mappers.InvitesMapper;
 import com.mhp.planner.Mappers.QuestionMapper;
-import com.mhp.planner.Repository.EventRepository;
-import com.mhp.planner.Repository.InvitesRepository;
-import com.mhp.planner.Repository.QuestionRepository;
-import com.mhp.planner.Repository.UserRepository;
+import com.mhp.planner.Repository.*;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +34,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final InvitesMapper invitesMapper;
     private final QuestionMapper questionMapper;
+    private final InviteQuestionRepository inviteQuestionRepository;
 
     @Override
     public List<EventDto> getAllEvents() {
@@ -119,6 +120,13 @@ public class EventServiceImpl implements EventService {
             System.out.println(eventDto);
 
             event.setTitle(eventDto.getTitle());
+
+            if(!event.getEventDate().isEqual(eventDto.getEventDate())) {
+                for(Invite invite : event.getInvites()) {
+                    invite.setInviteQuestionResponses(new ArrayList<InviteQuestionResponse>());
+                    invite.setStatus("Not Accepted");
+                }
+            }
             event.setEventDate(eventDto.getEventDate());
             event.setLocation(eventDto.getLocation());
             event.setDressCode(eventDto.getDressCode());
@@ -137,6 +145,8 @@ public class EventServiceImpl implements EventService {
             {
                 if(!eventDto.getQuestions().contains(questionMapper.entity2dto(question)))
                 {
+                    inviteQuestionRepository.deleteByQuestion_Id(question.getId());
+                    System.out.println(inviteQuestionRepository.findAll());
                     questionRepository.deleteById(question.getId());
                 }
             }
