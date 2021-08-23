@@ -124,7 +124,7 @@ public class EventServiceImpl implements EventService {
             if(!event.getEventDate().isEqual(eventDto.getEventDate())) {
                 for(Invite invite : event.getInvites()) {
                     invite.setInviteQuestionResponses(new ArrayList<InviteQuestionResponse>());
-                    invite.setStatus("Not Accepted");
+                    invite.setStatus("pending");
                 }
             }
             event.setEventDate(eventDto.getEventDate());

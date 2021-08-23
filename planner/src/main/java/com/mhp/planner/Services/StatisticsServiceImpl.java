@@ -91,8 +91,8 @@ public class StatisticsServiceImpl implements StatisticsService{
                 if(filter.equals("declined") || filter.equals("all"))
                 addTableForDeclinedOrNotResponded(pdf, event, "declined");
 
-                if(filter.equals("Not Accepted") || filter.equals("all"))
-                addTableForDeclinedOrNotResponded(pdf, event, "Not Accepted");
+                if(filter.equals("pending") || filter.equals("all"))
+                addTableForDeclinedOrNotResponded(pdf, event, "pending");
 
                 pdf.close();
 
