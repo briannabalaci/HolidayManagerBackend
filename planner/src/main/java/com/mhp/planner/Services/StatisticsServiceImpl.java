@@ -199,7 +199,11 @@ public class StatisticsServiceImpl implements StatisticsService{
             c1 = new PdfPCell(new Phrase(invite.getUserInvited().getFullName(), smallFont));
             c1.setPadding(3);
             table.addCell(c1);
-            for(InviteQuestionResponse iqr : invite.getInviteQuestionResponses()) {
+            List<InviteQuestionResponse> iqrs = invite.getInviteQuestionResponses();
+            iqrs.sort((q1, q2) ->
+                    Long.compare(q2.getId(), q1.getId()));
+            for(InviteQuestionResponse iqr : iqrs) {
+                System.out.println("iqr id: " + iqr.getId() + " " + iqr.getQuestion().getText() + " has answer " + iqr.getAnswer().getText());
                 c1 = new PdfPCell(new Phrase(iqr.getAnswer().getText(), smallFont));
                 c1.setPadding(3);
                 table.addCell(c1);
