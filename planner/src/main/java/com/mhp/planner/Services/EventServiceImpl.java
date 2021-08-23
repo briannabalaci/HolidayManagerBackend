@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -149,6 +150,11 @@ public class EventServiceImpl implements EventService {
                     System.out.println(inviteQuestionRepository.findAll());
                     questionRepository.deleteById(question.getId());
                 }
+            }
+            var nullIds = eventDto.getQuestions().stream().filter(s -> s.getId() == null).collect(Collectors.toList());
+            if(nullIds.size() != 0)
+            {
+                event.getInvites().forEach(s -> s.setStatus("pending"));
             }
             event.getQuestions().clear();
             event.getQuestions().addAll(questionMapper.dtos2entities(eventDto.getQuestions()));
