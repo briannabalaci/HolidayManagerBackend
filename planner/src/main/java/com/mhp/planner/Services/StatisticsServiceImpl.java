@@ -128,7 +128,7 @@ public class StatisticsServiceImpl implements StatisticsService{
             table.addCell(c1);
 
             //add count
-            c1 = new PdfPCell(new Phrase(countOfAnswers.get(answer).toString(), smallFont));
+            c1 = new PdfPCell(new Phrase(countOfAnswers.getOrDefault(answer,0l).toString(), smallFont));
             c1.setPadding(3);
             table.addCell(c1);
         }
