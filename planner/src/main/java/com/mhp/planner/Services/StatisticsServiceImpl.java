@@ -58,7 +58,7 @@ public class StatisticsServiceImpl implements StatisticsService{
             Font.BOLD);
 
     @Override
-    public ByteArrayInputStream generatePDF(Long id) {
+    public ByteArrayInputStream generatePDFByFilter(Long id, String filter) {
         //find event
         Optional<Event> optionalEvent = eventRepository.findById(id);
         if(optionalEvent.isEmpty()) {
@@ -78,8 +78,13 @@ public class StatisticsServiceImpl implements StatisticsService{
                 addBasicDetails(pdf, event);
                 add3Spaces(pdf, event);
 
-                addTableForAccepted(pdf, event);
+                if(filter.equals("accepted") || filter.equals("all"))
+                    addTableForAccepted(pdf, event);
+
+                if(filter.equals("declined") || filter.equals("all"))
                 addTableForDeclinedOrNotResponded(pdf, event, "declined");
+
+                if(filter.equals("Not Accepted") || filter.equals("all"))
                 addTableForDeclinedOrNotResponded(pdf, event, "Not Accepted");
 
                 pdf.close();

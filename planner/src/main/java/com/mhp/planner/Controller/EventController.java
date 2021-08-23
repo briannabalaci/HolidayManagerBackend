@@ -89,9 +89,9 @@ public class EventController {
 
 
     @AllowOrganizer
-    @GetMapping("{id}/statistics")
-    public ResponseEntity<?> getStatistics(@PathVariable("id") Long id) {
-        ByteArrayInputStream pdf = statisticsService.generatePDF(id);
+    @GetMapping("{id}/statistics/{filter}")
+    public ResponseEntity<?> getStatisticsByFilter(@PathVariable("id") Long id, @PathVariable("filter") String filter) {
+        ByteArrayInputStream pdf = statisticsService.generatePDFByFilter(id, filter);
         if(pdf == null) {
             return new ResponseEntity<>("Event not found", HttpStatus.NOT_FOUND);
         }
