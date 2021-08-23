@@ -5,10 +5,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.Image;
-import com.mhp.planner.Entities.Event;
-import com.mhp.planner.Entities.Invite;
-import com.mhp.planner.Entities.InviteQuestionResponse;
-import com.mhp.planner.Entities.Question;
+import com.mhp.planner.Entities.*;
 import com.mhp.planner.Repository.EventRepository;
 import com.mhp.planner.Repository.InviteQuestionRepository;
 import com.mhp.planner.Repository.InvitesRepository;
@@ -26,10 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -62,8 +57,7 @@ public class StatisticsServiceImpl implements StatisticsService{
         //find event
         Optional<Event> optionalEvent = eventRepository.findById(id);
         if(optionalEvent.isEmpty()) {
-            //nasol
-            return null; //should throw some kind of an error
+            return null;
         }
         else {
             Event event = optionalEvent.get();
@@ -76,7 +70,20 @@ public class StatisticsServiceImpl implements StatisticsService{
                 addHeaderPage(pdf, event);
                 add3Spaces(pdf, event);
                 addBasicDetails(pdf, event);
-                add3Spaces(pdf, event);
+
+                if(filter.equals("accepted") || filter.equals("all")) {
+                    Paragraph p = new Paragraph("");
+                    p = new Paragraph("Overview\n", normalBold);
+                    pdf.add(p);
+
+                    Map<Answers, Long> countOfAnswers = getCountOfAnswers(event.getInvitesByStatus("accepted"));
+                    int i = 1;
+                    for (Question question : event.getQuestions())
+                        addTableForQuestion(pdf, question, i++, countOfAnswers);
+
+                    p = new Paragraph("All responses\n", normalBold);
+                    pdf.add(p);
+                }
 
                 if(filter.equals("accepted") || filter.equals("all"))
                     addTableForAccepted(pdf, event);
@@ -96,6 +103,48 @@ public class StatisticsServiceImpl implements StatisticsService{
             }
             return null;
         }
+    }
+
+    private void addTableForQuestion(Document pdf, Question question, int questionNr, Map<Answers, Long> countOfAnswers) throws DocumentException {
+        pdf.add(new Paragraph("Question" + questionNr + ": " + question.getText() + "\n\n", smallBold));
+
+        PdfPTable table = new PdfPTable(2);
+        table.setWidthPercentage(50);
+        table.setHorizontalAlignment(Element.ALIGN_LEFT);
+
+        PdfPCell c1 = new PdfPCell(new Phrase("Answer", smallBold));
+        c1.setPadding(3);
+        table.addCell(c1);
+
+        c1 = new PdfPCell(new Phrase("Count", smallBold));
+        c1.setPadding(3);
+        table.addCell(c1);
+
+        //add row for each answer
+        for(Answers answer : question.getAnswerList()) {
+            //add answer text
+            c1 = new PdfPCell(new Phrase(answer.getText(), smallFont));
+            c1.setPadding(3);
+            table.addCell(c1);
+
+            //add count
+            c1 = new PdfPCell(new Phrase(countOfAnswers.get(answer).toString(), smallFont));
+            c1.setPadding(3);
+            table.addCell(c1);
+        }
+
+        pdf.add(table);
+        pdf.add(new Paragraph("\n"));
+    }
+
+    private Map<Answers, Long> getCountOfAnswers(List<Invite> invites) {
+        Map<Answers, Long> countOfAnswers = new HashMap<>();
+        for(Invite invite:invites) {
+            for(InviteQuestionResponse iqr : invite.getInviteQuestionResponses()) {
+                countOfAnswers.put(iqr.getAnswer(), countOfAnswers.getOrDefault(iqr.getAnswer(), 0L) + 1);
+            }
+        }
+        return countOfAnswers;
     }
 
     void addHeaderPage(Document pdf, Event event) throws DocumentException, IOException {
@@ -182,6 +231,7 @@ public class StatisticsServiceImpl implements StatisticsService{
         addCustomParagraph(statusParagraph, "Status: ", invites.size() + " " + status +"\n");    //should display how many accepted
         pdf.add(statusParagraph);
 
+        if(invites.size() == 0) return; //don't draw table headers if there is no data
         PdfPTable table = new PdfPTable(1 + event.getQuestions().size());
         table.setWidthPercentage(100);
 
@@ -197,18 +247,14 @@ public class StatisticsServiceImpl implements StatisticsService{
         }
 
         //add row for each invite
-        //for now add all to check the result
-
-
         for(Invite invite: invites) {
             c1 = new PdfPCell(new Phrase(invite.getUserInvited().getFullName(), smallFont));
             c1.setPadding(3);
             table.addCell(c1);
             List<InviteQuestionResponse> iqrs = invite.getInviteQuestionResponses();
             iqrs.sort((q1, q2) ->
-                    Long.compare(q2.getId(), q1.getId()));
+                    - Long.compare(q2.getId(), q1.getId()));
             for(InviteQuestionResponse iqr : iqrs) {
-                System.out.println("iqr id: " + iqr.getId() + " " + iqr.getQuestion().getText() + " has answer " + iqr.getAnswer().getText());
                 c1 = new PdfPCell(new Phrase(iqr.getAnswer().getText(), smallFont));
                 c1.setPadding(3);
                 table.addCell(c1);
@@ -225,6 +271,7 @@ public class StatisticsServiceImpl implements StatisticsService{
         addCustomParagraph(statusParagraph, "\nStatus: ", invites.size() + " " + status +"\n");    //should display how many accepted
         pdf.add(statusParagraph);
 
+        if(invites.size() == 0) return; //don't draw table headers if there is no data
         PdfPTable table = new PdfPTable(1);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
         table.setWidthPercentage(40);
@@ -243,9 +290,9 @@ public class StatisticsServiceImpl implements StatisticsService{
     }
 
     void addCustomParagraph(Paragraph pharagraph, String str1, String str2) {
-        Paragraph titleParagraph = new Paragraph("", normalFont);
-        titleParagraph.add(new Phrase(str1, normalBold));
-        titleParagraph.add(new Phrase(str2 + "\n", normalFont));
+        Paragraph titleParagraph = new Paragraph("", smallFont);
+        titleParagraph.add(new Phrase(str1, smallBold));
+        titleParagraph.add(new Phrase(str2 + "\n", smallFont));
         pharagraph.add(titleParagraph);
     }
 
