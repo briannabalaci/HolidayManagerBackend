@@ -42,4 +42,8 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="20210817-002" author="mmehi">
+        <modifyDataType tableName="event" columnName="cover_image" newDataType="TEXT"/>
+    </changeSet>
 </databaseChangeLog>

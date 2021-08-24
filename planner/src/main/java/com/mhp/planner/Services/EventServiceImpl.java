@@ -2,10 +2,7 @@ package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Dtos.QuestionDto;
-import com.mhp.planner.Entities.Event;
-import com.mhp.planner.Entities.Invite;
-import com.mhp.planner.Entities.InviteQuestionResponse;
-import com.mhp.planner.Entities.User;
+import com.mhp.planner.Entities.*;
 import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Mappers.InvitesMapper;
 import com.mhp.planner.Mappers.QuestionMapper;
@@ -19,6 +16,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -50,9 +48,12 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEvent(Long id) throws NotFoundException {
         Optional<Event> eventOptional = eventRepository.findById(id);
+
         if (eventOptional.isEmpty()) {
             throw new NotFoundException("Event with id " + id + " not found");
         } else {
+            Event event = eventOptional.get();
+            event.setQuestions(event.getQuestions().stream().sorted(Comparator.comparingLong(Question::getId)).collect(Collectors.toList()));
             return eventMapper.entity2dto(eventOptional.get());
         }
     }
@@ -132,6 +133,8 @@ public class EventServiceImpl implements EventService {
             event.setLocation(eventDto.getLocation());
             event.setDressCode(eventDto.getDressCode());
 
+            System.out.println(eventDto.getQuestions());
+
             //set invites
             for(var invite: eventDto.getInvites())
             {
@@ -154,7 +157,9 @@ public class EventServiceImpl implements EventService {
             var nullIds = eventDto.getQuestions().stream().filter(s -> s.getId() == null).collect(Collectors.toList());
             if(nullIds.size() != 0)
             {
-                event.getInvites().forEach(s -> s.setStatus("pending"));
+
+                event.getInvites().forEach(s -> {s.setStatus("pending"); s.setInviteQuestionResponses(new ArrayList<InviteQuestionResponse>()); });
+
             }
             event.getQuestions().clear();
             event.getQuestions().addAll(questionMapper.dtos2entities(eventDto.getQuestions()));
