@@ -124,10 +124,12 @@ public class EventServiceImpl implements EventService {
             event.setTitle(eventDto.getTitle());
 
             if(!event.getEventDate().isEqual(eventDto.getEventDate())) {
-                for(Invite invite : event.getInvites()) {
-                    invite.setInviteQuestionResponses(new ArrayList<InviteQuestionResponse>());
-                    invite.setStatus("pending");
-                }
+                event.getInvites().forEach(
+                        s -> {
+                               s.setStatus("pending");
+                               event.getQuestions().forEach(e -> inviteQuestionRepository.deleteByQuestion_Id(e.getId()));
+                });
+
             }
             event.setEventDate(eventDto.getEventDate());
             event.setLocation(eventDto.getLocation());
@@ -158,7 +160,10 @@ public class EventServiceImpl implements EventService {
             if(nullIds.size() != 0)
             {
 
-                event.getInvites().forEach(s -> {s.setStatus("pending"); s.setInviteQuestionResponses(new ArrayList<InviteQuestionResponse>()); });
+                event.getInvites().forEach(s -> {
+                    s.setStatus("pending");
+                    event.getQuestions().forEach(e -> {inviteQuestionRepository.deleteByQuestion_Id(e.getId());});
+                });
 
             }
             event.getQuestions().clear();
