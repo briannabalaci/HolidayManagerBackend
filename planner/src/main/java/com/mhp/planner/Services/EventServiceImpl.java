@@ -2,8 +2,10 @@ package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.AnswersDto;
 import com.mhp.planner.Dtos.EventDto;
-import com.mhp.planner.Dtos.QuestionDto;
-import com.mhp.planner.Entities.*;
+import com.mhp.planner.Entities.Event;
+import com.mhp.planner.Entities.Invite;
+import com.mhp.planner.Entities.Question;
+import com.mhp.planner.Entities.User;
 import com.mhp.planner.Mappers.EventMapper;
 import com.mhp.planner.Mappers.InvitesMapper;
 import com.mhp.planner.Mappers.QuestionMapper;
@@ -16,10 +18,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +35,7 @@ public class EventServiceImpl implements EventService {
     private final InvitesMapper invitesMapper;
     private final QuestionMapper questionMapper;
     private final InviteQuestionRepository inviteQuestionRepository;
-    private final AnswersRepository answersRepository;
+    private final EmailService emailService;
 
     @Override
     public List<EventDto> getAllEvents() {
@@ -62,22 +62,49 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDto createEvent(EventDto eventDto) throws IOException {
-
         Event event = eventMapper.dto2entity(eventDto);
         System.out.println(event);
         Event createdEvent = eventRepository.save(event);
+
+        List<String> inviteEmails = createdEvent.getInvites().stream()
+                .map(Invite::getUserInvited)
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+
+        Date date = Date.from(createdEvent.getEventDate().atZone(ZoneId.systemDefault()).toInstant());
+
+        emailService.sendTemplatedEmail(
+                "New MHP event invitation",
+                "newEventTemplate.html",
+                Map.of("eventName", createdEvent.getTitle(),
+                        "location", createdEvent.getLocation(),
+                        "date", date.toString(),
+                        "dressCode", createdEvent.getDressCode(),
+                        "id", createdEvent.getId().toString()), inviteEmails);
+
         return eventMapper.entity2dto(createdEvent);
     }
 
     @Override
     public void deleteEvent(Long id) throws NotFoundException {
         Optional<Event> eventOptional = eventRepository.findById(id);
-        if(eventOptional.isEmpty()) {
+        if (eventOptional.isEmpty()) {
             throw new NotFoundException("Event with id " + id + " not found!");
         }
-        else {
-            eventRepository.deleteById(id);
-        }
+
+        Event event = eventOptional.get();
+        List<String> inviteEmails = event.getInvites().stream()
+                .map(Invite::getUserInvited)
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+
+        eventRepository.deleteById(id);
+
+        emailService.sendTemplatedEmail(
+                "MHP event cancellation",
+                "cancellationEventTemplate.html",
+                Map.of("eventName", event.getTitle()),
+                inviteEmails);
     }
 
     public List<EventDto> getEventsBy(String email, String filter) {
@@ -119,12 +146,12 @@ public class EventServiceImpl implements EventService {
 
             event.setTitle(eventDto.getTitle());
 
-            if(!event.getEventDate().isEqual(eventDto.getEventDate())) {
+            if (!event.getEventDate().isEqual(eventDto.getEventDate())) {
                 event.getInvites().forEach(
                         s -> {
-                               s.setStatus("pending");
-                               event.getQuestions().forEach(e -> inviteQuestionRepository.deleteByQuestion_Id(e.getId()));
-                });
+                            s.setStatus("pending");
+                            event.getQuestions().forEach(e -> inviteQuestionRepository.deleteByQuestion_Id(e.getId()));
+                        });
 
             }
             event.setEventDate(eventDto.getEventDate());
@@ -132,31 +159,28 @@ public class EventServiceImpl implements EventService {
             event.setDressCode(eventDto.getDressCode());
 
             //set invites
-            for(var invite: eventDto.getInvites())
-            {
-                    if(invite.getId() == null)
-                    {
-                        event.getInvites().add(invitesMapper.dto2entity(invite));
-                    }
+            for (var invite : eventDto.getInvites()) {
+                if (invite.getId() == null) {
+                    event.getInvites().add(invitesMapper.dto2entity(invite));
+                }
             }
 
             //set questions
-            for(var question: event.getQuestions())
-            {
-                if(!eventDto.getQuestions().contains(questionMapper.entity2dto(question)))
-                {
+            for (var question : event.getQuestions()) {
+                if (!eventDto.getQuestions().contains(questionMapper.entity2dto(question))) {
                     inviteQuestionRepository.deleteByQuestion_Id(question.getId());
                     System.out.println(inviteQuestionRepository.findAll());
                     questionRepository.deleteById(question.getId());
                 }
             }
             var nullIds = eventDto.getQuestions().stream().filter(s -> s.getId() == null).collect(Collectors.toList());
-            if(nullIds.size() != 0)
-            {
+            if (nullIds.size() != 0) {
 
                 event.getInvites().forEach(s -> {
                     s.setStatus("pending");
-                    event.getQuestions().forEach(e -> {inviteQuestionRepository.deleteByQuestion_Id(e.getId());});
+                    event.getQuestions().forEach(e -> {
+                        inviteQuestionRepository.deleteByQuestion_Id(e.getId());
+                    });
                 });
 
             }
