@@ -96,9 +96,11 @@ public class UserController {
 
     @AllowAll
     @PutMapping("/change-password")
-    public ResponseEntity<HttpStatus> changePassword(@RequestBody UserPasswordDto userPasswordDto) {
-        userService.changePasswordUser(userPasswordDto);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<?> changePassword(@RequestBody UserPasswordDto userPasswordDto) {
+        if (userService.changePasswordUser(userPasswordDto) != null)
+            return new ResponseEntity<>(HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     private final JwtTokenService jwtTokenService;
