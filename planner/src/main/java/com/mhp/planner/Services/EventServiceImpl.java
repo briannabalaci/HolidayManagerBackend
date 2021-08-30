@@ -1,5 +1,6 @@
 package com.mhp.planner.Services;
 
+import com.mhp.planner.Dtos.AnswersDto;
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Dtos.QuestionDto;
 import com.mhp.planner.Entities.*;
@@ -34,6 +35,7 @@ public class EventServiceImpl implements EventService {
     private final InvitesMapper invitesMapper;
     private final QuestionMapper questionMapper;
     private final InviteQuestionRepository inviteQuestionRepository;
+    private final AnswersRepository answersRepository;
 
     @Override
     public List<EventDto> getAllEvents() {
@@ -56,12 +58,6 @@ public class EventServiceImpl implements EventService {
             event.setQuestions(event.getQuestions().stream().sorted(Comparator.comparingLong(Question::getId)).collect(Collectors.toList()));
             return eventMapper.entity2dto(eventOptional.get());
         }
-    }
-
-    @Override
-    public EventDto getImageBasedOnEvent(Long id) {
-        Event event = eventRepository.findById(id).get();
-        return eventMapper.entity2dto(event);
     }
 
     @Override
@@ -135,8 +131,6 @@ public class EventServiceImpl implements EventService {
             event.setLocation(eventDto.getLocation());
             event.setDressCode(eventDto.getDressCode());
 
-            System.out.println(eventDto.getQuestions());
-
             //set invites
             for(var invite: eventDto.getInvites())
             {
@@ -166,7 +160,11 @@ public class EventServiceImpl implements EventService {
                 });
 
             }
+
+
+
             event.getQuestions().clear();
+
             event.getQuestions().addAll(questionMapper.dtos2entities(eventDto.getQuestions()));
 
             Event updatedEntity = eventRepository.save(event);
@@ -174,5 +172,7 @@ public class EventServiceImpl implements EventService {
             return eventMapper.entity2dto(updatedEntity);
         }
     }
+
+
 
 }
