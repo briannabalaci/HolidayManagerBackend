@@ -4,12 +4,15 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.model.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -24,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
     private final AmazonSimpleEmailService amazonSimpleEmailService;
 
     @Override
-    public void sendEmail(String title, String body, List<String> emailAddresses) {
+    public void sendEmails(String title, String body, List<String> emailAddresses) {
         SendEmailRequest request = new SendEmailRequest().withDestination(new Destination().withBccAddresses(emailAddresses))
                 .withMessage(new Message()
                         .withSubject(new Content().withData(title))
@@ -34,7 +37,12 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendTemplatedEmail(String title, String templateName, Map<String, String> variables, List<String> emailAddresses) {
+    public void sendEmail(String title, String body, String email) {
+        sendEmails(title, body, List.of(email));
+    }
+
+    @Override
+    public void sendTemplatedEmails(String title, String templateName, Map<String, String> variables, List<String> emailAddresses) {
 
         String templatePath = "emailTemplates/" + templateName;
         String body = readResourceFileAsString(templatePath);
@@ -43,20 +51,21 @@ public class EmailServiceImpl implements EmailService {
             body = body.replaceAll("\\{\\{[ ]*" + entry.getKey() + "[ ]*}}", entry.getValue());
         }
 
-        sendEmail(title, body, emailAddresses);
+        sendEmails(title, body, emailAddresses);
+    }
+
+    @Override
+    public void sendTemplatedEmail(String title, String templateName, Map<String, String> variables, String email) {
+        sendTemplatedEmails(title, templateName, variables, List.of(email));
     }
 
     private String readResourceFileAsString(String resourcePath) {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-
-        try {
-            URI uri = Objects.requireNonNull(classloader.getResource(resourcePath)).toURI();
-            return new String(Files.readAllBytes(Paths.get(uri)));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+            try {
+                final ClassPathResource classPathResource = new ClassPathResource(resourcePath);
+                return StreamUtils.copyToString(classPathResource.getInputStream(), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
     }
-
 }
+
