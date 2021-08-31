@@ -1,6 +1,5 @@
 package com.mhp.planner.Services;
 
-import com.mhp.planner.Dtos.AnswersDto;
 import com.mhp.planner.Dtos.EventDto;
 import com.mhp.planner.Entities.Event;
 import com.mhp.planner.Entities.Invite;
@@ -17,8 +16,11 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,21 +68,31 @@ public class EventServiceImpl implements EventService {
         System.out.println(event);
         Event createdEvent = eventRepository.save(event);
 
-        List<String> inviteEmails = createdEvent.getInvites().stream()
-                .map(Invite::getUserInvited)
-                .map(User::getEmail)
-                .collect(Collectors.toList());
+        LocalDateTime eventDate = createdEvent.getEventDate();
 
-        Date date = Date.from(createdEvent.getEventDate().atZone(ZoneId.systemDefault()).toInstant());
+        String date = String.format("%02d/%02d/%04d",
+                eventDate.getDayOfMonth(),
+                eventDate.getMonthValue(),
+                eventDate.getYear());
 
-        emailService.sendTemplatedEmail(
-                "New MHP event invitation",
-                "newEventTemplate.html",
-                Map.of("eventName", createdEvent.getTitle(),
-                        "location", createdEvent.getLocation(),
-                        "date", date.toString(),
-                        "dressCode", createdEvent.getDressCode(),
-                        "id", createdEvent.getId().toString()), inviteEmails);
+        String pattern = "hh:mm a";
+        String time = eventDate.format(DateTimeFormatter.ofPattern(pattern));
+
+        for (Invite invites : createdEvent.getInvites()) {
+            User invitedUser = invites.getUserInvited();
+
+            emailService.sendTemplatedEmail(
+                    "New MHP event invitation",
+                    "newEventTemplate.html",
+                    Map.of("eventName", createdEvent.getTitle(),
+                            "foreName", invitedUser.getForename(),
+                            "location", createdEvent.getLocation(),
+                            "date", date,
+                            "time", time,
+                            "dressCode", createdEvent.getDressCode(),
+                            "id", createdEvent.getId().toString()),
+                    invitedUser.getEmail());
+        }
 
         return eventMapper.entity2dto(createdEvent);
     }
@@ -93,18 +105,19 @@ public class EventServiceImpl implements EventService {
         }
 
         Event event = eventOptional.get();
-        List<String> inviteEmails = event.getInvites().stream()
-                .map(Invite::getUserInvited)
-                .map(User::getEmail)
-                .collect(Collectors.toList());
 
         eventRepository.deleteById(id);
 
-        emailService.sendTemplatedEmail(
-                "MHP event cancellation",
-                "cancellationEventTemplate.html",
-                Map.of("eventName", event.getTitle()),
-                inviteEmails);
+        for (Invite invites : event.getInvites()) {
+            User invitedUser = invites.getUserInvited();
+
+            emailService.sendTemplatedEmail(
+                    "MHP event cancellation",
+                    "cancellationEventTemplate.html",
+                    Map.of("eventName", event.getTitle(),
+                            "foreName", invitedUser.getForename()),
+                    invitedUser.getEmail());
+        }
     }
 
     public List<EventDto> getEventsBy(String email, String filter) {
@@ -185,13 +198,37 @@ public class EventServiceImpl implements EventService {
 
             }
 
-
-
             event.getQuestions().clear();
 
             event.getQuestions().addAll(questionMapper.dtos2entities(eventDto.getQuestions()));
 
             Event updatedEntity = eventRepository.save(event);
+
+            LocalDateTime eventDate = updatedEntity.getEventDate();
+
+            String date = String.format("%02d/%02d/%04d",
+                    eventDate.getDayOfMonth(),
+                    eventDate.getMonthValue(),
+                    eventDate.getYear());
+
+            String pattern = "hh:mm a";
+            String time = eventDate.format(DateTimeFormatter.ofPattern(pattern));
+
+            for (Invite invites : updatedEntity.getInvites()) {
+                User invitedUser = invites.getUserInvited();
+
+                emailService.sendTemplatedEmail(
+                        "MHP event update",
+                        "updateEventTemplate.html",
+                        Map.of("eventName", updatedEntity.getTitle(),
+                                "foreName", invitedUser.getForename(),
+                                "location", updatedEntity.getLocation(),
+                                "date", date,
+                                "time", time,
+                                "dressCode", updatedEntity.getDressCode(),
+                                "id", updatedEntity.getId().toString()),
+                        invitedUser.getEmail());
+            }
 
             return eventMapper.entity2dto(updatedEntity);
         }

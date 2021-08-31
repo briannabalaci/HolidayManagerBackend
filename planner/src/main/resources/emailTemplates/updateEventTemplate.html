@@ -114,27 +114,24 @@
                         <td style="padding: 30px 30px 0px 30px;background-color:#ffffff;">
                             <h1 style="margin-top:0;margin-bottom:16px;font-size:26px;line-height:32px;font-weight:bold;letter-spacing:-0.02em;">
                                 Good things are going to happen!</h1>
-                            <h2>Are you ready to join us?</h2>
+                            <h2>Event update</h2>
                             <p class="greeting">Dear <em>{{ foreName }}</em>,</p>
                             <p class="text">
-                                We can’t wait to welcome you for our new event: <strong>'{{ eventName }}'</strong>!
-                                We’re pretty confident that you’re going to love it.
+                                Our event, <strong>'{{ eventName }}'</strong>, has been updated!
+                                We hope that you can participate on it and we will have a great time together.
                             </p>
                             <p class="infos">
-                                Until then, take a look at the following event details:
+                                Check out the current event details:
                             </p>
                             <ul>
+                                <li><strong>Event name:</strong> &nbsp;{{ eventName }}</li>
                                 <li><strong>Location:</strong> &nbsp;{{ location }}</li>
                                 <li><strong>Date:</strong> &nbsp;{{ date }}</li>
                                 <li><strong>Time:</strong> &nbsp;{{ time }}</li>
                                 <li><strong>Dress code:</strong> &nbsp;{{ dressCode }}</li>
                             </ul>
-                            <p class="text">
-                                Let's make an unforgettable experience together!
-                            </p>
-                            <p class="accept center">
-                                Don’t miss it!
-                                Accept your invite today!
+                            <p class="infos">
+                                To update your status at <strong>'{{ eventName }}'</strong> event click the following button.
                             </p>
                         </td>
                     </tr>
@@ -165,6 +162,15 @@
                                         </tr>
                                         </table>
                                         <![endif]-->
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <p class="accept center">
+                                            Don’t miss it!
+                                            Update your status now!
+                                        </p>
                                     </td>
                                 </tr>
 
