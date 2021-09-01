@@ -170,6 +170,7 @@ public class EventServiceImpl implements EventService {
             event.setEventDate(eventDto.getEventDate());
             event.setLocation(eventDto.getLocation());
             event.setDressCode(eventDto.getDressCode());
+            event.setTime_limit(eventDto.getTime_limit());
 
             //set invites
             for (var invite : eventDto.getInvites()) {
