@@ -155,7 +155,7 @@ public class StatisticsServiceImpl implements StatisticsService{
 //        Image img = Image.getInstance(String.valueOf(new ClassPathResource("images/mhp.png").getFile()));
         Image img = Image.getInstance(new URL("https://www.mhp.com/fileadmin/www.mhp.com/assets/og/mhp_opengraph.jpg"));
         PdfPCell c1 = new PdfPCell(img, true);
-        c1.setFixedHeight(70);
+        c1.setFixedHeight(100);
         c1.setHorizontalAlignment(Element.ALIGN_LEFT);
         c1.setPadding(0);
         c1.setBorder(Rectangle.NO_BORDER);
