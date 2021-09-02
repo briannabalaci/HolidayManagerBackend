@@ -1,6 +1,7 @@
 package com.mhp.planner.Services;
 
 import com.mhp.planner.Dtos.EventDto;
+import com.mhp.planner.Dtos.InvitesDto;
 import com.mhp.planner.Entities.Event;
 import com.mhp.planner.Entities.Invite;
 import com.mhp.planner.Entities.Question;
@@ -124,23 +125,23 @@ public class EventServiceImpl implements EventService {
         switch (filter) {
             case "All Events": {
                 List<Event> events = eventRepository.findAllByInvites_UserInvited_Email(email);
-                return eventMapper.entities2dtos(events);
+                return eventMapper.entities2dtos(events).stream().sorted(Comparator.comparingLong(EventDto::getId).reversed()).collect(Collectors.toList());
             }
             case "Future Events": {
                 List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndEventDateAfter(email, LocalDateTime.now());
-                return eventMapper.entities2dtos(events);
+                return eventMapper.entities2dtos(events).stream().sorted(Comparator.comparingLong(EventDto::getId).reversed()).collect(Collectors.toList());
             }
             case "Accepted": {
                 List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndInvites_Status(email, "accepted");
-                return eventMapper.entities2dtos(events);
+                return eventMapper.entities2dtos(events).stream().sorted(Comparator.comparingLong(EventDto::getId).reversed()).collect(Collectors.toList());
             }
             case "Declined": {
                 List<Event> events = eventRepository.findAllByInvites_UserInvited_EmailAndInvites_Status(email, "declined");
-                return eventMapper.entities2dtos(events);
+                return eventMapper.entities2dtos(events).stream().sorted(Comparator.comparingLong(EventDto::getId).reversed()).collect(Collectors.toList());
             }
             case "My Events": {
                 List<Event> events = eventRepository.findAllByOrganizer_Email(email);
-                return eventMapper.entities2dtos(events);
+                return eventMapper.entities2dtos(events).stream().sorted(Comparator.comparingLong(EventDto::getId).reversed()).collect(Collectors.toList());
             }
         }
         return null;
@@ -151,6 +152,8 @@ public class EventServiceImpl implements EventService {
     public EventDto updateEvent(EventDto eventDto) throws NotFoundException {
         Optional<Event> eventOptional = eventRepository.findById(eventDto.getId());
 
+        boolean sendUpdate = false;
+
         if (eventOptional.isEmpty()) {
             throw new NotFoundException("Event with id " + eventDto.getId() + " not found!");
         } else {
@@ -160,21 +163,44 @@ public class EventServiceImpl implements EventService {
             event.setTitle(eventDto.getTitle());
 
             if (!event.getEventDate().isEqual(eventDto.getEventDate())) {
+                sendUpdate = true;
                 event.getInvites().forEach(
                         s -> {
                             s.setStatus("pending");
                             event.getQuestions().forEach(e -> inviteQuestionRepository.deleteByQuestion_Id(e.getId()));
                         });
 
+
             }
             event.setEventDate(eventDto.getEventDate());
             event.setLocation(eventDto.getLocation());
             event.setDressCode(eventDto.getDressCode());
 
+            LocalDateTime eventDate = eventDto.getEventDate();
+
+            String date = String.format("%02d/%02d/%04d",
+                    eventDate.getDayOfMonth(),
+                    eventDate.getMonthValue(),
+                    eventDate.getYear());
+
+            String pattern = "hh:mm a";
+            String time = eventDate.format(DateTimeFormatter.ofPattern(pattern));
+
             //set invites
             for (var invite : eventDto.getInvites()) {
                 if (invite.getId() == null) {
                     event.getInvites().add(invitesMapper.dto2entity(invite));
+                    emailService.sendTemplatedEmail(
+                            "New MHP event invitation",
+                            "newEventTemplate.html",
+                            Map.of("eventName", eventDto.getTitle(),
+                                    "foreName", userRepository.findByEmail(invite.getUserInvited()).getForename(),
+                                    "location", eventDto.getLocation(),
+                                    "date", date,
+                                    "time", time,
+                                    "dressCode", eventDto.getDressCode(),
+                                    "id", eventDto.getId().toString()),
+                            invite.getUserInvited());
                 }
             }
 
@@ -188,7 +214,7 @@ public class EventServiceImpl implements EventService {
             }
             var nullIds = eventDto.getQuestions().stream().filter(s -> s.getId() == null).collect(Collectors.toList());
             if (nullIds.size() != 0) {
-
+                sendUpdate = true;
                 event.getInvites().forEach(s -> {
                     s.setStatus("pending");
                     event.getQuestions().forEach(e -> {
@@ -204,32 +230,26 @@ public class EventServiceImpl implements EventService {
 
             Event updatedEntity = eventRepository.save(event);
 
-            LocalDateTime eventDate = updatedEntity.getEventDate();
 
-            String date = String.format("%02d/%02d/%04d",
-                    eventDate.getDayOfMonth(),
-                    eventDate.getMonthValue(),
-                    eventDate.getYear());
+            if (sendUpdate) {
+                for (InvitesDto invites : eventDto.getInvites()) {
+                    String invitedUser = invites.getUserInvited();
 
-            String pattern = "hh:mm a";
-            String time = eventDate.format(DateTimeFormatter.ofPattern(pattern));
-
-            for (Invite invites : updatedEntity.getInvites()) {
-                User invitedUser = invites.getUserInvited();
-
-                emailService.sendTemplatedEmail(
-                        "MHP event update",
-                        "updateEventTemplate.html",
-                        Map.of("eventName", updatedEntity.getTitle(),
-                                "foreName", invitedUser.getForename(),
-                                "location", updatedEntity.getLocation(),
-                                "date", date,
-                                "time", time,
-                                "dressCode", updatedEntity.getDressCode(),
-                                "id", updatedEntity.getId().toString()),
-                        invitedUser.getEmail());
+                    if(invites.getId() != null) {
+                        emailService.sendTemplatedEmail(
+                                "MHP event update",
+                                "updateEventTemplate.html",
+                                Map.of("eventName", updatedEntity.getTitle(),
+                                        "foreName", userRepository.findByEmail(invitedUser).getForename(),
+                                        "location", updatedEntity.getLocation(),
+                                        "date", date,
+                                        "time", time,
+                                        "dressCode", updatedEntity.getDressCode(),
+                                        "id", updatedEntity.getId().toString()),
+                                invitedUser);
+                    }
+                }
             }
-
             return eventMapper.entity2dto(updatedEntity);
         }
     }
