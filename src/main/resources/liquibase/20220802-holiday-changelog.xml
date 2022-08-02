@@ -18,13 +18,13 @@
             </column>
             <column name="DOCUMENT" type="BYTEA">
             </column>
-            <column name="HOLIDAY_TYPE" type="VARCHAR(255)">
+            <column name="TYPE" type="VARCHAR(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="HOLIDAY_STATUS" type="VARCHAR(255)">
+            <column name="STATUS" type="VARCHAR(255)">
                 <constraints nullable="false" />
             </column>
-            <column name="MORE_DETAILS" type="VARCHAR(255)">
+            <column name="DETAILS" type="VARCHAR(255)">
             </column>
             <column name="USER_ID" type="BIGINT">
                 <constraints nullable="false" foreignKeyName="fk_user_id" references="users(id)"/>
