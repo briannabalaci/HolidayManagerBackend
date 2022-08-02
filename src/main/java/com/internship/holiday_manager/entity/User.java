@@ -1,5 +1,8 @@
 package com.internship.holiday_manager.entity;
 
+import com.internship.holiday_manager.entity.enums.Department;
+import com.internship.holiday_manager.entity.enums.Role;
+import com.internship.holiday_manager.entity.enums.UserType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -37,5 +40,5 @@ public class User {
     private UserType type;
 
     @Column(name="team_id")
-    private Long teamId;
+    private Long teamID;
 }
