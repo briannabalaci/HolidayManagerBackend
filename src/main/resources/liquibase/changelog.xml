@@ -4,4 +4,6 @@
                 http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <include file="liquibase/20220802-team-changelog.xml" />
     <include file="liquibase/20220802-user-changelog.xml" />
+    <include file="liquibase/20220802-notification-changelog.xml" />
+    <include file="liquibase/20220802-holiday-changelog.xml" />
 </databaseChangeLog>
