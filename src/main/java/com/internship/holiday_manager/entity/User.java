@@ -8,6 +8,7 @@ import javax.persistence.*;
 @Data
 @Table(name="users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,15 +25,18 @@ public class User {
     @Column(name="surname")
     private String surname;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="department")
     private Department department;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="role")
     private Role role;
 
     @Column(name="nr_holidays")
     private Integer nrHolidays;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="type")
     private UserType type;
 
