@@ -1,6 +1,6 @@
 package com.internship.holiday_manager.repository;
 
-import com.internship.holiday_manager.entity.Role;
+import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
