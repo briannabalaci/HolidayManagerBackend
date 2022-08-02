@@ -4,20 +4,9 @@ import lombok.Data;
 
 import javax.persistence.*;
 
-enum Department{
-    JAVA, ABAP, BUSINESS_INTELLIGENCE
-}
-
-enum Role{
-    TESTER, DEVELOPER
-}
-
-enum UserType{
-    ADMIN, TEAMLEAD, EMPLOYEE
-}
 @Entity
 @Data
-@Table(name="user")
+@Table(name="users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,12 +30,12 @@ public class User {
     @Column(name="role")
     private Role role;
 
-    @Column(name="nr_of_holidays")
-    private Integer nr_of_holidays;
+    @Column(name="nr_holidays")
+    private Integer nrHolidays;
 
     @Column(name="type")
     private UserType type;
 
     @Column(name="team_id")
-    private Long teamID;
+    private Long teamId;
 }
