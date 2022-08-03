@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.controller;
 
 
+import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.User;
@@ -25,4 +26,10 @@ public class UserController {
     public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
         return new ResponseEntity<>(userService.authentication(dto), HttpStatus.OK);
     }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
+        return new ResponseEntity<>(userService.changePassword(dto), HttpStatus.OK);
+    }
+
 }

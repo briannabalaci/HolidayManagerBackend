@@ -26,6 +26,8 @@ public class UserServiceImpl implements UserService{
     public String changePassword(ChangePasswordDto dto) {
         User u = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword());
         if(u != null){
+            u.setPassword(dto.getNewPassword());
+            userRepository.save(u);
             return "Password updated successfully!";
         }
         return "Email or password incorrect!";
