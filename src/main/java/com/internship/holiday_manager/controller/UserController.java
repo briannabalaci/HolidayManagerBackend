@@ -2,9 +2,8 @@ package com.internship.holiday_manager.controller;
 
 
 import com.internship.holiday_manager.dto.LoginUserDto;
-import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.User;
-import com.internship.holiday_manager.service.UserService;
+import com.internship.holiday_manager.service.user_service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

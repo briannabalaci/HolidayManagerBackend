@@ -18,5 +18,5 @@ public class UserDto {
     private Role role;
     private Integer nrHolidays;
     private UserType type;
-    private Team team;
+    private TeamDto team;
 }
