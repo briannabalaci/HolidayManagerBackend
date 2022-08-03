@@ -16,7 +16,7 @@ import com.internship.holiday_manager.entity.User;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-  private final UserMapper userMapper;
+    private final UserMapper userMapper;
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -36,8 +36,6 @@ public class UserServiceImpl implements UserService{
     }
    @Override
     public UserDto createUser(UserDto dto){
-        log.info(dto.toString());
-
         User user=userRepository.save(userMapper.dtoToEntity(dto));
         return userMapper.entityToDto(user);
 

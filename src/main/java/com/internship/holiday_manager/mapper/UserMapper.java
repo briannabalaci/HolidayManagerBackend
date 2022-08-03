@@ -1,6 +1,4 @@
-
-
-        package com.internship.holiday_manager.mapper;
+package com.internship.holiday_manager.mapper;
 import com.internship.holiday_manager.dto.TeamDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.Team;
