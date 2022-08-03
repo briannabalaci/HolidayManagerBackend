@@ -13,9 +13,9 @@ public class UserDto {
     private String password;
     private String forname;
     private String surname;
-    private String department;
-    private String role;
+    private Department department;
+    private Role role;
     private Integer nrHolidays;
-    private String type;
+    private UserType type;
     private Long teamId;
 }
