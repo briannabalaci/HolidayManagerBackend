@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.controller;
 
 
+import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.UserService;
@@ -20,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> authentication(@RequestBody UserDto dto){
+    public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
         return new ResponseEntity<>(userService.authentication(dto.getEmail(), dto.getPassword()), HttpStatus.OK);
     }
 }
