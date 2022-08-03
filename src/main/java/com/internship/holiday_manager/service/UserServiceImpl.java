@@ -1,6 +1,8 @@
 package com.internship.holiday_manager.service;
 
 
+import com.internship.holiday_manager.dto.ChangePasswordDto;
+import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,16 @@ public class UserServiceImpl implements UserService{
         this.userRepository = userRepository;
     }
     
-    public User authentication(String email, String password) {
-        return userRepository.findByEmailAndPassword(email, password);
+    public User authentication(LoginUserDto dto) {
+        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+    }
+
+    @Override
+    public String changePassword(ChangePasswordDto dto) {
+        User u = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword());
+        if(u != null){
+            return "Password updated successfully!";
+        }
+        return "Email or password incorrect!";
     }
 }

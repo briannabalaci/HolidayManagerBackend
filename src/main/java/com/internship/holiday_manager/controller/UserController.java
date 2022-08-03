@@ -23,6 +23,6 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
-        return new ResponseEntity<>(userService.authentication(dto.getEmail(), dto.getPassword()), HttpStatus.OK);
+        return new ResponseEntity<>(userService.authentication(dto), HttpStatus.OK);
     }
 }
