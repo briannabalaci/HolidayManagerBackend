@@ -1,5 +1,6 @@
 package com.internship.holiday_manager.dto;
 
+import com.internship.holiday_manager.entity.Team;
 import com.internship.holiday_manager.entity.enums.Department;
 import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
@@ -17,5 +18,5 @@ public class UserDto {
     private Role role;
     private Integer nrHolidays;
     private UserType type;
-    private Long teamId;
+    private Team team;
 }
