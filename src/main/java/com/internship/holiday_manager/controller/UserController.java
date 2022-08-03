@@ -25,7 +25,7 @@ public class UserController {
     public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
         return new ResponseEntity<>(userService.authentication(dto), HttpStatus.OK);
     }
-    @CrossOrigin()
+   @CrossOrigin()
    @PostMapping("/add-user")
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
         return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
