@@ -44,5 +44,5 @@ public class User {
     private UserType type;
 
     @Column(name="team_id")
-    private Long teamID;
+    private Long teamId;
 }
