@@ -43,6 +43,7 @@ public class User {
     @Column(name="type")
     private UserType type;
 
-    @Column(name="team_id")
-    private Long teamID;
+    @ManyToOne()
+    @JoinColumn(name = "team_id", nullable = false)
+    private Team team;
 }

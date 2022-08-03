@@ -38,6 +38,8 @@ public class Holiday {
     @Column(name="details")
     private String details;
 
-    @Column(name = "user_id")
-    private Long userID;
+
+    @ManyToOne()
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

@@ -17,7 +17,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public String authentication(String email, String password) {
+        log.info("Login called");
         if(userRepository.findByEmailAndPassword(email, password) != null){
+            log.info("Login called - SUCCESS");
             return "Logged in successfully!";
         }
         return "Failed to login! Wrong credentials!";
