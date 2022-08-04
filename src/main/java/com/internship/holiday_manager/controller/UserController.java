@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+@CrossOrigin()
 public class UserController {
 
     private final UserService userService;
@@ -22,6 +22,11 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
-        return new ResponseEntity<>(userService.authentication(dto.getEmail(), dto.getPassword()), HttpStatus.OK);
+        return new ResponseEntity<>(userService.authentication(dto), HttpStatus.OK);
+    }
+   @CrossOrigin()
+   @PostMapping("/add-user")
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
+        return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
     }
 }
