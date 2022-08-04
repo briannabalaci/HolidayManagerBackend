@@ -7,8 +7,6 @@ import javax.persistence.Column;
 @Data
 public class TeamDto {
     private Long id;
-
     private String name;
-
     private String teamLeader;
 }

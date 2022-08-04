@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+@CrossOrigin()
 public class UserController {
 
     private final UserService userService;
@@ -28,8 +28,15 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
-        return new ResponseEntity<>(userService.changePassword(dto), HttpStatus.OK);
+    public void changePassword(@RequestBody ChangePasswordDto dto){
+        userService.changePassword(dto);
     }
+
+    @CrossOrigin()
+    @PostMapping("/add-user")
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
+        return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
+    }
+
 
 }

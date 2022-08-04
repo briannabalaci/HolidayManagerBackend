@@ -3,6 +3,9 @@ package com.internship.holiday_manager.service;
 
 import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
+import com.internship.holiday_manager.dto.UserDto;
+
+import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,9 +16,10 @@ import com.internship.holiday_manager.entity.User;
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
+    private final UserMapper userMapper;
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
     
     public User authentication(LoginUserDto dto) {
@@ -29,5 +33,11 @@ public class UserServiceImpl implements UserService{
             u.setPassword(dto.getNewPassword());
             userRepository.save(u);
         }
+    }
+   @Override
+    public UserDto createUser(UserDto dto){
+        User user=userRepository.save(userMapper.dtoToEntity(dto));
+        return userMapper.entityToDto(user);
+
     }
 }
