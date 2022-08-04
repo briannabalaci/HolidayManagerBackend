@@ -37,7 +37,6 @@ public class Holiday {
     @Column(name="details")
     private String details;
 
-
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
