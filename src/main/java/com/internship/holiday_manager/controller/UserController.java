@@ -29,18 +29,16 @@ public class UserController {
 
     @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
-        if(userService.verifyPassword(dto)){
+        if(userService.verifyPasswordAndCredentials(dto)){
             userService.changePassword(dto);
             return new ResponseEntity<>("Password was changed successfully!", HttpStatus.OK);
         }
             return new ResponseEntity<>("Invalid password or email", HttpStatus.OK);
     }
 
-    @CrossOrigin()
     @PostMapping("/add-user")
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
         return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
     }
-
-
+    
 }

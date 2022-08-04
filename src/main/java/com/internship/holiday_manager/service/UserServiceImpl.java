@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService{
 
 
     @Override
-    public boolean verifyPassword(ChangePasswordDto dto) {
+    public boolean verifyPasswordAndCredentials(ChangePasswordDto dto) {
         if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
            return false;
         }
