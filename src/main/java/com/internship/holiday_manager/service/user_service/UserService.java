@@ -1,4 +1,4 @@
-package com.internship.holiday_manager.service;
+package com.internship.holiday_manager.service.user_service;
 
 import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;

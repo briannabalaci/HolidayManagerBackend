@@ -4,7 +4,6 @@ import com.internship.holiday_manager.entity.enums.Department;
 import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
 import lombok.Data;
-
 import javax.persistence.*;
 
 @Entity
