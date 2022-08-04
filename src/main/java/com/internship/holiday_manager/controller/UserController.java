@@ -28,8 +28,9 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public void changePassword(@RequestBody ChangePasswordDto dto){
+    public ResponseEntity changePassword(@RequestBody ChangePasswordDto dto){
         userService.changePassword(dto);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @CrossOrigin()
