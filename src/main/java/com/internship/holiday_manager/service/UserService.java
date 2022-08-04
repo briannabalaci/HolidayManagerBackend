@@ -2,12 +2,13 @@ package com.internship.holiday_manager.service;
 
 import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
+import com.internship.holiday_manager.dto.UpdateUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.User;
 
 public interface UserService {
 
-    User authentication(LoginUserDto dto);
+    UserDto authentication(LoginUserDto dto);
 
     void changePassword(ChangePasswordDto dto);
 
@@ -19,5 +20,9 @@ public interface UserService {
      * @return - it returns true if the new password is fine and the user with the given credentials exists, otherwise it returns false
      */
     boolean verifyPasswordAndCredentials(ChangePasswordDto dto);
+
+    UserDto updateUser(UpdateUserDto dto);
+
+    void deleteUser(String email);
 
 }

@@ -3,6 +3,7 @@ package com.internship.holiday_manager.service;
 
 import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
+import com.internship.holiday_manager.dto.UpdateUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 
 import com.internship.holiday_manager.mapper.UserMapper;
@@ -24,8 +25,8 @@ public class UserServiceImpl implements UserService{
         this.userMapper = userMapper;
     }
     
-    public User authentication(LoginUserDto dto) {
-        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
+    public UserDto authentication(LoginUserDto dto) {
+        return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
     }
 
     @Override
@@ -48,5 +49,27 @@ public class UserServiceImpl implements UserService{
         }
 
         return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword()) != null;
+    }
+
+    @Override
+    public UserDto updateUser(UpdateUserDto dto){
+        User u = userRepository.findByEmail(dto.getEmail());
+        if(u!= null) {
+            u.setPassword(dto.getPassword());
+            u.setForname(dto.getForname());
+            u.setSurname(dto.getSurname());
+            u.setDepartment(dto.getDepartment());
+            u.setNrHolidays(dto.getNrHolidays());
+            u.setRole((dto.getRole()));
+        }
+        return userMapper.entityToDto(userRepository.save(u));
+    }
+
+    @Override
+    public void deleteUser(String email) {
+        User u = userRepository.findByEmail(email);
+        if(u != null) {
+            userRepository.deleteById(u.getId());
+        }
     }
 }
