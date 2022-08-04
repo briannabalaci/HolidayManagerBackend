@@ -8,6 +8,6 @@ public interface UserService {
 
     User authentication(LoginUserDto dto);
 
-    String changePassword(ChangePasswordDto dto);
+    void changePassword(ChangePasswordDto dto);
 
 }

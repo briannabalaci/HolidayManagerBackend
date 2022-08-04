@@ -23,13 +23,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String changePassword(ChangePasswordDto dto) {
+    public void changePassword(ChangePasswordDto dto) {
         User u = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword());
         if(u != null){
             u.setPassword(dto.getNewPassword());
             userRepository.save(u);
-            return "Password updated successfully!";
         }
-        return "Email or password incorrect!";
     }
 }

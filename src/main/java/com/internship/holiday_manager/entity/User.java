@@ -44,7 +44,7 @@ public class User {
     private UserType type;
 
     @ManyToOne()
-    @JoinColumn(name = "team_id", nullable = false)
+    @JoinColumn(name = "team_id")
     private Team team;
 
 }
