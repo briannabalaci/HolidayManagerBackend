@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.controller;
 
 
+import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.User;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
+@CrossOrigin()
 public class UserController {
 
     private final UserService userService;
@@ -23,6 +24,20 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
-        return new ResponseEntity<>(userService.authentication(dto.getEmail(), dto.getPassword()), HttpStatus.OK);
+        return new ResponseEntity<>(userService.authentication(dto), HttpStatus.OK);
     }
+
+    @PutMapping("/change-password")
+    public ResponseEntity changePassword(@RequestBody ChangePasswordDto dto){
+        userService.changePassword(dto);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @CrossOrigin()
+    @PostMapping("/add-user")
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
+        return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
+    }
+
+
 }
