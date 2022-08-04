@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.internship.holiday_manager.entity.User;
 
+import java.util.Objects;
+
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService{
@@ -27,12 +29,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String changePassword(ChangePasswordDto dto) {
+    public void changePassword(ChangePasswordDto dto) {
+        if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
+            return;
+        }
         User u = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword());
         if(u != null){
-            return "Password updated successfully!";
+            u.setPassword(dto.getNewPassword());
+            userRepository.save(u);
         }
-        return "Email or password incorrect!";
     }
    @Override
     public UserDto createUser(UserDto dto){

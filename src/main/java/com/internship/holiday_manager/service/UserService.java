@@ -8,7 +8,7 @@ import com.internship.holiday_manager.entity.User;
 public interface UserService {
 
     User authentication(LoginUserDto dto);
-
-    String changePassword(ChangePasswordDto dto);
+    void changePassword(ChangePasswordDto dto);
     UserDto createUser(UserDto dto);
+
 }
