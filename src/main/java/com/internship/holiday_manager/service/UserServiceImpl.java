@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.internship.holiday_manager.entity.User;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -39,6 +40,13 @@ public class UserServiceImpl implements UserService{
     public UserDto createUser(UserDto dto){
         User user=userRepository.save(userMapper.dtoToEntity(dto));
         return userMapper.entityToDto(user);
+    }
+
+    @Override
+    public List<UserDto> getAll() {
+      List<User> entities = userRepository.findAll();
+      List<UserDto> dtos= userMapper.entitiesToDtos(entities);
+      return  dtos;
     }
 
 
@@ -72,4 +80,5 @@ public class UserServiceImpl implements UserService{
             userRepository.deleteById(u.getId());
         }
     }
+
 }
