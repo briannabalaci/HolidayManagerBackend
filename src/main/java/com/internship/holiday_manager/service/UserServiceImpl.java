@@ -30,19 +30,23 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void changePassword(ChangePasswordDto dto) {
-        if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
-            return;
-        }
         User u = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword());
-        if(u != null){
-            u.setPassword(dto.getNewPassword());
-            userRepository.save(u);
-        }
+        u.setPassword(dto.getNewPassword());
+        userRepository.save(u);
     }
    @Override
     public UserDto createUser(UserDto dto){
         User user=userRepository.save(userMapper.dtoToEntity(dto));
         return userMapper.entityToDto(user);
+    }
 
+
+    @Override
+    public boolean verifyPassword(ChangePasswordDto dto) {
+        if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
+           return false;
+        }
+
+        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword()) != null;
     }
 }

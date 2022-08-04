@@ -28,9 +28,12 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity changePassword(@RequestBody ChangePasswordDto dto){
-        userService.changePassword(dto);
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
+        if(userService.verifyPassword(dto)){
+            userService.changePassword(dto);
+            return new ResponseEntity<>("Password was changed successfully!", HttpStatus.OK);
+        }
+            return new ResponseEntity<>("Invalid password or email", HttpStatus.OK);
     }
 
     @CrossOrigin()
