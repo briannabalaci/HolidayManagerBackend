@@ -10,6 +10,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface TeamMapper {
 
+
 @Mapper(componentModel = "spring")
 public interface TeamMapper {
     TeamDto entityToDto(Team entity);

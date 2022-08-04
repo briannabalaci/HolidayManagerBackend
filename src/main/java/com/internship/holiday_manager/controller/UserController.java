@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.controller;
 
 
+import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.user_service.UserService;
@@ -24,9 +25,18 @@ public class UserController {
     public ResponseEntity<User> authentication(@RequestBody LoginUserDto dto){
         return new ResponseEntity<>(userService.authentication(dto), HttpStatus.OK);
     }
-   @CrossOrigin()
-   @PostMapping("/add-user")
+
+    @PutMapping("/change-password")
+    public ResponseEntity changePassword(@RequestBody ChangePasswordDto dto){
+        userService.changePassword(dto);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @CrossOrigin()
+    @PostMapping("/add-user")
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
         return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
     }
+
+
 }
