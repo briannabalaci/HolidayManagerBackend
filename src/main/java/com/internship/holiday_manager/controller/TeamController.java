@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/team")
 @CrossOrigin
-@Slf4j
 public class TeamController {
 
     private final TeamService teamService;
@@ -40,12 +39,7 @@ public class TeamController {
 
     @GetMapping("/get-by-id/{teamID}")
     public ResponseEntity<TeamDto> getById(@PathVariable long teamID){
-        try {
-            TeamDto entity = teamService.findByID(teamID);
-            return new ResponseEntity<>(entity, HttpStatus.OK);
-        }
-        catch(Exception e){
-            return ResponseEntity.notFound().build();
-        }
+        TeamDto entity = teamService.findByID(teamID);
+        return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 }
