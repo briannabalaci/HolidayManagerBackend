@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
     
-    public User authentication(LoginUserDto dto) {
+    public User getUserInformation(LoginUserDto dto) {
         return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
     }
 
