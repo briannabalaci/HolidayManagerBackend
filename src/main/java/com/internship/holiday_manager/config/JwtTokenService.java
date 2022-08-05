@@ -26,7 +26,7 @@ public class JwtTokenService {
 
     private static final long EXPIRATIONTIME = Duration.ofHours(4).toMillis();
 
-    private static final String HEADER_STRING = "auth";
+    private static final String HEADER_STRING = "app-auth";
     private static final String CLAIM_USER = "username";
 
     private static final String CLAIM_TYPE = "type";

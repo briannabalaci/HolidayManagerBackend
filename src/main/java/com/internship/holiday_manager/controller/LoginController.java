@@ -2,6 +2,7 @@ package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.config.JwtTokenService;
 import com.internship.holiday_manager.dto.LoginUserDto;
+import com.internship.holiday_manager.dto.TokenDto;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.user_service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +24,13 @@ public class LoginController {
     }
 
     @PostMapping("/auth")
-    public ResponseEntity<String> authentication(@RequestBody LoginUserDto dto){
+    public ResponseEntity<TokenDto> authentication(@RequestBody LoginUserDto dto){
 
         User userInfo = userService.getUserInformation(dto);
         String jwt = jwtTokenService.createJwtToken(userInfo.getEmail(), userInfo.getType());
-        return ResponseEntity.ok(jwt);
+        TokenDto token = new TokenDto();
+        token.setToken(jwt);
+        return ResponseEntity.ok(token);
     }
 
     //TODO: change-password method
