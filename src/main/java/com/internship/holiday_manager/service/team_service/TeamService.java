@@ -31,4 +31,5 @@ public interface TeamService {
      * @return a list with all the teams
      */
     List<TeamDto> getAllTeams();
+
 }
