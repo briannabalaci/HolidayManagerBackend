@@ -37,16 +37,19 @@ public class UserController {
     }
 
     @PutMapping("/update-user")
+    @AllowAdmin
     public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUserDto dto){
         return new ResponseEntity<>(userService.updateUser(dto), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete-user/{email}")
+    @AllowAdmin
     public ResponseEntity delete(@PathVariable String email) {
         userService.deleteUser(email);
         return new ResponseEntity(HttpStatus.OK);
     }
     @GetMapping("/get-all-users")
+    @AllowAdmin
     public ResponseEntity<List<UserDto>> getAll(){
         return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
     }

@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
 
     public UserDto authentication(LoginUserDto dto) {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
-
+    }
     public User getUserInformation(LoginUserDto dto) {
         return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
 
