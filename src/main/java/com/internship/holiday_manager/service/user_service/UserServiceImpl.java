@@ -51,8 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getAll() {
       List<User> entities = userRepository.findAll();
-      List<UserDto> dtos= userMapper.entitiesToDtos(entities);
-      return  dtos;
+        return userMapper.entitiesToDtos(entities);
     }
 
 
@@ -64,17 +63,19 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword()) != null;
     }
-
+private void ChangeUserData(UpdateUserDto dto,User u){
+    u.setPassword(dto.getPassword());
+    u.setForname(dto.getForname());
+    u.setSurname(dto.getSurname());
+    u.setDepartment(dto.getDepartment());
+    u.setNrHolidays(dto.getNrHolidays());
+    u.setRole((dto.getRole()));
+}
     @Override
     public UserDto updateUser(UpdateUserDto dto){
         User u = userRepository.findByEmail(dto.getEmail());
         if(u!= null) {
-            u.setPassword(dto.getPassword());
-            u.setForname(dto.getForname());
-            u.setSurname(dto.getSurname());
-            u.setDepartment(dto.getDepartment());
-            u.setNrHolidays(dto.getNrHolidays());
-            u.setRole((dto.getRole()));
+            ChangeUserData(dto,u);
         }
         return userMapper.entityToDto(userRepository.save(u));
     }
