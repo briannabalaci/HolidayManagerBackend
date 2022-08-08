@@ -27,7 +27,10 @@ public class LoginController {
     public ResponseEntity<TokenDto> authentication(@RequestBody LoginUserDto dto){
 
         User userInfo = userService.getUserInformation(dto);
-        String jwt = jwtTokenService.createJwtToken(userInfo.getEmail(), userInfo.getType());
+        String jwt = "";
+        if(userInfo != null) {
+            jwt = jwtTokenService.createJwtToken(userInfo.getEmail(), userInfo.getType());
+        }
         TokenDto token = new TokenDto();
         token.setToken(jwt);
         return ResponseEntity.ok(token);
