@@ -37,8 +37,16 @@
     </createTable>
 </changeSet>
 
-<changeSet id="20220803" author="mbledea2">
-        <dropNotNullConstraint tableName="USERS" columnName="TEAM_ID"/>
-</changeSet>
+    <changeSet id="20220803-user-001" author="thudrea">
+        <dropNotNullConstraint tableName="USERS" columnName="TEAM_ID" columnDataType="BIGINT"/>
+    </changeSet>
+
+    <changeSet id="20220803-user-002" author="thudrea">
+        <dropForeignKeyConstraint baseTableName="USERS" constraintName="fk_team_id"/>
+        <addForeignKeyConstraint baseTableName="USERS" baseColumnNames="TEAM_ID"
+                                 constraintName="fk_team_id"
+                                 referencedTableName="TEAM" referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
 
 </databaseChangeLog>

@@ -1,4 +1,4 @@
-package com.internship.holiday_manager.service;
+package com.internship.holiday_manager.service.user_service;
 
 import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface UserService {
 
+
     UserDto authentication(LoginUserDto dto);
+    User getUserInformation(LoginUserDto dto);
+
 
     void changePassword(ChangePasswordDto dto);
 
