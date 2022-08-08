@@ -10,7 +10,11 @@ import java.util.List;
 
 public interface UserService {
 
-
+    /**
+     * It returns UserDto for the user that matches LoginUserDto
+     * @param dto contains user login data
+     * @return UserDto for the user that matches LoginUserDto data. If no user is found it return null
+     */
     UserDto authentication(LoginUserDto dto);
     User getUserInformation(LoginUserDto dto);
 
