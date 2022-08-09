@@ -1,11 +1,15 @@
 package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.config.JwtTokenService;
+import com.internship.holiday_manager.dto.ChangePasswordDto;
 import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.dto.TokenDto;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.user_service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 //import static java.lang.StringCoding.encoder;
@@ -13,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/login")
+@CrossOrigin()
 public class LoginController {
+
 
     private final UserService userService;
     private  final JwtTokenService jwtTokenService;
@@ -36,14 +42,14 @@ public class LoginController {
         return ResponseEntity.ok(token);
     }
 
-    //TODO: change-password method
-//    @PutMapping("/change-password")
-//    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
-//        if(userService.verifyPasswordAndCredentials(dto)){
-//            userService.changePassword(dto);
-//            return new ResponseEntity<>("Password was changed successfully!", HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>("Invalid password or email", HttpStatus.OK);
-//    }
+   //TODO: change-password method
+    @PutMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
+        if(userService.verifyPasswordAndCredentials(dto)){
+            userService.changePassword(dto);
+            return new ResponseEntity<>("Password was changed successfully!", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("Invalid password or email", HttpStatus.OK);
+    }
 
 }

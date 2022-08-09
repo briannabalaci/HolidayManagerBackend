@@ -9,8 +9,11 @@ import com.internship.holiday_manager.dto.UpdateUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +23,7 @@ import java.util.List;
 @RequestMapping("/user")
 @CrossOrigin()
 public class UserController {
+
 
     private final UserService userService;
 

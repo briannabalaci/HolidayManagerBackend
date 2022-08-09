@@ -1,8 +1,10 @@
 package com.internship.holiday_manager.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -17,4 +19,9 @@ public class Team {
 
     @Column(name="team_leader")
     private String teamLeader;
+
+    @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)
+    @JoinColumn(name="team_id")
+    @JsonManagedReference
+    private List<User> members;
 }

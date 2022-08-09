@@ -1,8 +1,10 @@
 package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.dto.TeamDto;
+import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.team_service.TeamService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
+import com.internship.holiday_manager.utils.annotations.AllowAll;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,5 +45,11 @@ public class TeamController {
     public ResponseEntity<TeamDto> getById(@PathVariable long teamID){
         TeamDto entity = teamService.findByID(teamID);
         return new ResponseEntity<>(entity, HttpStatus.OK);
+    }
+
+    @AllowAdmin
+    @GetMapping("/get-members/{teamID}")
+    public ResponseEntity<List<User>> getTeamMembers(@PathVariable long teamID){
+        return new ResponseEntity<>(teamService.findByID(teamID).getMembers(),HttpStatus.OK);
     }
 }

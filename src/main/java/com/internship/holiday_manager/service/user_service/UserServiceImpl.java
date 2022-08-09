@@ -10,6 +10,8 @@ import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.repository.UserRepository;
 import com.internship.holiday_manager.service.user_service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.internship.holiday_manager.entity.User;
 
@@ -19,6 +21,9 @@ import java.util.Objects;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -32,18 +37,25 @@ public class UserServiceImpl implements UserService {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
     }
     public User getUserInformation(LoginUserDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail());
+        if ( user != null){
+            if (passwordEncoder.matches(dto.getPassword(),user.getPassword()))
+                return user;
+            else return null;
+        }
         return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword());
 
     }
 
     @Override
     public void changePassword(ChangePasswordDto dto) {
-        User u = userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword());
-        u.setPassword(dto.getNewPassword());
+        User u = userRepository.findByEmail(dto.getEmail());
+        u.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(u);
     }
    @Override
     public UserDto createUser(UserDto dto){
+        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user=userRepository.save(userMapper.dtoToEntity(dto));
         return userMapper.entityToDto(user);
     }
@@ -60,8 +72,13 @@ public class UserServiceImpl implements UserService {
         if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
            return false;
         }
-
-        return userRepository.findByEmailAndPassword(dto.getEmail(), dto.getOldPassword()) != null;
+        User user = userRepository.findByEmail(dto.getEmail());
+        if ( user != null){
+            if (passwordEncoder.matches(dto.getOldPassword(),user.getPassword()))
+                return true;
+            else return false;
+        }
+        else return false;
     }
 private void ChangeUserData(UpdateUserDto dto,User u){
     u.setPassword(dto.getPassword());

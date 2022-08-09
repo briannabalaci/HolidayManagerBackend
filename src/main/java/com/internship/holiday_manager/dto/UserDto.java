@@ -7,7 +7,6 @@ import com.internship.holiday_manager.entity.enums.UserType;
 import lombok.Data;
 
 import java.util.List;
-
 @Data
 public class UserDto {
     private Long id;
