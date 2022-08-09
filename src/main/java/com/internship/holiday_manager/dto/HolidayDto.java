@@ -1,39 +1,22 @@
-package com.internship.holiday_manager.entity;
+package com.internship.holiday_manager.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
-import com.sun.xml.txw2.Document;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
-@Entity
-@Table(name="holiday")
-public class Holiday {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class HolidayDto {
     private Long id;
-
-    @Column(name="start_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime start_date;
-
-    @Column(name="end_date")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime end_date;
-
-    @Column(name="substitute")
     private String substitute;
-
-    @Column(name="document")
     private byte[] document;
-
-    @Column(name="type")
     private HolidayType type;
-
-    @Column(name="status")
     private HolidayStatus status;
-
-    @Column(name="details")
     private String details;
 }

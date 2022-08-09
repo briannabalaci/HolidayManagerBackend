@@ -5,6 +5,7 @@ import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
 import lombok.Data;
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -45,5 +46,9 @@ public class User {
     @ManyToOne()
     @JoinColumn(name = "team_id" )
     private Team team;
+
+    @JoinColumn(name="user_id")
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    private List<Holiday> holidays;
 
 }
