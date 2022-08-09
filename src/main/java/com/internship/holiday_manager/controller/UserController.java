@@ -27,8 +27,13 @@ public class UserController {
 
     @PostMapping("/add-user")
     @AllowAdmin
-    public ResponseEntity<UserDto> addUser(@RequestBody RegisterDto dto){
-        return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
+    public ResponseEntity<String> addUser(@RequestBody RegisterDto dto){
+        if(!userService.userExists(dto)) {
+            userService.createUser(dto);
+            return new ResponseEntity<>("User created succesfully!", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("The user already exists!", HttpStatus.CONFLICT);
+        }
     }
 
     @PutMapping("/update-user")

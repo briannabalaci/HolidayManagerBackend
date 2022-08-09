@@ -85,6 +85,17 @@ public class UserServiceImpl implements UserService {
         } else return false;
     }
 
+    @Override
+    public boolean userExists(RegisterDto dto) {
+        User user = userRepository.findByEmail(dto.getEmail());
+        if(user != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     private void ChangeUserData(UpdateUserDto dto, User u) {
         u.setPassword(dto.getPassword());
         u.setForname(dto.getForname());

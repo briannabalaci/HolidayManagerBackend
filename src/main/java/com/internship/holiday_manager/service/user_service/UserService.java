@@ -25,7 +25,7 @@ public interface UserService {
      * @return - it returns true if the new password is fine and the user with the given credentials exists, otherwise it returns false
      */
     boolean verifyPasswordAndCredentials(ChangePasswordDto dto);
-
+    boolean userExists(RegisterDto dto);
     UserDto updateUser(UpdateUserDto dto);
 
     void deleteUser(String email);
