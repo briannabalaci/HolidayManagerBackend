@@ -2,18 +2,12 @@ package com.internship.holiday_manager.controller;
 
 
 
-import com.internship.holiday_manager.dto.ChangePasswordDto;
-import com.internship.holiday_manager.dto.LoginUserDto;
-import com.internship.holiday_manager.dto.UpdateUserDto;
+import com.internship.holiday_manager.dto.*;
 
-import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,12 +25,9 @@ public class UserController {
         this.userService = userService;
     }
 
-
-
-
     @PostMapping("/add-user")
     @AllowAdmin
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto dto){
+    public ResponseEntity<UserDto> addUser(@RequestBody RegisterDto dto){
         return new ResponseEntity<>(userService.createUser(dto), HttpStatus.OK);
     }
 

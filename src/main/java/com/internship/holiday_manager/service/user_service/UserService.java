@@ -1,9 +1,6 @@
 package com.internship.holiday_manager.service.user_service;
 
-import com.internship.holiday_manager.dto.ChangePasswordDto;
-import com.internship.holiday_manager.dto.LoginUserDto;
-import com.internship.holiday_manager.dto.UpdateUserDto;
-import com.internship.holiday_manager.dto.UserDto;
+import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.entity.User;
 
 import java.util.List;
@@ -18,10 +15,9 @@ public interface UserService {
     UserDto authentication(LoginUserDto dto);
     User getUserInformation(LoginUserDto dto);
 
-
     void changePassword(ChangePasswordDto dto);
 
-    UserDto createUser(UserDto dto);
+    UserDto createUser(RegisterDto dto);
     List<UserDto> getAll();
     /**
      * It checks if the new password is different from the old password and if the user with the given credentials exists or not

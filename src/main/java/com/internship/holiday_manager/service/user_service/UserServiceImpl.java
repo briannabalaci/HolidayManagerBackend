@@ -1,14 +1,9 @@
 package com.internship.holiday_manager.service.user_service;
 
-
-import com.internship.holiday_manager.dto.ChangePasswordDto;
-import com.internship.holiday_manager.dto.LoginUserDto;
-import com.internship.holiday_manager.dto.UpdateUserDto;
-import com.internship.holiday_manager.dto.UserDto;
+import com.internship.holiday_manager.dto.*;
 
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.repository.UserRepository;
-import com.internship.holiday_manager.service.user_service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -27,19 +22,21 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
     }
-    
+
 
     public UserDto authentication(LoginUserDto dto) {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
     }
+
     public User getUserInformation(LoginUserDto dto) {
         User user = userRepository.findByEmail(dto.getEmail());
-        if ( user != null){
-            if (passwordEncoder.matches(dto.getPassword(),user.getPassword()))
+        if (user != null) {
+            if (passwordEncoder.matches(dto.getPassword(), user.getPassword()))
                 return user;
             else return null;
         }
@@ -53,46 +50,55 @@ public class UserServiceImpl implements UserService {
         u.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(u);
     }
-   @Override
-    public UserDto createUser(UserDto dto){
+
+    @Override
+    public UserDto createUser(RegisterDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
-        User user=userRepository.save(userMapper.dtoToEntity(dto));
-        return userMapper.entityToDto(user);
+        User user = User.builder().email(dto.getEmail())
+                                    .password(dto.getPassword())
+                                    .surname(dto.getSurname())
+                                    .forname(dto.getForname())
+                                    .nrHolidays(dto.getNrHolidays())
+                                    .department(dto.getDepartment())
+                                    .type(dto.getType())
+                                    .role(dto.getRole())
+                                    .build();
+        User savedUser = userRepository.save(user);
+        return userMapper.entityToDto(savedUser);
     }
 
     @Override
     public List<UserDto> getAll() {
-      List<User> entities = userRepository.findAll();
+        List<User> entities = userRepository.findAll();
         return userMapper.entitiesToDtos(entities);
     }
 
 
     @Override
     public boolean verifyPasswordAndCredentials(ChangePasswordDto dto) {
-        if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
-           return false;
+        if (Objects.equals(dto.getOldPassword(), dto.getNewPassword())) {
+            return false;
         }
         User user = userRepository.findByEmail(dto.getEmail());
-        if ( user != null){
-            if (passwordEncoder.matches(dto.getOldPassword(),user.getPassword()))
-                return true;
-            else return false;
-        }
-        else return false;
+        if (user != null) {
+            return passwordEncoder.matches(dto.getOldPassword(), user.getPassword());
+        } else return false;
     }
-private void ChangeUserData(UpdateUserDto dto,User u){
-    u.setPassword(dto.getPassword());
-    u.setForname(dto.getForname());
-    u.setSurname(dto.getSurname());
-    u.setDepartment(dto.getDepartment());
-    u.setNrHolidays(dto.getNrHolidays());
-    u.setRole((dto.getRole()));
-}
+
+    private void ChangeUserData(UpdateUserDto dto, User u) {
+        u.setPassword(dto.getPassword());
+        u.setForname(dto.getForname());
+        u.setSurname(dto.getSurname());
+        u.setDepartment(dto.getDepartment());
+        u.setNrHolidays(dto.getNrHolidays());
+        u.setRole((dto.getRole()));
+    }
+
     @Override
-    public UserDto updateUser(UpdateUserDto dto){
+    public UserDto updateUser(UpdateUserDto dto) {
         User u = userRepository.findByEmail(dto.getEmail());
-        if(u!= null) {
-            ChangeUserData(dto,u);
+        if (u != null) {
+            ChangeUserData(dto, u);
         }
         return userMapper.entityToDto(userRepository.save(u));
     }
@@ -100,7 +106,7 @@ private void ChangeUserData(UpdateUserDto dto,User u){
     @Override
     public void deleteUser(String email) {
         User u = userRepository.findByEmail(email);
-        if(u != null) {
+        if (u != null) {
             userRepository.deleteById(u.getId());
         }
     }
