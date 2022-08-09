@@ -34,4 +34,12 @@ public interface UserService {
 
     void deleteUser(String email);
 
+    /**
+     * filter all users by forname and surname
+     * @param forname user's forname
+     * @param surname user's surname
+     * @return the filtered list of users
+     */
+    public List<UserDto> findAllByFornameOrSurname(String forname, String surname);
+
 }

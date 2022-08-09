@@ -52,10 +52,17 @@ public class UserController {
         userService.deleteUser(email);
         return new ResponseEntity(HttpStatus.OK);
     }
+
     @GetMapping("/get-all-users")
     @AllowAdmin
     public ResponseEntity<List<UserDto>> getAll(){
         return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
+    }
+
+    @GetMapping("/filterByName/{forname}/{surname}")
+    @AllowAdmin
+    public ResponseEntity<List<UserDto>> filterUsersByFornameAndSurname(@PathVariable String forname, @PathVariable String surname){
+        return new ResponseEntity<>(userService.findAllByFornameOrSurname(forname,surname),HttpStatus.OK);
     }
 
 }

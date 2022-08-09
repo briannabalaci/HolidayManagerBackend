@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
     }
-    
+
 
     public UserDto authentication(LoginUserDto dto) {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         u.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(u);
     }
-   @Override
+    @Override
     public UserDto createUser(UserDto dto){
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user=userRepository.save(userMapper.dtoToEntity(dto));
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> getAll() {
-      List<User> entities = userRepository.findAll();
+        List<User> entities = userRepository.findAll();
         return userMapper.entitiesToDtos(entities);
     }
 
@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean verifyPasswordAndCredentials(ChangePasswordDto dto) {
         if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
-           return false;
+            return false;
         }
         User user = userRepository.findByEmail(dto.getEmail());
         if ( user != null){
@@ -80,14 +80,14 @@ public class UserServiceImpl implements UserService {
         }
         else return false;
     }
-private void ChangeUserData(UpdateUserDto dto,User u){
-    u.setPassword(dto.getPassword());
-    u.setForname(dto.getForname());
-    u.setSurname(dto.getSurname());
-    u.setDepartment(dto.getDepartment());
-    u.setNrHolidays(dto.getNrHolidays());
-    u.setRole((dto.getRole()));
-}
+    private void ChangeUserData(UpdateUserDto dto,User u){
+        u.setPassword(dto.getPassword());
+        u.setForname(dto.getForname());
+        u.setSurname(dto.getSurname());
+        u.setDepartment(dto.getDepartment());
+        u.setNrHolidays(dto.getNrHolidays());
+        u.setRole((dto.getRole()));
+    }
     @Override
     public UserDto updateUser(UpdateUserDto dto){
         User u = userRepository.findByEmail(dto.getEmail());
@@ -105,4 +105,11 @@ private void ChangeUserData(UpdateUserDto dto,User u){
         }
     }
 
+    @Override
+    public List<UserDto> findAllByFornameOrSurname(String forname, String surname) {
+        List<User> entites = userRepository.findAllByFornameOrSurname(forname, surname);
+        log.info("Get all by forname and surname called");
+        List<UserDto> dtos = userMapper.entitiesToDtos(entites);
+        return dtos;
+    }
 }
