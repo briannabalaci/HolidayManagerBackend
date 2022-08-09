@@ -4,14 +4,18 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.internship.holiday_manager.entity.enums.Department;
 import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name="users")
 public class User {
 
@@ -48,7 +52,6 @@ public class User {
 
     @ManyToOne()
     @JoinColumn(name = "team_id" )
-//    @ToString.Exclude
     @JsonBackReference
     private Team team;
 

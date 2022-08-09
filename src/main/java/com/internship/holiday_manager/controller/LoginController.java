@@ -6,13 +6,10 @@ import com.internship.holiday_manager.dto.LoginUserDto;
 import com.internship.holiday_manager.dto.TokenDto;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.user_service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-//import static java.lang.StringCoding.encoder;
 
 
 @RestController
@@ -42,7 +39,6 @@ public class LoginController {
         return ResponseEntity.ok(token);
     }
 
-   //TODO: change-password method
     @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDto dto){
         if(userService.verifyPasswordAndCredentials(dto)){
