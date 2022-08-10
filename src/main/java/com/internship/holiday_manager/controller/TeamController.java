@@ -1,8 +1,10 @@
 package com.internship.holiday_manager.controller;
 
+import com.internship.holiday_manager.dto.TeamAddDto;
 import com.internship.holiday_manager.dto.TeamDto;
 import com.internship.holiday_manager.service.team_service.TeamService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +13,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/team")
-@CrossOrigin
+@CrossOrigin(origins = "localhost:4200")
+@Slf4j
 public class TeamController {
 
     private final TeamService teamService;
@@ -22,7 +25,9 @@ public class TeamController {
 
     @AllowAdmin
     @PostMapping("/add")
-    public ResponseEntity<TeamDto> save(@RequestBody TeamDto entityDto){
+    public ResponseEntity<TeamDto> save(@RequestBody TeamAddDto entityDto){
+        log.info("In controlller");
+        log.info(String.valueOf(entityDto));
         return new ResponseEntity<>(teamService.save(entityDto), HttpStatus.OK);
     }
 

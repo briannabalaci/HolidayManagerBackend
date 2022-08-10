@@ -1,5 +1,6 @@
 package com.internship.holiday_manager.service.team_service;
 
+import com.internship.holiday_manager.dto.TeamAddDto;
 import com.internship.holiday_manager.dto.TeamDto;
 import com.internship.holiday_manager.dto.UserDto;
 
@@ -11,7 +12,7 @@ public interface TeamService {
      * @param teamDTO
      * @return the added entity
      */
-    TeamDto save(TeamDto teamDTO);
+    TeamDto save(TeamAddDto teamDTO);
 
     /**
      * Get a team by its ID
