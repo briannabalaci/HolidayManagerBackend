@@ -35,7 +35,8 @@ public class LoginController {
         User userInfo = userService.getUserInformation(dto);
         String jwt = "";
         if(userInfo != null) {
-            jwt = jwtTokenService.createJwtToken(userInfo.getEmail(), userInfo.getType());
+            System.out.println(userInfo.getId());
+            jwt = jwtTokenService.createJwtToken(userInfo.getEmail(), userInfo.getType(), userInfo.getId());
         }
         TokenDto token = new TokenDto();
         token.setToken(jwt);

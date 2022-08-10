@@ -29,6 +29,7 @@ public class JwtTokenService {
     private static final String HEADER_STRING = "app-auth";
     private static final String CLAIM_USER = "username";
 
+    private static final String CLAIM_ID = "id";
     private static final String CLAIM_TYPE = "type";
     @Value("${application.secret}")
     private String secret;
@@ -92,13 +93,14 @@ public class JwtTokenService {
     }
 
 
-    public String createJwtToken(final String email, final UserType type) {
+    public String createJwtToken(final String email, final UserType type, final Long id) {
         // create the jwt token
         String jwtToken;
 
         jwtToken = Jwts.builder()//
                 .claim(CLAIM_USER, email)//
                 .claim(CLAIM_TYPE, type)//
+                .claim(CLAIM_ID, id)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))//
                 .signWith(SignatureAlgorithm.HS512, secret.getBytes(StandardCharsets.UTF_8))//
                 .compact();//
