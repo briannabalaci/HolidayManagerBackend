@@ -29,7 +29,7 @@ public interface UserService {
     UserDto updateUser(UpdateUserDto dto);
 
     void deleteUser(String email);
-    
-    UserDto getUser(String email);
 
+    UserDto getUser(String email);
+    public List<UserDto> getUsersWithoutTeam();
 }

@@ -11,6 +11,7 @@ import com.internship.holiday_manager.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -30,11 +31,8 @@ public class TeamServiceImpl implements TeamService{
     @Override
     public TeamDto save(TeamAddDto teamDTO) {
         User teamLead = userRepository.getById(teamDTO.getTeamLeaderId());
-        teamLead.setType(UserType.TEAMLEAD);
-        userRepository.save(teamLead);
-        
         Team entityToSave = Team.builder().name(teamDTO.getName())
-                .teamLeader(teamLead.getForname()+ " "+teamLead.getSurname())
+                .teamLeader(teamLead)
                 .build();
         Team saved = teamRepository.save(entityToSave);
         log.info("New team created");
@@ -42,6 +40,9 @@ public class TeamServiceImpl implements TeamService{
         for(Long userID:teamDTO.getMembersId()){
             User user = userRepository.getById(userID);
             user.setTeam(saved);
+            if(user.getId().equals(teamLead.getId())){
+                teamLead.setType(UserType.TEAMLEAD);
+            }
             userRepository.save(user);
         }
         log.info("TeamID updated for users.");
@@ -56,8 +57,12 @@ public class TeamServiceImpl implements TeamService{
     }
 
     @Override
+    @Transactional
     public TeamDto delete(Long teamID) {
         Team entity = teamRepository.getById(teamID);
+        User teamLead = entity.getTeamLeader();
+        teamLead.setType(UserType.EMPLOYEE);
+        userRepository.save(teamLead);
         teamRepository.delete(entity);
         log.info("Team with ID {} deleted. "+teamID);
         return teamMapper.entityToDto(entity);

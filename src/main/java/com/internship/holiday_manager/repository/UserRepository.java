@@ -1,4 +1,5 @@
 package com.internship.holiday_manager.repository;
+import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmail(@Param("email") String email);
 
-    List<User> findAllByFornameOrSurname(String forname, String surname);
+    @Query("SELECT u from User u where u.team.id is null")
+    List<User> findUsersWithoutTeam();
 
 }

@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.internship.holiday_manager.entity.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -138,4 +139,22 @@ public class UserServiceImpl implements UserService {
         return userMapper.entityToDto(this.userRepository.findByEmail(email));
     }
 
+    public List<UserDto> getUsersWithoutTeam(){
+        List<UserDto> dtos = new ArrayList<>();
+        for(User u: userRepository.findUsersWithoutTeam()){
+            UserDto user = UserDto.builder()
+                    .id(u.getId())
+                    .email(u.getEmail())
+                    .surname(u.getSurname())
+                    .forname(u.getForname())
+                    .nrHolidays(u.getNrHolidays())
+                    .department(u.getDepartment())
+                    .type(u.getType())
+                    .role(u.getRole())
+                    .teamLeaderId(null)
+                    .build();
+            dtos.add(user);
+        }
+        return dtos;
+    }
 }

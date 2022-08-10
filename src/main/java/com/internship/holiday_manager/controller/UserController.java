@@ -57,10 +57,11 @@ public class UserController {
         return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
     }
 
-    @GetMapping("/filterByName/{forname}/{surname}")
+    @GetMapping("/get-users-noteam")
     @AllowAdmin
-    public ResponseEntity<List<UserDto>> filterUsersByFornameAndSurname(@PathVariable String forname, @PathVariable String surname){
-        return new ResponseEntity<>(userService.findAllByFornameOrSurname(forname,surname),HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getUsersWithoutTeam(){
+        return new ResponseEntity<>(userService.getUsersWithoutTeam(),HttpStatus.OK);
     }
+
 
 }
