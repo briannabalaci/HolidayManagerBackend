@@ -12,4 +12,7 @@ public interface HolidayRepository extends JpaRepository<Holiday,Long> {
 
     @Query("select h from Holiday h where h.user.id=:id ")
     List<Holiday> findUsersHolidays(@Param("id") Long id);
+
+    @Query("select u from Holiday u where u.id=:id")
+    Holiday findByID(@Param("id") Long id);
 }

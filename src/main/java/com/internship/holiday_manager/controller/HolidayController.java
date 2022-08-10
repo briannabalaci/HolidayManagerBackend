@@ -3,6 +3,7 @@ import com.internship.holiday_manager.dto.HolidayDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.service.holiday_service.HolidayService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
+import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +22,18 @@ public class HolidayController {
     }
 
     @PostMapping("/add-holiday")
-    @AllowAdmin
+    @AllowEmployee
     public ResponseEntity<HolidayDto> addHoliday(@RequestBody HolidayDto dto){
         return new ResponseEntity<>(holidayService.createHoliday(dto), HttpStatus.OK);
     }
     @GetMapping("/get-all-holidays")
-    @AllowAdmin
+    @AllowEmployee
     public ResponseEntity<List<HolidayDto>> getAll(){
         return new ResponseEntity<>(holidayService.getAll(),HttpStatus.OK);
     }
 
     @GetMapping("/get-users-holidays")
-    @AllowAdmin
+    @AllowEmployee
     public ResponseEntity<List<HolidayDto>> getUsersHoliday(@RequestBody UserDto dto){
         return new ResponseEntity<>(holidayService.getUsersHolidays(dto),HttpStatus.OK);
     }

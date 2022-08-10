@@ -9,6 +9,8 @@ public interface HolidayService {
 
     HolidayDto createHoliday(HolidayDto holidayDto);
 
+    HolidayDto updateHoliday(HolidayDto holidayDto);
+
     List<HolidayDto> getAll();
 
     List<HolidayDto> getUsersHolidays(UserDto dto);
