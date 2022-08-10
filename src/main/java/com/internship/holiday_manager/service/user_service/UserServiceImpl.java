@@ -97,7 +97,14 @@ public class UserServiceImpl implements UserService {
 
 
     private void ChangeUserData(UpdateUserDto dto, User u) {
-        u.setPassword(dto.getPassword());
+        u.setPassword(passwordEncoder.encode(dto.getPassword()));
+        u.setForname(dto.getForname());
+        u.setSurname(dto.getSurname());
+        u.setDepartment(dto.getDepartment());
+        u.setNrHolidays(dto.getNrHolidays());
+        u.setRole((dto.getRole()));
+    }
+    private void ChangeUserDataWithoutPassword(UpdateUserDto dto, User u) {
         u.setForname(dto.getForname());
         u.setSurname(dto.getSurname());
         u.setDepartment(dto.getDepartment());
@@ -109,7 +116,13 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UpdateUserDto dto) {
         User u = userRepository.findByEmail(dto.getEmail());
         if (u != null) {
-            ChangeUserData(dto, u);
+            if(dto.getPassword() != null){
+                ChangeUserData(dto, u);
+            }
+            else {
+                ChangeUserDataWithoutPassword(dto,u);
+            }
+
         }
         return userMapper.entityToDto(userRepository.save(u));
     }
