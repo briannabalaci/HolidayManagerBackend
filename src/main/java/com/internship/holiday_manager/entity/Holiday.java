@@ -16,10 +16,10 @@ public class Holiday {
     private Long id;
 
     @Column(name="start_date")
-    private LocalDateTime start_date;
+    private LocalDateTime startDate;
 
     @Column(name="end_date")
-    private LocalDateTime end_date;
+    private LocalDateTime endDate;
 
     @Column(name="substitute")
     private String substitute;
@@ -27,9 +27,11 @@ public class Holiday {
     @Column(name="document")
     private byte[] document;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="type")
     private HolidayType type;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="status")
     private HolidayStatus status;
 

@@ -30,4 +30,6 @@ public interface UserService {
 
     void deleteUser(String email);
 
+    UserDto getUser(String email);
+
 }
