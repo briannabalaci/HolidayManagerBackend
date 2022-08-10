@@ -3,6 +3,7 @@ package com.internship.holiday_manager.service.user_service;
 import com.internship.holiday_manager.dto.*;
 
 import com.internship.holiday_manager.mapper.UserMapper;
+import com.internship.holiday_manager.repository.TeamRepository;
 import com.internship.holiday_manager.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,12 @@ public class UserServiceImpl implements UserService {
     private BCryptPasswordEncoder passwordEncoder;
 
     private final UserRepository userRepository;
+    private final TeamRepository teamRepository;
     private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, TeamRepository teamRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.teamRepository = teamRepository;
         this.userMapper = userMapper;
     }
 
@@ -157,4 +160,5 @@ public class UserServiceImpl implements UserService {
         }
         return dtos;
     }
+
 }
