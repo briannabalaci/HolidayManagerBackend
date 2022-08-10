@@ -6,5 +6,11 @@ import java.util.List;
 
 public interface TeamLeadService {
 
-    List<HolidayDto> getRequests();
+    /**
+     *  We get all the holiday requests of the team-lead
+     * @param teamLeaderId - the d of the team-lead
+     * @return - a list with the requests
+     */
+    List<HolidayDto> getRequests(Long teamLeaderId);
+
 }

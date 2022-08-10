@@ -17,8 +17,9 @@ public class Team {
     @Column(name="name")
     private String name;
 
-    @Column(name="team_leader")
-    private String teamLeader;
+    @OneToOne
+    @JoinColumn(name = "team_leader")
+    private User teamLeader;
 
     @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)
     @JoinColumn(name="team_id")

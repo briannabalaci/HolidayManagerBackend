@@ -49,4 +49,15 @@
                                  onDelete="SET NULL"/>
     </changeSet>
 
+    <changeSet id="20220810-team-001" author="mbledea2">
+        <dropColumn tableName="team" columnName="team_leader"/>
+    </changeSet>
+
+
+    <changeSet id="20220810-team-002" author="mbledea2">
+        <addColumn tableName="team">
+            <column name="team_leader" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>
