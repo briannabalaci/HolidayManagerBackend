@@ -34,4 +34,6 @@ public interface UserService {
 
     void deleteUser(String email);
 
+    UserDto findUserById(Long id);
+
 }

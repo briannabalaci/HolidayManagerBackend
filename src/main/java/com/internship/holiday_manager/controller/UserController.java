@@ -9,6 +9,7 @@ import com.internship.holiday_manager.dto.UpdateUserDto;
 import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
+import com.internship.holiday_manager.utils.annotations.AllowAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,10 +53,16 @@ public class UserController {
         userService.deleteUser(email);
         return new ResponseEntity(HttpStatus.OK);
     }
+    @GetMapping("/find-user-by-id/{id}")
+    @AllowAll
+    public ResponseEntity delete(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
+    }
     @GetMapping("/get-all-users")
     @AllowAdmin
     public ResponseEntity<List<UserDto>> getAll(){
         return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
     }
+
 
 }

@@ -17,6 +17,7 @@ import com.internship.holiday_manager.entity.User;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -103,6 +104,16 @@ private void ChangeUserData(UpdateUserDto dto,User u){
         if(u != null) {
             userRepository.deleteById(u.getId());
         }
+    }
+
+    @Override
+    public UserDto findUserById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if (!user.isEmpty()){
+            UserDto userDto = userMapper.entityToDto(user.get());
+            return userDto;
+        }
+        else return  null;
     }
 
 }
