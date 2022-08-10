@@ -13,4 +13,13 @@ public interface TeamLeadService {
      */
     List<HolidayDto> getRequests(Long teamLeaderId);
 
+
+    /**
+     * We get all the holiday requests of the members which are part of the team of the team-lead
+     * @param teamId - the id of the team-lead
+     * @return - a list with the requests
+     */
+    List<HolidayDto> getTeamRequests(Long teamId);
+
+
 }

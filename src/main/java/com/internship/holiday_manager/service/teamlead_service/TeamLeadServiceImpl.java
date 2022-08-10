@@ -30,7 +30,25 @@ public class TeamLeadServiceImpl implements TeamLeadService{
     @Override
     public List<HolidayDto> getRequests(Long teamLeaderId) {
         List<Holiday> entities = this.holidayRepository.findByUserId(teamLeaderId);
+
         return holidayMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public List<HolidayDto> getTeamRequests(Long teamId) {
+        List<User> members = this.teamRepository.getById(teamId).getMembers();
+        List<Holiday> holidays = new ArrayList<>();
+
+        members.forEach(h -> { if(!h.getType().name().equals("TEAMLEAD"))
+            holidays.addAll(this.holidayRepository.findByUserId(h.getId()));
+        });
+
+        List<HolidayDto> dtos = holidayMapper.entitiesToDtos(holidays);
+
+        // TODO: - still in doubts if i need this line or not
+        // dtos.forEach(h -> { h.getUser().setTeamId(teamId);});
+
+        return dtos;
     }
 
 }

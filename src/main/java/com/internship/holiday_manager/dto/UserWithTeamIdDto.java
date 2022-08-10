@@ -1,13 +1,12 @@
 package com.internship.holiday_manager.dto;
-import com.internship.holiday_manager.entity.Team;
+
 import com.internship.holiday_manager.entity.enums.Department;
 import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
 import lombok.Data;
 
-
 @Data
-public class UserDto {
+public class UserWithTeamIdDto {
     private Long id;
     private String email;
     private String forname;
@@ -16,8 +15,5 @@ public class UserDto {
     private Role role;
     private Integer nrHolidays;
     private UserType type;
-    private Team team;
+    private Long teamId;
 }
-
-
-

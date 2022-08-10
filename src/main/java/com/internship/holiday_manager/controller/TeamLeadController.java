@@ -37,4 +37,10 @@ public class TeamLeadController {
         return new ResponseEntity<List<HolidayDto>>(teamLeadService.getRequests(id), HttpStatus.OK);
     }
 
+    @AllowTeamLead
+    @GetMapping("/get-team-requests")
+    public ResponseEntity<List<HolidayDto>> getTeamRequests(@RequestParam("id") Long id){
+        return new ResponseEntity<List<HolidayDto>>(teamLeadService.getTeamRequests(id), HttpStatus.OK);
+    }
+
 }
