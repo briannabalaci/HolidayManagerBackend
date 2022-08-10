@@ -29,13 +29,7 @@ public interface UserService {
     UserDto updateUser(UpdateUserDto dto);
 
     void deleteUser(String email);
-
-    /**
-     * filter all users by forname and surname
-     * @param forname user's forname
-     * @param surname user's surname
-     * @return the filtered list of users
-     */
-    public List<UserDto> findAllByFornameOrSurname(String forname, String surname);
+    
+    UserDto getUser(String email);
 
 }

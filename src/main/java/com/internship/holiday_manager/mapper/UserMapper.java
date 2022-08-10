@@ -4,7 +4,8 @@ import com.internship.holiday_manager.entity.User;
 import org.mapstruct.*;
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+
+@Mapper(componentModel = "spring", collectionMappingStrategy = CollectionMappingStrategy.ACCESSOR_ONLY)
 public interface UserMapper {
 
     UserDto entityToDto(User entity);

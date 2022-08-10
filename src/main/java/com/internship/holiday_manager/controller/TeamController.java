@@ -2,6 +2,7 @@ package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.dto.TeamAddDto;
 import com.internship.holiday_manager.dto.TeamDto;
+import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.service.team_service.TeamService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import lombok.extern.slf4j.Slf4j;
@@ -50,9 +51,9 @@ public class TeamController {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-//    @AllowAdmin
-//    @GetMapping("/get-members/{teamID}")
-//    public ResponseEntity<List<UserDto>> getTeamMembers(@PathVariable long teamID){
-//        return new ResponseEntity<>(teamService.findByID(teamID).getMembers(),HttpStatus.OK);
-//    }
+    @AllowAdmin
+    @GetMapping("/get-members/{teamID}")
+    public ResponseEntity<List<UserDto>> getTeamMembers(@PathVariable long teamID){
+        return new ResponseEntity<>(teamService.findByID(teamID).getMembers(),HttpStatus.OK);
+    }
 }

@@ -96,7 +96,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private void ChangeUserData(UpdateUserDto dto, User u) {
-        u.setPassword(dto.getPassword());
+        u.setPassword(passwordEncoder.encode(dto.getPassword()));
+        u.setForname(dto.getForname());
+        u.setSurname(dto.getSurname());
+        u.setDepartment(dto.getDepartment());
+        u.setNrHolidays(dto.getNrHolidays());
+        u.setRole((dto.getRole()));
+    }
+    private void ChangeUserDataWithoutPassword(UpdateUserDto dto, User u) {
         u.setForname(dto.getForname());
         u.setSurname(dto.getSurname());
         u.setDepartment(dto.getDepartment());
@@ -108,7 +115,13 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UpdateUserDto dto) {
         User u = userRepository.findByEmail(dto.getEmail());
         if (u != null) {
-            ChangeUserData(dto, u);
+            if(dto.getPassword() != null){
+                ChangeUserData(dto, u);
+            }
+            else {
+                ChangeUserDataWithoutPassword(dto,u);
+            }
+
         }
         return userMapper.entityToDto(userRepository.save(u));
     }
@@ -121,11 +134,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public List<UserDto> findAllByFornameOrSurname(String forname, String surname) {
-        List<User> entites = userRepository.findAllByFornameOrSurname(forname, surname);
-        log.info("Get all by forname and surname called");
-        List<UserDto> dtos = userMapper.entitiesToDtos(entites);
-        return dtos;
+    public UserDto getUser(String email) {
+        return userMapper.entityToDto(this.userRepository.findByEmail(email));
     }
+
 }
