@@ -19,4 +19,5 @@ public class HolidayDto {
     private HolidayType type;
     private HolidayStatus status;
     private String details;
+    private UserDto user;
 }

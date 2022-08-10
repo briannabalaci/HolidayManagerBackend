@@ -19,7 +19,7 @@ public class UserDto {
     private Integer nrHolidays;
     private UserType type;
     private TeamDto team;
-    private List<HolidayDto> holidays;
+    //private List<HolidayDto> holidays;
 }
 
 
