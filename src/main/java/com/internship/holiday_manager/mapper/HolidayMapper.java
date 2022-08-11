@@ -5,9 +5,6 @@ import com.internship.holiday_manager.entity.Holiday;
 import org.mapstruct.Mapper;
 
 import java.util.List;
-
-
-
 @Mapper(componentModel = "spring", uses = UserWithTeamIdMapper.class)
 public interface HolidayMapper {
 
@@ -16,5 +13,6 @@ public interface HolidayMapper {
     Holiday dtoToEntity(HolidayDto dto);
 
     List<HolidayDto> entitiesToDtos(List<Holiday> entities);
+
     List<Holiday> dtosToEntities(List<HolidayDto> dtos);
 }

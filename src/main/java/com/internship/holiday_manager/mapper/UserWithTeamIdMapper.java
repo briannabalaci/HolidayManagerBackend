@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 
-@Mapper(componentModel = "spring", collectionMappingStrategy = CollectionMappingStrategy.ACCESSOR_ONLY)
+@Mapper(componentModel = "spring")
 public interface UserWithTeamIdMapper {
 
     UserWithTeamIdDto entityToDto(User entity);
