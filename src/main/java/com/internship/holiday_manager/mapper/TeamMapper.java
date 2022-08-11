@@ -4,7 +4,7 @@ import com.internship.holiday_manager.dto.TeamDto;
 import com.internship.holiday_manager.entity.Team;
 import org.mapstruct.*;
 import java.util.List;
-@Mapper(componentModel = "spring", uses = UserMapper.class)
+@Mapper(componentModel = "spring", uses = UserWithTeamIdMapper.class)
 public interface TeamMapper {
 
     TeamDto entityToDto(Team entity);

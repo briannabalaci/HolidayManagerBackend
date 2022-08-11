@@ -5,13 +5,13 @@ import org.mapstruct.*;
 import java.util.List;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = TeamMapper.class)
 public interface UserMapper {
 
-    @Mapping(target = "team", ignore = true)
+//    @Mapping(target = "team", ignore = true)
     UserDto entityToDto(User entity);
 
-    @Mapping(target = "team", ignore = true)
+//    @Mapping(target = "team", ignore = true)
     User dtoToEntity(UserDto dto);
 
     List<UserDto> entitiesToDtos(List<User> entities);

@@ -9,7 +9,7 @@ import java.util.List;
 public class TeamDto {
     private Long id;
     private String name;
-    private UserDto teamLeader;
-    private List<UserDto> members;
+    private UserWithTeamIdDto teamLeader;
+    private List<UserWithTeamIdDto> members;
 }
 

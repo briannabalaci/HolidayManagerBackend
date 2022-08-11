@@ -49,7 +49,7 @@ public class TeamController {
 
     @AllowAdmin
     @GetMapping("/get-members/{teamID}")
-    public ResponseEntity<List<UserDto>> getTeamMembers(@PathVariable long teamID){
+    public ResponseEntity<List<UserWithTeamIdDto>> getTeamMembers(@PathVariable long teamID){
         return new ResponseEntity<>(teamService.findByID(teamID).getMembers(),HttpStatus.OK);
     }
 }
