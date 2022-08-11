@@ -17,4 +17,12 @@
     </createTable>
 </changeSet>
 
+
+    <changeSet id="20220810-team-002" author="mbledea2">
+        <addForeignKeyConstraint baseTableName="TEAM" baseColumnNames="team_leader"
+                                 constraintName="fk_teamleader_id"
+                                 referencedTableName="USERS" referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+    </changeSet>
+
 </databaseChangeLog>

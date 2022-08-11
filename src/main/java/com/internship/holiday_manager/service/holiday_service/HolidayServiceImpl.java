@@ -1,11 +1,7 @@
 package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.HolidayDto;
-import com.internship.holiday_manager.dto.UpdateUserDto;
-import com.internship.holiday_manager.dto.UserDto;
 import com.internship.holiday_manager.entity.Holiday;
-import com.internship.holiday_manager.entity.Team;
-import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.repository.HolidayRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +30,8 @@ public class HolidayServiceImpl implements HolidayService{
     }
     private void ChangeHolidayData(HolidayDto dto, Holiday u){
         u.setStatus(dto.getStatus());
-        u.setEnd_date(dto.getEnd_date());
-        u.setStart_date(dto.getStart_date());
+        u.setEndDate(dto.getEndDate());
+        u.setStartDate(dto.getStartDate());
         u.setSubstitute(dto.getSubstitute());
     }
 

@@ -2,11 +2,11 @@
 package com.internship.holiday_manager.mapper;
 import com.internship.holiday_manager.dto.TeamDto;
 import com.internship.holiday_manager.entity.Team;
-import org.mapstruct.Mapper;
-
+import org.mapstruct.*;
 import java.util.List;
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserWithTeamIdMapper.class, collectionMappingStrategy = CollectionMappingStrategy.ACCESSOR_ONLY)
 public interface TeamMapper {
+
     TeamDto entityToDto(Team entity);
 
     Team dtoToEntity(TeamDto dto);

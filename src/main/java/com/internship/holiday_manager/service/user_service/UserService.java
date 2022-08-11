@@ -1,9 +1,6 @@
 package com.internship.holiday_manager.service.user_service;
 
-import com.internship.holiday_manager.dto.ChangePasswordDto;
-import com.internship.holiday_manager.dto.LoginUserDto;
-import com.internship.holiday_manager.dto.UpdateUserDto;
-import com.internship.holiday_manager.dto.UserDto;
+import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.entity.User;
 
 import java.util.List;
@@ -18,22 +15,41 @@ public interface UserService {
     UserDto authentication(LoginUserDto dto);
     User getUserInformation(LoginUserDto dto);
 
-
     void changePassword(ChangePasswordDto dto);
 
-    UserDto createUser(UserDto dto);
+    UserDto createUser(RegisterDto dto);
     List<UserDto> getAll();
+
     /**
      * It checks if the new password is different from the old password and if the user with the given credentials exists or not
      * @param dto - It contains the email of the user, the old password and the new password
      * @return - it returns true if the new password is fine and the user with the given credentials exists, otherwise it returns false
      */
     boolean verifyPasswordAndCredentials(ChangePasswordDto dto);
+    boolean userExists(RegisterDto dto);
 
+    /**
+     * This method updates the data about the user
+     * @param dto - contains the data about the user we want to update
+     * @return - the updated user
+     */
     UserDto updateUser(UpdateUserDto dto);
 
+    /**
+     * This method deletes a user by its email
+     * @param email - the email of the user which is unique
+     */
     void deleteUser(String email);
 
+
     UserDto findUserById(Long id);
+
+    /**
+     * This method finds the user information based on its email
+     * @param email - the email of the user
+     * @return - the user it searched for
+     */
+    UserDto getUser(String email);
+
 
 }
