@@ -54,7 +54,6 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public List<HolidayDto> getUsersHolidays(Long id) {
         List<Holiday> entities = holidayRepository.findUsersHolidays(id);
-        System.out.println(entities);
         return holidayMapper.entitiesToDtos(entities);
     }
 }
