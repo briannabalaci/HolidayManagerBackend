@@ -57,7 +57,7 @@ public class UserController {
         return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
     }
 
-    @GetMapping("/get-users-noteam")
+    @GetMapping("/users-noteam")
     @AllowAdmin
     public ResponseEntity<List<UserDto>> getUsersWithoutTeam(){
         return new ResponseEntity<>(userService.getUsersWithoutTeam(),HttpStatus.OK);

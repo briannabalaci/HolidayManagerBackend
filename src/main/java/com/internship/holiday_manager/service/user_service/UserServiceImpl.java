@@ -92,11 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean userExists(RegisterDto dto) {
         User user = userRepository.findByEmail(dto.getEmail());
-        if(user != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return user!=null;
     }
 
     private void ChangeUserData(UpdateUserDto dto, User u) {

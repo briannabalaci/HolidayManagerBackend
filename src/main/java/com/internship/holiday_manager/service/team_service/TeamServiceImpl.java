@@ -27,26 +27,40 @@ public class TeamServiceImpl implements TeamService{
         this.teamMapper = teamMapper;
     }
 
+    private void revertTeamLeadToEmployee(Team team){
+        User teamLead = team.getTeamLeader();
+        teamLead.setType(UserType.EMPLOYEE);
+        userRepository.save(teamLead);
+    }
 
-    @Override
-    public TeamDto save(TeamAddDto teamDTO) {
+    private Team createTeam(TeamAddDto teamDTO){
         User teamLead = userRepository.getById(teamDTO.getTeamLeaderId());
         Team entityToSave = Team.builder().name(teamDTO.getName())
                 .teamLeader(teamLead)
                 .build();
         Team saved = teamRepository.save(entityToSave);
         log.info("New team created");
+        return saved;
+    }
+    private void updateUsersTeam(TeamAddDto teamAddDto, Team savedTeam){
+        User teamLead = userRepository.getById(teamAddDto.getTeamLeaderId());
 
-        for(Long userID:teamDTO.getMembersId()){
+        for(Long userID:teamAddDto.getMembersId()){
             User user = userRepository.getById(userID);
-            user.setTeam(saved);
+            user.setTeam(savedTeam);
             if(user.getId().equals(teamLead.getId())){
                 teamLead.setType(UserType.TEAMLEAD);
             }
             userRepository.save(user);
         }
         log.info("TeamID updated for users.");
-        return teamMapper.entityToDto(saved);
+    }
+    @Override
+    public TeamDto save(TeamAddDto teamDTO) {
+        Team team = createTeam(teamDTO);
+        updateUsersTeam(teamDTO, team);
+
+        return teamMapper.entityToDto(team);
     }
 
     @Override
@@ -60,9 +74,7 @@ public class TeamServiceImpl implements TeamService{
     @Transactional
     public TeamDto delete(Long teamID) {
         Team entity = teamRepository.getById(teamID);
-        User teamLead = entity.getTeamLeader();
-        teamLead.setType(UserType.EMPLOYEE);
-        userRepository.save(teamLead);
+        revertTeamLeadToEmployee(entity);
         teamRepository.delete(entity);
         log.info("Team with ID {} deleted. "+teamID);
         return teamMapper.entityToDto(entity);

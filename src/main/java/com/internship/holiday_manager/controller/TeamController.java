@@ -39,7 +39,7 @@ public class TeamController {
     }
 
     @AllowAdmin
-    @GetMapping("/get-all")
+    @GetMapping("/all")
     public ResponseEntity<List<TeamDto>> getAll(){
         return new ResponseEntity<>(teamService.getAllTeams(),HttpStatus.OK);
     }
@@ -52,7 +52,7 @@ public class TeamController {
     }
 
     @AllowAdmin
-    @GetMapping("/get-members/{teamID}")
+    @GetMapping("/members/{teamID}")
     public ResponseEntity<List<UserDto>> getTeamMembers(@PathVariable long teamID){
         return new ResponseEntity<>(teamService.findByID(teamID).getMembers(),HttpStatus.OK);
     }
