@@ -32,9 +32,9 @@ public class HolidayController {
         return new ResponseEntity<>(holidayService.getAll(),HttpStatus.OK);
     }
 
-    @GetMapping("/get-users-holidays")
+    @GetMapping("/get-users-holidays/{id}")
     @AllowEmployee
-    public ResponseEntity<List<HolidayDto>> getUsersHoliday(@RequestBody UserDto dto){
-        return new ResponseEntity<>(holidayService.getUsersHolidays(dto),HttpStatus.OK);
+    public ResponseEntity<List<HolidayDto>> getUsersHoliday(@PathVariable Long id){
+        return new ResponseEntity<>(holidayService.getUsersHolidays(id),HttpStatus.OK);
     }
 }

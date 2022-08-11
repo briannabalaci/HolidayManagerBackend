@@ -13,5 +13,5 @@ public interface HolidayService {
 
     List<HolidayDto> getAll();
 
-    List<HolidayDto> getUsersHolidays(UserDto dto);
+    List<HolidayDto> getUsersHolidays(Long id);
 }
