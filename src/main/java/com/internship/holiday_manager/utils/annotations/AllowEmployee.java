@@ -6,7 +6,8 @@ import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasAuthority(T(com.internship.holiday_manager.entity.enums.UserType).TEAMLEAD)")
+@PreAuthorize("hasAuthority(T(com.internship.holiday_manager.entity.enums.UserType).EMPLOYEE)")
 @Target(ElementType.METHOD)
-public @interface AllowTeamLead {
+public @interface AllowEmployee {
+
 }

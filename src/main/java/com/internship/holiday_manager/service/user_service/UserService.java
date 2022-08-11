@@ -19,6 +19,7 @@ public interface UserService {
 
     UserDto createUser(RegisterDto dto);
     List<UserDto> getAll();
+
     /**
      * It checks if the new password is different from the old password and if the user with the given credentials exists or not
      * @param dto - It contains the email of the user, the old password and the new password
@@ -26,10 +27,29 @@ public interface UserService {
      */
     boolean verifyPasswordAndCredentials(ChangePasswordDto dto);
     boolean userExists(RegisterDto dto);
+
+    /**
+     * This method updates the data about the user
+     * @param dto - contains the data about the user we want to update
+     * @return - the updated user
+     */
     UserDto updateUser(UpdateUserDto dto);
 
+    /**
+     * This method deletes a user by its email
+     * @param email - the email of the user which is unique
+     */
     void deleteUser(String email);
 
+
+    UserDto findUserById(Long id);
+
+    /**
+     * This method finds the user information based on its email
+     * @param email - the email of the user
+     * @return - the user it searched for
+     */
     UserDto getUser(String email);
     public List<UserDto> getUsersWithoutTeam();
+
 }

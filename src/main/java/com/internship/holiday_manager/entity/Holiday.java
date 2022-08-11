@@ -1,5 +1,6 @@
 package com.internship.holiday_manager.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 import lombok.Data;
@@ -39,6 +40,7 @@ public class Holiday {
     private String details;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false )
+    @JsonBackReference
     private User user;
 }

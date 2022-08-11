@@ -1,13 +1,9 @@
 package com.internship.holiday_manager.controller;
 
-
-
 import com.internship.holiday_manager.dto.*;
-
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchProfile;
+import com.internship.holiday_manager.utils.annotations.AllowAll;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +45,12 @@ public class UserController {
     public ResponseEntity delete(@PathVariable String email) {
         userService.deleteUser(email);
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/find-user-by-id/{id}")
+    @AllowAll
+    public ResponseEntity findById(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 
     @GetMapping("/get-all-users")

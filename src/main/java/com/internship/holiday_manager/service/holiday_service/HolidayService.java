@@ -1,0 +1,17 @@
+package com.internship.holiday_manager.service.holiday_service;
+
+import com.internship.holiday_manager.dto.HolidayDto;
+import com.internship.holiday_manager.dto.UserDto;
+
+import java.util.List;
+
+public interface HolidayService {
+
+    HolidayDto createHoliday(HolidayDto holidayDto);
+
+    HolidayDto updateHoliday(HolidayDto holidayDto);
+
+    List<HolidayDto> getAll();
+
+    List<HolidayDto> getUsersHolidays(Long id);
+}

@@ -6,6 +6,7 @@ import java.util.List;
 
 
 @Mapper(componentModel = "spring", collectionMappingStrategy = CollectionMappingStrategy.ACCESSOR_ONLY)
+
 public interface UserMapper {
 
     UserDto entityToDto(User entity);

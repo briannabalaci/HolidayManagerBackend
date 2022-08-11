@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.internship.holiday_manager.entity.enums.Department;
 import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
@@ -55,5 +56,9 @@ public class User {
     @JsonBackReference
     private Team team;
 
+//    @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)
+//    @JoinColumn(name="user_id")
+//    @JsonManagedReference
+//    private List<Holiday> holidays;
 
 }
