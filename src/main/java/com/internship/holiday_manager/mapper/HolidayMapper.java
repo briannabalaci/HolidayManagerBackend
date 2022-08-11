@@ -5,7 +5,7 @@ import com.internship.holiday_manager.entity.Holiday;
 import org.mapstruct.Mapper;
 
 import java.util.List;
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserWithTeamIdMapper.class)
 public interface HolidayMapper {
 
     HolidayDto entityToDto(Holiday entity);

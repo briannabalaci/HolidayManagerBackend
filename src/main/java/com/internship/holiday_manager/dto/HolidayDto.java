@@ -24,5 +24,5 @@ public class HolidayDto {
 
     private String details;
 
-    private UserDto user;
+    private UserWithTeamIdDto user;
 }

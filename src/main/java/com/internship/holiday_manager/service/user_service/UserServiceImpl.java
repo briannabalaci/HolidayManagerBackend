@@ -3,7 +3,9 @@ package com.internship.holiday_manager.service.user_service;
 import com.internship.holiday_manager.dto.*;
 
 import com.internship.holiday_manager.mapper.UserMapper;
+import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
 import com.internship.holiday_manager.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,18 +17,19 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
+    @Autowired
     private final UserRepository userRepository;
+    @Autowired
     private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
+    @Autowired
+    private final UserWithTeamIdMapper userWithTeamIdMapper;
+
 
 
     public UserDto authentication(LoginUserDto dto) {
@@ -135,9 +138,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //TODO: De vazut daca mai e nevoie de metoda sau nu
+//    @Override
+//    public UserWithTeamIdDto getUser(String email) {
+//        User u = this.userRepository.findByEmail(email);
+//        UserWithTeamIdDto dto = userWithTeamIdMapper.entityToDto(u);
+//        dto.setTeamId(u.getTeam().getId());
+//        return dto;
+//    }
+
     @Override
     public UserDto getUser(String email) {
-        return userMapper.entityToDto(this.userRepository.findByEmail(email));
+        User user = this.userRepository.findByEmail(email);
+        return userMapper.entityToDto(user);
     }
 
 }
