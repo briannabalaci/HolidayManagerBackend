@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //TODO: De vazut daca mai e nevoie de metoda sau nu
 //    @Override
 //    public UserWithTeamIdDto getUser(String email) {
 //        User u = this.userRepository.findByEmail(email);
@@ -148,8 +149,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUser(String email) {
-        User u = this.userRepository.findByEmail(email);
-        return userMapper.entityToDto(u);
+        User user = this.userRepository.findByEmail(email);
+        return userMapper.entityToDto(user);
     }
 
 }
