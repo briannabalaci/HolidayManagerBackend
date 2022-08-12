@@ -27,25 +27,25 @@ public class TeamLeadController {
     }
 
     @AllowTeamLead
-    @GetMapping("/get-user")
+    @GetMapping("/user")
     public ResponseEntity<UserDto> getUser(@RequestParam("email") String email){
         return new ResponseEntity<>(this.userService.getUser(email), HttpStatus.OK);
     }
 
     @AllowTeamLead
-    @GetMapping("/get-requests")
+    @GetMapping("/requests")
     public ResponseEntity<List<HolidayDto>> getRequests(@RequestParam("id") Long id){
         return new ResponseEntity<List<HolidayDto>>(teamLeadService.getRequests(id), HttpStatus.OK);
     }
 
     @AllowTeamLead
-    @GetMapping("/get-team-requests")
+    @GetMapping("/team-requests")
     public ResponseEntity<List<HolidayDto>> getTeamRequests(@RequestParam("id") Long id){
         return new ResponseEntity<List<HolidayDto>>(teamLeadService.getTeamRequests(id), HttpStatus.OK);
     }
 
     @AllowTeamLead
-    @GetMapping("/get-requests-filtered-by")
+    @GetMapping("/requests-filtered-by")
     public ResponseEntity<List<HolidayDto>> getRequestsFilteredByType(@RequestParam("type") HolidayType type, @RequestParam("id") Long id){
         return new ResponseEntity<>(teamLeadService.getRequestsByType(id, type), HttpStatus.OK);
     }
