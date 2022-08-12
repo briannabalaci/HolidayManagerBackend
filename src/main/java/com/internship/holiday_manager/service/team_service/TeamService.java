@@ -1,8 +1,8 @@
 package com.internship.holiday_manager.service.team_service;
 
-import com.internship.holiday_manager.dto.TeamAddDto;
-import com.internship.holiday_manager.dto.TeamDto;
-import com.internship.holiday_manager.dto.UserDto;
+import com.internship.holiday_manager.dto.team.TeamAddDto;
+import com.internship.holiday_manager.dto.team.TeamDto;
+import com.internship.holiday_manager.dto.team.TeamUpdateDto;
 
 import java.util.List;
 
@@ -12,7 +12,14 @@ public interface TeamService {
      * @param teamDTO
      * @return the added entity
      */
-    TeamDto save(TeamAddDto teamDTO);
+    TeamDto save(TeamAddDto teamDTO) throws Exception;
+
+    /**
+     * Update an existing team
+     * @param teamDTO new team
+     * @return the updated team
+     */
+    TeamDto update(TeamUpdateDto teamDTO);
 
     /**
      * Get a team by its ID

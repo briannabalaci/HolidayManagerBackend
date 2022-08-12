@@ -1,8 +1,6 @@
 package com.internship.holiday_manager.controller;
-import com.internship.holiday_manager.dto.HolidayDto;
-import com.internship.holiday_manager.dto.UserDto;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.service.holiday_service.HolidayService;
-import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -2,7 +2,7 @@ package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.config.JwtTokenService;
 import com.internship.holiday_manager.dto.ChangePasswordDto;
-import com.internship.holiday_manager.dto.LoginUserDto;
+import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.TokenDto;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.service.user_service.UserService;

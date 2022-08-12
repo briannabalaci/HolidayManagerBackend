@@ -1,6 +1,6 @@
 package com.internship.holiday_manager.service.holiday_service;
 
-import com.internship.holiday_manager.dto.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.repository.HolidayRepository;

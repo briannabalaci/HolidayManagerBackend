@@ -1,6 +1,8 @@
 package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.dto.*;
+import com.internship.holiday_manager.dto.user.UpdateUserDto;
+import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import com.internship.holiday_manager.utils.annotations.AllowAll;

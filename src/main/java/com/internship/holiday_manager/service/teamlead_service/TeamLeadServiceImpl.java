@@ -1,10 +1,9 @@
 package com.internship.holiday_manager.service.teamlead_service;
 
-import com.internship.holiday_manager.dto.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.entity.enums.HolidayType;
-import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.repository.HolidayRepository;
 import com.internship.holiday_manager.repository.TeamRepository;
