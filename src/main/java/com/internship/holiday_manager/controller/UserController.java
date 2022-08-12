@@ -30,7 +30,7 @@ public class UserController {
             userService.createUser(dto);
             return new ResponseEntity<>("User created succesfully!", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("The user already exists!", HttpStatus.CONFLICT);
+            return new ResponseEntity<>("The user already exists!", HttpStatus.OK);
         }
     }
 

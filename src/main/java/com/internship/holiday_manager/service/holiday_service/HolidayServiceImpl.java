@@ -33,6 +33,9 @@ public class HolidayServiceImpl implements HolidayService{
         u.setEndDate(dto.getEndDate());
         u.setStartDate(dto.getStartDate());
         u.setSubstitute(dto.getSubstitute());
+        if(dto.getDocument() != null) {
+            u.setDocument(dto.getDocument());
+        }
     }
 
     //TO DO - not done!!
