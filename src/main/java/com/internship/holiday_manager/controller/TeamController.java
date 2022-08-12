@@ -1,9 +1,9 @@
 package com.internship.holiday_manager.controller;
 
-import com.internship.holiday_manager.dto.TeamAddDto;
-import com.internship.holiday_manager.dto.TeamDto;
-import com.internship.holiday_manager.dto.UserDto;
-import com.internship.holiday_manager.dto.UserWithTeamIdDto;
+import com.internship.holiday_manager.dto.team.TeamAddDto;
+import com.internship.holiday_manager.dto.team.TeamDto;
+import com.internship.holiday_manager.dto.team.TeamUpdateDto;
+import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.service.team_service.TeamService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +27,18 @@ public class TeamController {
 
     @AllowAdmin
     @PostMapping("/add")
-    public ResponseEntity<TeamDto> save(@RequestBody TeamAddDto entityDto){
-        log.info("In controlller");
-        log.info(String.valueOf(entityDto));
-        return new ResponseEntity<>(teamService.save(entityDto), HttpStatus.OK);
+    public ResponseEntity<TeamDto> save(@RequestBody TeamAddDto entityDto) throws Exception {
+        try {
+            return new ResponseEntity<>(teamService.save(entityDto), HttpStatus.OK);
+        }catch(Exception e){
+            log.info("Intra pe catch");
+            return new ResponseEntity<>(new TeamDto(),HttpStatus.OK);
+        }
+    }
+    @AllowAdmin
+    @PutMapping("/update")
+    public ResponseEntity<TeamDto> update(@RequestBody TeamUpdateDto entityDto){
+        return new ResponseEntity<>(teamService.update(entityDto), HttpStatus.OK);
     }
 
     @AllowAdmin

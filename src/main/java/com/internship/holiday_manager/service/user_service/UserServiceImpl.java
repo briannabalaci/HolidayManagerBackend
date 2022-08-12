@@ -1,6 +1,10 @@
 package com.internship.holiday_manager.service.user_service;
 
 import com.internship.holiday_manager.dto.*;
+import com.internship.holiday_manager.dto.user.LoginUserDto;
+import com.internship.holiday_manager.dto.user.UpdateUserDto;
+import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
 import com.internship.holiday_manager.repository.UserRepository;
@@ -160,7 +164,7 @@ public class UserServiceImpl implements UserService {
 
     public List<UserDto> getUsersWithoutTeam(){
         List<UserDto> dtos = new ArrayList<>();
-        for(User u: userRepository.findUsersWithoutTeam()){
+        for(User u: userRepository.findByTeamIsNullAndTypeNot(UserType.ADMIN)){
             UserDto user = UserDto.builder()
                     .id(u.getId())
                     .email(u.getEmail())

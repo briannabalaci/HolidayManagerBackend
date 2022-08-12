@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.internship.holiday_manager.entity.enums.Department;
 import com.internship.holiday_manager.entity.enums.Role;
 import com.internship.holiday_manager.entity.enums.UserType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -54,6 +51,7 @@ public class User {
     @ManyToOne()
     @JoinColumn(name = "team_id" )
     @JsonBackReference
+    @ToString.Exclude
     private Team team;
 
 //    @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)

@@ -1,7 +1,8 @@
-package com.internship.holiday_manager.dto;
+package com.internship.holiday_manager.dto.holiday;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 import lombok.Data;

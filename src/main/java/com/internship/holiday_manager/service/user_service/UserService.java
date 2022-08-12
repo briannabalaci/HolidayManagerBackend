@@ -1,6 +1,9 @@
 package com.internship.holiday_manager.service.user_service;
 
 import com.internship.holiday_manager.dto.*;
+import com.internship.holiday_manager.dto.user.LoginUserDto;
+import com.internship.holiday_manager.dto.user.UpdateUserDto;
+import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.entity.User;
 
 import java.util.List;
