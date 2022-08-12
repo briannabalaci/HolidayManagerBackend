@@ -56,4 +56,16 @@ public class HolidayServiceImpl implements HolidayService{
         List<Holiday> entities = holidayRepository.findUsersHolidays(id);
         return holidayMapper.entitiesToDtos(entities);
     }
+
+    @Override
+    public HolidayDto deleteHoliday(Long id) {
+        log.info("pana mea");
+        Holiday holiday = holidayRepository.findByID(id);
+        if (holiday != null) {
+            holidayRepository.delete(holiday);
+            return holidayMapper.entityToDto(holiday);
+        }
+        return null;
+    }
+
 }

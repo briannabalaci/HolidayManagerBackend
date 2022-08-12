@@ -14,4 +14,6 @@ public interface HolidayService {
     List<HolidayDto> getAll();
 
     List<HolidayDto> getUsersHolidays(Long id);
+
+    HolidayDto deleteHoliday(Long id);
 }
