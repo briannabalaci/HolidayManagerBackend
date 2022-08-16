@@ -71,7 +71,6 @@ public class HolidayServiceImpl implements HolidayService{
 
     @Override
     public HolidayDto deleteHoliday(Long id) {
-        log.info("pana mea");
         Holiday holiday = holidayRepository.findByID(id);
         if (holiday != null) {
             holidayRepository.delete(holiday);
