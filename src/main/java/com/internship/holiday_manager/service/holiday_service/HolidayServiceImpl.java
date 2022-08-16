@@ -38,10 +38,18 @@ public class HolidayServiceImpl implements HolidayService{
         return holidayMapper.entityToDto(saved);
     }
     private void ChangeHolidayData(HolidayDto dto, Holiday u){
-        u.setStatus(dto.getStatus());
-        u.setEndDate(dto.getEndDate());
-        u.setStartDate(dto.getStartDate());
-        u.setSubstitute(dto.getSubstitute());
+        if(dto.getStatus() != null) {
+            u.setStatus(dto.getStatus());
+        }
+        if(dto.getEndDate() != null) {
+            u.setEndDate(dto.getEndDate());
+        }
+        if(dto.getStartDate() != null) {
+            u.setStartDate(dto.getStartDate());
+        }
+        if(dto.getSubstitute() != null) {
+            u.setSubstitute(dto.getSubstitute());
+        }
         if(dto.getDocument() != null) {
             u.setDocument(dto.getDocument());
         }
