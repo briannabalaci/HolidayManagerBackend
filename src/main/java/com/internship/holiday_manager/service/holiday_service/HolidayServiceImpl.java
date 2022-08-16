@@ -3,6 +3,7 @@ package com.internship.holiday_manager.service.holiday_service;
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
+import com.internship.holiday_manager.entity.enums.HolidayType;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.repository.HolidayRepository;
@@ -88,4 +89,26 @@ public class HolidayServiceImpl implements HolidayService{
         }
         return holidayDto;
     }
+
+    @Override
+    public List<HolidayDto> getRequestsByType(Long teamLeaderId, HolidayType type) {
+        List<Holiday> entities = this.holidayRepository.findAllByTypeAndUserId(type, teamLeaderId);
+
+        return holidayMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public List<HolidayDto> getRequestsByStatus(Long teamLeaderId, HolidayStatus status) {
+        List<Holiday> entities = this.holidayRepository.findAllByStatusAndUserId(status, teamLeaderId);
+
+        return holidayMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public List<HolidayDto> getRequestsByStatusAndType(Long teamLeaderId, HolidayStatus status, HolidayType type) {
+        List<Holiday> entities = this.holidayRepository.findAllByStatusAndTypeAndUserId(status, type, teamLeaderId);
+
+        return holidayMapper.entitiesToDtos(entities);
+    }
+
 }
