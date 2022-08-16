@@ -1,6 +1,6 @@
 package com.internship.holiday_manager.service.teamlead_service;
 
-import com.internship.holiday_manager.dto.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 
 import java.util.List;

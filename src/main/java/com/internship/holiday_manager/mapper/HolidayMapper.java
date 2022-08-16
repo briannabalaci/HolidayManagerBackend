@@ -1,6 +1,6 @@
 package com.internship.holiday_manager.mapper;
 
-import com.internship.holiday_manager.dto.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import org.mapstruct.Mapper;
 

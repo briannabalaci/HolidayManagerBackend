@@ -1,8 +1,7 @@
 package com.internship.holiday_manager.mapper;
 
-import com.internship.holiday_manager.dto.UserWithTeamIdDto;
+import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.entity.User;
-import org.mapstruct.CollectionMappingStrategy;
 import org.mapstruct.Mapper;
 
 import java.util.List;

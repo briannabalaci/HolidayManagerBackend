@@ -1,4 +1,4 @@
-package com.internship.holiday_manager.dto;
+package com.internship.holiday_manager.dto.user;
 
 import lombok.Data;
 

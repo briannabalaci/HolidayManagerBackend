@@ -1,5 +1,5 @@
 package com.internship.holiday_manager.mapper;
-import com.internship.holiday_manager.dto.UserDto;
+import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.entity.User;
 import org.mapstruct.*;
 import java.util.List;

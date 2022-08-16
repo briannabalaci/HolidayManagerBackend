@@ -25,4 +25,12 @@
                                  onDelete="SET NULL"/>
     </changeSet>
 
+    <changeSet id="20220812-team-003" author="thudrea">
+        <addUniqueConstraint
+                columnNames="NAME, TEAM_LEADER"
+                constraintName="unique_constraints"
+                tableName="TEAM"
+        />
+    </changeSet>
+
 </databaseChangeLog>
