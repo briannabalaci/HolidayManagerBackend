@@ -19,7 +19,7 @@ public interface TeamService {
      * @param teamDTO new team
      * @return the updated team
      */
-    TeamDto update(TeamUpdateDto teamDTO);
+    TeamDto update(TeamUpdateDto teamDTO) throws Exception;
 
     /**
      * Get a team by its ID
