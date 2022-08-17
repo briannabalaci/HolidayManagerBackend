@@ -1,7 +1,9 @@
 package com.internship.holiday_manager.controller;
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.service.holiday_service.HolidayService;
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
+import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +42,21 @@ public class HolidayController {
     @AllowEmployee
     public ResponseEntity<List<HolidayDto>> getUsersHoliday(@PathVariable Long id){
         return new ResponseEntity<>(holidayService.getUsersHolidays(id),HttpStatus.OK);
+    }
+
+    @PutMapping("/approve/{id}")
+    @AllowTeamLead
+    public ResponseEntity<HolidayDto> approveHolidayRequest(@PathVariable Long id){
+        return new ResponseEntity<>(holidayService.approveHolidayRequest(id),HttpStatus.OK);
+    }
+    @PutMapping("/deny/{id}")
+    @AllowTeamLead
+    public ResponseEntity<HolidayDto> denyHolidayRequest(@PathVariable Long id){
+        return new ResponseEntity<>(holidayService.denyHolidayRequest(id),HttpStatus.OK);
+    }
+    @PutMapping("/details")
+    @AllowTeamLead
+    public ResponseEntity<HolidayDto> requestMoreHolidayDetails(@RequestBody UpdateDetailsHolidayDto updateDetailsHolidayDto){
+        return new ResponseEntity<>(holidayService.requestMoreDetails(updateDetailsHolidayDto),HttpStatus.OK);
     }
 }

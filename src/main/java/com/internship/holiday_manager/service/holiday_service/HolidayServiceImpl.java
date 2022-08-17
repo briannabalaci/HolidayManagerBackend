@@ -1,7 +1,9 @@
 package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
+import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.HolidayMapper;
@@ -10,6 +12,7 @@ import com.internship.holiday_manager.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -42,6 +45,9 @@ public class HolidayServiceImpl implements HolidayService{
         u.setEndDate(dto.getEndDate());
         u.setStartDate(dto.getStartDate());
         u.setSubstitute(dto.getSubstitute());
+        if(dto.getDetails() != null) {
+            u.setDetails(dto.getDetails());
+        }
         if(dto.getDocument() != null) {
             u.setDocument(dto.getDocument());
         }
@@ -79,5 +85,42 @@ public class HolidayServiceImpl implements HolidayService{
             holidayDto.setStatus(HolidayStatus.PENDING);
         }
         return holidayDto;
+    }
+
+    @Override
+    public HolidayDto approveHolidayRequest(Long id) {
+        HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(id));
+        HolidayDto updated;
+        User userToUpdate = userRepository.getById(holidayDto.getUser().getId());
+        Integer noHolidays = (int)(Duration.between(holidayDto.getStartDate(),holidayDto.getEndDate()).toDays());
+        if(userToUpdate.getNrHolidays() < noHolidays) updated = denyHolidayRequest(id);
+        else {
+            userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() - noHolidays);
+            userRepository.save(userToUpdate);
+            holidayDto.setStatus(HolidayStatus.APPROVED);
+            holidayDto.setDetails(null);
+            updated = this.updateHoliday(holidayDto);
+        }
+        return updated;
+        //TODO send new notification that says the holiday request was approved
+    }
+
+
+    @Override
+    public HolidayDto denyHolidayRequest(Long id) {
+        HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(id));
+        holidayDto.setStatus(HolidayStatus.DENIED);
+        holidayDto.setDetails(null);
+        return this.updateHoliday(holidayDto);
+        //TODO apelare functie care sterge notificarea corespunzatoare acestui request
+
+    }
+
+    @Override
+    public HolidayDto requestMoreDetails(UpdateDetailsHolidayDto updateDetailsHolidayDto) {
+        HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(updateDetailsHolidayDto.getId()));
+        holidayDto.setDetails(updateDetailsHolidayDto.getDetails());
+        return this.updateHoliday(holidayDto);
+        //TODO apelare functie pt notificarea userului
     }
 }
