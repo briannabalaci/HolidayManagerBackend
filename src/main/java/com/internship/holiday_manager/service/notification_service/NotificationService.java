@@ -4,6 +4,8 @@ import com.internship.holiday_manager.dto.RegisterDto;
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.dto.notification.NotificationDto;
 import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.entity.Notification;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -26,4 +28,17 @@ public interface NotificationService {
      * @return the notification we deleted in case of success
      */
     NotificationDto deleteNotification(Long id);
+
+    /**
+     * @param id id ul user ului care a primit notificarea
+     * @param seen selecteaza notificarile vazute sau nevazute
+     * @return returneaza notificarile vazute sau nevazute ale unui user
+     */
+    List<NotificationDto> getAllUsersNotif(Long id, Boolean seen);
+
+    /**
+     * Updateaza toate notificarile unui user cu id ul id sa fie vazute
+     * @param id id ul user ului care a vazut notificarile
+     */
+    void setSeen(Long id);
 }

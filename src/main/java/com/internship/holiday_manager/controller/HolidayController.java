@@ -45,6 +45,13 @@ public class HolidayController {
     public ResponseEntity<List<HolidayDto>> getUsersHoliday(@PathVariable Long id){
         return new ResponseEntity<>(holidayService.getUsersHolidays(id),HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete-holiday/{id}")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<HolidayDto> deleteHoliday(@PathVariable Long id) {
+        return new ResponseEntity(holidayService.deleteHoliday(id), HttpStatus.OK);
+    }
+
     @GetMapping("/requests-filtered-by")
     @AllowTeamLeadAndEmployee
     public ResponseEntity<List<HolidayDto>> getRequestsFilteredByType(@RequestParam(required = false) HolidayStatus status, @RequestParam(required = false) HolidayType type, @RequestParam("id") Long id) {
@@ -59,11 +66,6 @@ public class HolidayController {
         }
     }
 
-    @DeleteMapping("/delete-holiday/{id}")
-    @AllowEmployee
-    public ResponseEntity<HolidayDto> deleteHoliday(@PathVariable Long id) {
-        return new ResponseEntity(holidayService.deleteHoliday(id), HttpStatus.OK);
-    }
     @PutMapping("/approve/{id}")
     @AllowTeamLead
     public ResponseEntity<HolidayDto> approveHolidayRequest(@PathVariable Long id){

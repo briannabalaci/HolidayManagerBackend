@@ -43,4 +43,23 @@ public class NotificationController {
         } else
             return new ResponseEntity("Stergere esuata", HttpStatus.CONFLICT);
     }
+
+    @GetMapping("/all-read/{id}")
+    @AllowAll
+    public ResponseEntity<List<NotificationDto>> getAllRead(@PathVariable Long id){
+        return new ResponseEntity<>(notificationService.getAllUsersNotif(id, true),HttpStatus.OK);
+    }
+
+    @GetMapping("/all-unread/{id}")
+    @AllowAll
+    public ResponseEntity<List<NotificationDto>> getAllUnread(@PathVariable Long id){
+        return new ResponseEntity<>(notificationService.getAllUsersNotif(id, false),HttpStatus.OK);
+    }
+
+    @PutMapping("/seen-all/{id}")
+    @AllowAll
+    public ResponseEntity<String> updateHoliday(@PathVariable Long id){
+        notificationService.setSeen(id);
+        return new ResponseEntity<>("Notificari updatate cu succes", HttpStatus.OK);
+    }
 }
