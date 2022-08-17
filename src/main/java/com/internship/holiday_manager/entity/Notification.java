@@ -1,8 +1,11 @@
 package com.internship.holiday_manager.entity;
 
+import com.internship.holiday_manager.entity.enums.HolidayType;
+import com.internship.holiday_manager.entity.enums.NotificationType;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -12,10 +15,25 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="message")
-    private String message;
+    @ManyToOne()
+    @JoinColumn(name = "sender_id", nullable = false)
+    private User sender;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private User receiver;
+
+    @Column(name="send_date")
+    private LocalDateTime sendDate;
+
+    @Column(name="seen")
+    private Boolean seen;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="type")
+    private NotificationType type;
+
+    @ManyToOne()
+    @JoinColumn(name = "request_id", nullable = false)
+    private Holiday request;
 }
