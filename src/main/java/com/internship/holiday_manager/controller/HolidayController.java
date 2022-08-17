@@ -71,7 +71,7 @@ public class HolidayController {
     }
     @PutMapping("/deny/{id}")
     @AllowTeamLead
-    public ResponseEntity<HolidayDto> denyHolidayRequest(@PathVariable Long id){
+    public ResponseEntity<HolidayDto> denyHolidayRequest(@RequestBody Long id){
         return new ResponseEntity<>(holidayService.denyHolidayRequest(id),HttpStatus.OK);
     }
     @PutMapping("/details")

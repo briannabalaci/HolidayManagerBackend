@@ -10,6 +10,7 @@ import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.repository.HolidayRepository;
 import com.internship.holiday_manager.repository.UserRepository;
+import com.internship.holiday_manager.service.websocket_service.WebSocketService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -39,8 +40,6 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday saved = holidayRepository.save(entityToSave);
 
         log.info("New holiday created");
-
-
         return holidayMapper.entityToDto(saved);
     }
     private void ChangeHolidayData(HolidayDto dto, Holiday u){
@@ -149,6 +148,7 @@ public class HolidayServiceImpl implements HolidayService{
             holidayDto.setStatus(HolidayStatus.APPROVED);
             holidayDto.setDetails(null);
             updated = this.updateHoliday(holidayDto);
+
         }
         return updated;
         //TODO send new notification that says the holiday request was approved
@@ -172,6 +172,5 @@ public class HolidayServiceImpl implements HolidayService{
         return this.updateHoliday(holidayDto);
         //TODO apelare functie pt notificarea userului
     }
-
 
 }
