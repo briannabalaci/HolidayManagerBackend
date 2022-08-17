@@ -15,7 +15,6 @@ import java.util.List;
 @Service
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
-
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
 
@@ -26,11 +25,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationDto createNotification(NotificationDto dto) {
-
         Notification entityToSave = notificationMapper.dtoToEntity(dto);
-
         Notification saved = notificationRepository.save(entityToSave);
-
         log.info("New notification created");
         return notificationMapper.entityToDto(saved);
     }

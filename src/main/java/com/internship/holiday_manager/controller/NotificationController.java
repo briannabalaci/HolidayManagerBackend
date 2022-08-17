@@ -23,19 +23,19 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @PostMapping("/add-notification")
+    @PostMapping("/add")
     @AllowAll
     public ResponseEntity<NotificationDto> addNotification(@RequestBody NotificationDto dto){
         return new ResponseEntity<>(notificationService.createNotification(dto), HttpStatus.OK);
     }
 
-    @GetMapping("/get-all-notifications")
+    @GetMapping("/all")
     @AllowAll
     public ResponseEntity<List<NotificationDto>> getAll(){
         return new ResponseEntity<>(notificationService.getAll(),HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete-notification/{id}")
+    @DeleteMapping("/delete/{id}")
     @AllowAll
     public ResponseEntity<String> deleteNotification(@PathVariable Long id) {
         if (notificationService.deleteNotification(id) != null) {
