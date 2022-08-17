@@ -46,4 +46,15 @@ public class NotificationServiceImpl implements NotificationService {
         }
         return null;
     }
+
+    @Override
+    public List<NotificationDto> getAllUsersNotif(Long id, Boolean seen) {
+        List<Notification> entities = notificationRepository.getAllUsersNotif(id,seen);
+        return notificationMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public void setSeen(Long id) {
+        notificationRepository.seenAll(id);
+    }
 }
