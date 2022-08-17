@@ -46,7 +46,7 @@ public class HolidayController {
 
 
     @DeleteMapping("/delete-holiday/{id}")
-    @AllowEmployee
+    @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> deleteHoliday(@PathVariable Long id) {
         return new ResponseEntity(holidayService.deleteHoliday(id), HttpStatus.OK);
     }
