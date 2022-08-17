@@ -1,5 +1,7 @@
 package com.internship.holiday_manager.controller;
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.entity.enums.HolidayStatus;
+import com.internship.holiday_manager.entity.enums.HolidayType;
 import com.internship.holiday_manager.service.holiday_service.HolidayService;
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
@@ -42,9 +44,26 @@ public class HolidayController {
         return new ResponseEntity<>(holidayService.getUsersHolidays(id),HttpStatus.OK);
     }
 
+
     @DeleteMapping("/delete-holiday/{id}")
     @AllowEmployee
     public ResponseEntity<HolidayDto> deleteHoliday(@PathVariable Long id) {
         return new ResponseEntity(holidayService.deleteHoliday(id), HttpStatus.OK);
     }
+
+    @GetMapping("/requests-filtered-by")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<List<HolidayDto>> getRequestsFilteredByType(@RequestParam(required = false) HolidayStatus status, @RequestParam(required = false) HolidayType type, @RequestParam("id") Long id) {
+        if (type != null && status != null) {
+            return new ResponseEntity<>(holidayService.getRequestsByStatusAndType(id, status, type), HttpStatus.OK);
+        }
+        else if(type != null){
+            return new ResponseEntity<>(holidayService.getRequestsByType(id, type), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(holidayService.getRequestsByStatus(id, status), HttpStatus.OK);
+        }
+    }
+
+
 }

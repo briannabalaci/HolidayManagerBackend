@@ -3,6 +3,7 @@ package com.internship.holiday_manager.service.holiday_service;
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
+import com.internship.holiday_manager.entity.enums.HolidayType;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.repository.HolidayRepository;
@@ -38,10 +39,18 @@ public class HolidayServiceImpl implements HolidayService{
         return holidayMapper.entityToDto(saved);
     }
     private void ChangeHolidayData(HolidayDto dto, Holiday u){
-        u.setStatus(dto.getStatus());
-        u.setEndDate(dto.getEndDate());
-        u.setStartDate(dto.getStartDate());
-        u.setSubstitute(dto.getSubstitute());
+        if(dto.getStatus() != null) {
+            u.setStatus(dto.getStatus());
+        }
+        if(dto.getEndDate() != null) {
+            u.setEndDate(dto.getEndDate());
+        }
+        if(dto.getStartDate() != null) {
+            u.setStartDate(dto.getStartDate());
+        }
+        if(dto.getSubstitute() != null) {
+            u.setSubstitute(dto.getSubstitute());
+        }
         if(dto.getDocument() != null) {
             u.setDocument(dto.getDocument());
         }
@@ -89,6 +98,28 @@ public class HolidayServiceImpl implements HolidayService{
             holidayDto.setStatus(HolidayStatus.PENDING);
         }
         return holidayDto;
+    }
+
+
+    @Override
+    public List<HolidayDto> getRequestsByType(Long teamLeaderId, HolidayType type) {
+        List<Holiday> entities = this.holidayRepository.findAllByTypeAndUserId(type, teamLeaderId);
+
+        return holidayMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public List<HolidayDto> getRequestsByStatus(Long teamLeaderId, HolidayStatus status) {
+        List<Holiday> entities = this.holidayRepository.findAllByStatusAndUserId(status, teamLeaderId);
+
+        return holidayMapper.entitiesToDtos(entities);
+    }
+
+    @Override
+    public List<HolidayDto> getRequestsByStatusAndType(Long teamLeaderId, HolidayStatus status, HolidayType type) {
+        List<Holiday> entities = this.holidayRepository.findAllByStatusAndTypeAndUserId(status, type, teamLeaderId);
+
+        return holidayMapper.entitiesToDtos(entities);
     }
 
 }

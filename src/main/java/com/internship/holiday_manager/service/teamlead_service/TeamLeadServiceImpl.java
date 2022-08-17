@@ -52,11 +52,4 @@ public class TeamLeadServiceImpl implements TeamLeadService{
         return holidayMapper.entitiesToDtos(holidays);
     }
 
-    @Override
-    public List<HolidayDto> getRequestsByType(Long teamLeaderId, HolidayType type) {
-        List<Holiday> entities = this.holidayRepository.findAllByTypeAndUserId(type, teamLeaderId);
-
-        return holidayMapper.entitiesToDtos(entities);
-    }
-
 }

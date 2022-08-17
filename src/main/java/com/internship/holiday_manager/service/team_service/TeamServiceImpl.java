@@ -77,7 +77,10 @@ public class TeamServiceImpl implements TeamService{
         return teamMapper.entityToDto(team);
     }
 
-    private Team updateTeam(TeamUpdateDto teamDTO){
+    private Team updateTeam(TeamUpdateDto teamDTO) throws Exception {
+        Team found = teamRepository.findByName(teamDTO.getName());
+        if( found != null && !found.getId().equals(teamDTO.getId())) throw new Exception("A team with the same name already exists!\n");
+
         Team team = teamRepository.getById(teamDTO.getId());
         User oldTeamLead = team.getTeamLeader();
         if(!oldTeamLead.getId().equals(teamDTO.getTeamLeaderId())) {
@@ -100,7 +103,7 @@ public class TeamServiceImpl implements TeamService{
         return saved;
     }
     @Override
-    public TeamDto update(TeamUpdateDto teamDTO) {
+    public TeamDto update(TeamUpdateDto teamDTO) throws Exception {
         Team team = updateTeam(teamDTO);
         updateUsersTeam(team.getTeamLeader(),teamDTO.getMembersId(),team);
         return teamMapper.entityToDto(team);

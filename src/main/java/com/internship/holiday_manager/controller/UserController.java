@@ -6,6 +6,8 @@ import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import com.internship.holiday_manager.utils.annotations.AllowAll;
+import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
+import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +67,12 @@ public class UserController {
     @AllowAdmin
     public ResponseEntity<List<UserDto>> getUsersWithoutTeam(){
         return new ResponseEntity<>(userService.getUsersWithoutTeam(),HttpStatus.OK);
+    }
+
+    @GetMapping("/user-info")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<UserDto> getUser(@RequestParam("email") String email){
+        return new ResponseEntity<>(this.userService.getUser(email), HttpStatus.OK);
     }
 
 
