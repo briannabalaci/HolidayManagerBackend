@@ -30,7 +30,7 @@ public class HolidayController {
         return new ResponseEntity<>(holidayService.createHoliday(dto), HttpStatus.OK);
     }
     @PutMapping("/update-holiday")
-    @AllowEmployee
+    @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> updateHoliday(@RequestBody HolidayDto dto){
         return new ResponseEntity<>(holidayService.updateHoliday(dto), HttpStatus.OK);
     }
@@ -73,7 +73,7 @@ public class HolidayController {
     }
     @PutMapping("/deny/{id}")
     @AllowTeamLead
-    public ResponseEntity<HolidayDto> denyHolidayRequest(@RequestBody Long id){
+    public ResponseEntity<HolidayDto> denyHolidayRequest(@PathVariable Long id){
         return new ResponseEntity<>(holidayService.denyHolidayRequest(id),HttpStatus.OK);
     }
     @PutMapping("/details")
