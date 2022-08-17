@@ -39,6 +39,8 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday saved = holidayRepository.save(entityToSave);
 
         log.info("New holiday created");
+
+
         return holidayMapper.entityToDto(saved);
     }
     private void ChangeHolidayData(HolidayDto dto, Holiday u){
@@ -66,7 +68,6 @@ public class HolidayServiceImpl implements HolidayService{
         }
     }
 
-    //TO DO - not done!!
     @Override
     public HolidayDto updateHoliday(HolidayDto holidayDto) {
         Holiday u = holidayRepository.findByID(holidayDto.getId());
@@ -131,6 +132,10 @@ public class HolidayServiceImpl implements HolidayService{
         return holidayMapper.entitiesToDtos(entities);
     }
 
+    private void updateUserNoHolidays(User userToUpdate, Integer noHolidays){
+        userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() - noHolidays);
+        userRepository.save(userToUpdate);
+    }
 
     @Override
     public HolidayDto approveHolidayRequest(Long id) {
@@ -140,8 +145,7 @@ public class HolidayServiceImpl implements HolidayService{
         Integer noHolidays = (int)(Duration.between(holidayDto.getStartDate(),holidayDto.getEndDate()).toDays());
         if(userToUpdate.getNrHolidays() < noHolidays) updated = denyHolidayRequest(id);
         else {
-            userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() - noHolidays);
-            userRepository.save(userToUpdate);
+            updateUserNoHolidays(userToUpdate,noHolidays);
             holidayDto.setStatus(HolidayStatus.APPROVED);
             holidayDto.setDetails(null);
             updated = this.updateHoliday(holidayDto);
