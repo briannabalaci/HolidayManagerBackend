@@ -85,10 +85,6 @@ public class HolidayServiceImpl implements HolidayService{
     }
 
     private void ChangeHolidayData(HolidayDto dto, Holiday u){
-        u.setStatus(dto.getStatus());
-        u.setEndDate(dto.getEndDate());
-        u.setStartDate(dto.getStartDate());
-        u.setSubstitute(dto.getSubstitute());
         if(dto.getDetails() != null) {
             u.setDetails(dto.getDetails());
         }
