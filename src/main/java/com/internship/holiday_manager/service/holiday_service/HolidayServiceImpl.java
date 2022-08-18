@@ -21,7 +21,9 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -130,6 +132,9 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto deleteHoliday(Long id) {
         Holiday holiday = holidayRepository.findByID(id);
         if (holiday != null) {
+            if ( holiday.getStatus().equals(HolidayStatus.APPROVED)){
+                updateUserNoHolidays(holiday.getUser(), (int)ChronoUnit.DAYS.between(holiday.getEndDate(), holiday.getStartDate()));
+            }
             holidayRepository.delete(holiday);
             return holidayMapper.entityToDto(holiday);
         }
