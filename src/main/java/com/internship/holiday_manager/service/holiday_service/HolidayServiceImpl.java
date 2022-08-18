@@ -64,11 +64,7 @@ public class HolidayServiceImpl implements HolidayService{
         HolidayDto savedHoliday = holidayMapper.entityToDto(saved);
 
         if(updatedHolidayDto.getStatus()== HolidayStatus.PENDING) sendNotificationToTeamLead(savedHoliday);
-
-        log.info("New holiday created");
-        if(saved.getStatus() == HolidayStatus.PENDING) sendNotificationToTeamLead(holidayMapper.entityToDto(saved));
-
-
+        
         return holidayMapper.entityToDto(saved);
     }
 
