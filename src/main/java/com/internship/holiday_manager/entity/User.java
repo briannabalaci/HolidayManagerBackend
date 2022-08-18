@@ -51,7 +51,7 @@ public class User {
     @ManyToOne()
     @JoinColumn(name = "team_id" )
     @JsonBackReference
-//    @ToString.Exclude
+    @ToString.Exclude
     private Team team;
 
 //    @OneToMany(cascade = {CascadeType.ALL},orphanRemoval = true)

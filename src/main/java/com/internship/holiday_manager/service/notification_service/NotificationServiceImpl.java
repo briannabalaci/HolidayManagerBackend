@@ -8,6 +8,9 @@ import com.internship.holiday_manager.service.websocket_service.WebSocketService
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -57,6 +60,12 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<NotificationDto> getAllUsersNotif(Long id, Boolean seen) {
         List<Notification> entities = notificationRepository.getAllUsersNotif(id,seen);
+        Collections.sort(entities, new Comparator<Notification>(){
+            @Override
+            public int compare(Notification n1, Notification n2){
+                return n2.getSendDate().compareTo(n1.getSendDate());
+            }
+        });
         return notificationMapper.entitiesToDtos(entities);
     }
 

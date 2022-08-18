@@ -18,6 +18,7 @@ import com.internship.holiday_manager.service.notification_service.NotificationS
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -70,16 +71,19 @@ public class HolidayServiceImpl implements HolidayService{
         }
         return holidayDto;
     }
+
     @Override
     public HolidayDto createHoliday(HolidayDto holidayDto) {
         HolidayDto updatedHolidayDto = this.setStatusHoliday(holidayDto);
-        if(updatedHolidayDto.getStatus()== HolidayStatus.PENDING) sendNotificationToTeamLead(updatedHolidayDto);
+        log.info(updatedHolidayDto.toString());
 
         Holiday entityToSave = holidayMapper.dtoToEntity(updatedHolidayDto);
 
         Holiday saved = holidayRepository.save(entityToSave);
 
         log.info("New holiday created");
+        if(saved.getStatus() == HolidayStatus.PENDING) sendNotificationToTeamLead(holidayMapper.entityToDto(saved));
+
 
         return holidayMapper.entityToDto(saved);
     }
