@@ -8,6 +8,7 @@ import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import com.internship.holiday_manager.utils.annotations.AllowAll;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 @CrossOrigin()
+@Slf4j
 public class UserController {
 
 
@@ -54,6 +56,7 @@ public class UserController {
     @GetMapping("/find-user-by-id/{id}")
     @AllowAll
     public ResponseEntity findById(@PathVariable Long id) {
+        log.info("aici");
         return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
     }
 

@@ -41,4 +41,5 @@ public interface NotificationService {
      * @param id id ul user ului care a vazut notificarile
      */
     void setSeen(Long id);
+
 }
