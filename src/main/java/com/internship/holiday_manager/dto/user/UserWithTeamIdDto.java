@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-//@AllArgsConstructor
-//@NoArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserWithTeamIdDto {
     private Long id;
     private String email;

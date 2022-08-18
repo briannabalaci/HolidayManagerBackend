@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.dto.notification;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.User;
@@ -24,5 +25,5 @@ public class NotificationDto {
 
     private NotificationType type;
 
-    private Holiday request;
+    private HolidayDto request;
 }

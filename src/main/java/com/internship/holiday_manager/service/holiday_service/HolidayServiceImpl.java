@@ -42,25 +42,6 @@ public class HolidayServiceImpl implements HolidayService{
         this.notificationService = notificationService;
         this.holidayMapper = holidayMapper;
     }
-
-    private void sendNotificationToTeamLead(HolidayDto holidayDto){
-        User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
-        User receiver = teamRepository.getById(sender.getTeam().getId()).getTeamLeader();
-        UserWithTeamIdDto receiverDto = UserWithTeamIdDto.builder()
-                .id(receiver.getId()).email(receiver.getEmail()).forname(receiver.getForname()).surname(receiver.getSurname()).department(receiver.getDepartment())
-                .role(receiver.getRole()).nrHolidays(receiver.getNrHolidays()).type(receiver.getType()).teamId(receiver.getTeam().getId())
-                .build();
-
-        NotificationDto notificationDto = new NotificationDto();
-        notificationDto.setReceiver(receiverDto);
-        notificationDto.setSender(holidayDto.getUser());
-        notificationDto.setType(NotificationType.SENT);
-        notificationDto.setSendDate(LocalDateTime.now());
-        notificationDto.setSeen(false);
-        notificationDto.setRequest(holidayMapper.dtoToEntity(holidayDto));
-
-        notificationService.createNotification(notificationDto);
-    }
     public HolidayDto setStatusHoliday(HolidayDto holidayDto) {
         Long userId = holidayDto.getUser().getId();
         if(this.userRepository.getById(userId).getType().equals(UserType.TEAMLEAD)){
@@ -75,11 +56,14 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto createHoliday(HolidayDto holidayDto) {
         HolidayDto updatedHolidayDto = this.setStatusHoliday(holidayDto);
-        log.info(updatedHolidayDto.toString());
 
         Holiday entityToSave = holidayMapper.dtoToEntity(updatedHolidayDto);
 
         Holiday saved = holidayRepository.save(entityToSave);
+
+        HolidayDto savedHoliday = holidayMapper.entityToDto(saved);
+
+        if(updatedHolidayDto.getStatus()== HolidayStatus.PENDING) sendNotificationToTeamLead(savedHoliday);
 
         log.info("New holiday created");
         if(saved.getStatus() == HolidayStatus.PENDING) sendNotificationToTeamLead(holidayMapper.entityToDto(saved));
@@ -166,6 +150,25 @@ public class HolidayServiceImpl implements HolidayService{
         userRepository.save(userToUpdate);
     }
 
+    private void sendNotificationToTeamLead(HolidayDto holidayDto){
+        User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
+        User receiver = teamRepository.getById(sender.getTeam().getId()).getTeamLeader();
+        UserWithTeamIdDto receiverDto = UserWithTeamIdDto.builder()
+                .id(receiver.getId()).email(receiver.getEmail()).forname(receiver.getForname()).surname(receiver.getSurname()).department(receiver.getDepartment())
+                .role(receiver.getRole()).nrHolidays(receiver.getNrHolidays()).type(receiver.getType()).teamId(receiver.getTeam().getId())
+                .build();
+
+        NotificationDto notificationDto = new NotificationDto();
+        notificationDto.setReceiver(receiverDto);
+        notificationDto.setSender(holidayDto.getUser());
+        notificationDto.setType(NotificationType.SENT);
+        notificationDto.setSendDate(LocalDateTime.now());
+        notificationDto.setSeen(false);
+        notificationDto.setRequest(holidayDto);
+
+        notificationService.createNotification(notificationDto);
+    }
+
     private void sendNotificationToEmployee(HolidayDto holidayDto, NotificationType type){
         User receiver = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
         User sender = teamRepository.getById(receiver.getTeam().getId()).getTeamLeader();
@@ -180,7 +183,7 @@ public class HolidayServiceImpl implements HolidayService{
         notificationDto.setType(type);
         notificationDto.setSendDate(LocalDateTime.now());
         notificationDto.setSeen(false);
-        notificationDto.setRequest(holidayMapper.dtoToEntity(holidayDto));
+        notificationDto.setRequest(holidayDto);
 
         notificationService.createNotification(notificationDto);
     }
