@@ -130,7 +130,7 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday holiday = holidayRepository.findByID(id);
         if (holiday != null) {
             if ( holiday.getStatus().equals(HolidayStatus.APPROVED)){
-                updateUserNoHolidays(holiday.getUser(), (int)ChronoUnit.DAYS.between(holiday.getEndDate(), holiday.getStartDate()));
+                getBackUserNoHolidays(holiday.getUser(), getNoHolidays(holiday.getEndDate(), holiday.getEndDate()));
             }
             holidayRepository.delete(holiday);
             return holidayMapper.entityToDto(holiday);
@@ -161,6 +161,10 @@ public class HolidayServiceImpl implements HolidayService{
 
     private void updateUserNoHolidays(User userToUpdate, Integer noHolidays){
         userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() - noHolidays);
+        userRepository.save(userToUpdate);
+    }
+    private void getBackUserNoHolidays(User userToUpdate, Integer noHolidays){
+        userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() + noHolidays);
         userRepository.save(userToUpdate);
     }
 
