@@ -54,21 +54,31 @@ public class HolidayServiceImpl implements HolidayService{
         }
         return holidayDto;
     }
+
     @Override
     public HolidayDto createHoliday(HolidayDto holidayDto) {
         HolidayDto updatedHolidayDto = this.setStatusHoliday(holidayDto);
 
-
         Holiday entityToSave = holidayMapper.dtoToEntity(updatedHolidayDto);
-
         Holiday saved = holidayRepository.save(entityToSave);
+        //if the user creating the requets is the teamlead, noHolidays will be substracted
+        if(saved.getStatus() == HolidayStatus.APPROVED) {
+            log.info("HEre");
+            log.info(saved.toString());
+            Integer noHolidays = getNoHolidays(saved.getStartDate(), saved.getEndDate());
+            log.info("NoHolidays: "+noHolidays);
+            updateUserNoHolidays(userRepository.getById(saved.getUser().getId()), noHolidays);
+            log.info("User: "+saved.getUser().toString());
+        }
 
         HolidayDto savedHoliday = holidayMapper.entityToDto(saved);
 
-        if(updatedHolidayDto.getStatus()== HolidayStatus.PENDING) sendNotificationToTeamLead(savedHoliday);
-
-        log.info("New holiday created");
-
+        //send notification only if the user is part of a team
+        UserWithTeamIdDto userDto = holidayDto.getUser();
+        User user = userRepository.getById(userDto.getId());
+        if(user.getTeam()!=null && saved.getStatus()== HolidayStatus.PENDING)
+            sendNotificationToTeamLead(savedHoliday);
+        
         return holidayMapper.entityToDto(saved);
     }
 
@@ -96,6 +106,7 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto updateHoliday(HolidayDto holidayDto) {
         Holiday u = holidayRepository.findByID(holidayDto.getId());
+        u.setDetails(null);
         if(u!= null) {
             ChangeHolidayData(holidayDto,u);
         }
@@ -242,7 +253,9 @@ public class HolidayServiceImpl implements HolidayService{
 
         for (LocalDateTime date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1))
         {
-            if(!isWeekend(date)) noHolidays++;
+            if(!isWeekend(date)) {
+                noHolidays++;
+            }
         }
         return noHolidays;
     }
