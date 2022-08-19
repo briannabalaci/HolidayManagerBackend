@@ -8,6 +8,7 @@ import com.internship.holiday_manager.service.websocket_service.WebSocketService
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -28,6 +29,7 @@ public class NotificationServiceImpl implements NotificationService {
     private void notifyFrontend(String topic, String message){
         webSocketService.sendMessage(topic, message);
     }
+
     @Override
     public NotificationDto createNotification(NotificationDto dto) {
         Notification entityToSave = notificationMapper.dtoToEntity(dto);
