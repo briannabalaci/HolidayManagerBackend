@@ -100,11 +100,10 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto updateHoliday(HolidayDto holidayDto) {
         Holiday u = holidayRepository.findByID(holidayDto.getId());
+        u.setDetails(null);
         if(u!= null) {
-            if(u.getUser().getType() == UserType.EMPLOYEE && holidayDto.getDetails().equals(u.getDetails()))
-                sendNotificationToTeamLead(holidayMapper.entityToDto(u),NotificationType.UPDATE);
-
-            u.setDetails(null);
+//            if(u.getUser().getType() == UserType.EMPLOYEE)
+//                sendNotificationToTeamLead(holidayMapper.entityToDto(u),NotificationType.UPDATE);
             ChangeHolidayData(holidayDto,u);
         }
 
