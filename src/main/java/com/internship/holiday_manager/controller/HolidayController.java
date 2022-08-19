@@ -7,10 +7,13 @@ import com.internship.holiday_manager.service.holiday_service.HolidayService;
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -82,5 +85,13 @@ public class HolidayController {
         return new ResponseEntity<>(holidayService.requestMoreDetails(updateDetailsHolidayDto),HttpStatus.OK);
     }
 
+
+    @GetMapping("/number-of-holidays")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> getNoHolidays(@RequestParam String startDate, @RequestParam String endDate){
+        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return new ResponseEntity<>(holidayService.getNoHolidays(sD, eD), HttpStatus.OK);
+    }
 
 }

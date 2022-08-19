@@ -181,4 +181,10 @@ public class UserServiceImpl implements UserService {
         return dtos;
     }
 
+    @Override
+    public UserDto getUserById(Long id) {
+        Optional<User> user = this.userRepository.findById(id);
+        return this.userMapper.entityToDto(user.get());
+    }
+
 }

@@ -5,6 +5,7 @@ import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface HolidayService {
@@ -69,4 +70,13 @@ public interface HolidayService {
      * @return the updated holiday
      */
     HolidayDto requestMoreDetails(UpdateDetailsHolidayDto updateDetailsHolidayDto);
+
+
+    /**
+     * We compute the number of days from the given interval
+     * @param start - start date of the interval
+     * @param end - end date of the interval
+     * @return - the number of days from the interval
+     */
+    Integer getNoHolidays(LocalDateTime start, LocalDateTime end);
 }

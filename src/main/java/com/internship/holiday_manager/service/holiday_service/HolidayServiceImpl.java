@@ -243,7 +243,7 @@ public class HolidayServiceImpl implements HolidayService{
         DayOfWeek day = DayOfWeek.of(ld.get(ChronoField.DAY_OF_WEEK));
         return day == DayOfWeek.SUNDAY || day == DayOfWeek.SATURDAY;
     }
-    private Integer getNoHolidays(LocalDateTime start, LocalDateTime end){
+    public Integer getNoHolidays(LocalDateTime start, LocalDateTime end){
         Integer noHolidays = 0;
 
         for (LocalDateTime date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1))
