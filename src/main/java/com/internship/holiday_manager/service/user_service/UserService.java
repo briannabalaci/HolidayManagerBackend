@@ -55,4 +55,11 @@ public interface UserService {
     UserDto getUser(String email);
     public List<UserDto> getUsersWithoutTeam();
 
+    /**
+     * Finds the user based on its id
+     * @param id - the id after which we search
+     * @return - the user
+     */
+    UserDto getUserById(Long id);
+
 }

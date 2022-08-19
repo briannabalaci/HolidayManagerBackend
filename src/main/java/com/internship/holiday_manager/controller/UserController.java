@@ -78,5 +78,10 @@ public class UserController {
         return new ResponseEntity<>(this.userService.getUser(email), HttpStatus.OK);
     }
 
+    @GetMapping("/user")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<UserDto> getUser(@RequestParam("id") Long id){
+        return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
+    }
 
 }

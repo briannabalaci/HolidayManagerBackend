@@ -63,12 +63,8 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday saved = holidayRepository.save(entityToSave);
         //if the user creating the requets is the teamlead, noHolidays will be substracted
         if(saved.getStatus() == HolidayStatus.APPROVED) {
-            log.info("HEre");
-            log.info(saved.toString());
             Integer noHolidays = getNoHolidays(saved.getStartDate(), saved.getEndDate());
-            log.info("NoHolidays: "+noHolidays);
             updateUserNoHolidays(userRepository.getById(saved.getUser().getId()), noHolidays);
-            log.info("User: "+saved.getUser().toString());
         }
 
         HolidayDto savedHoliday = holidayMapper.entityToDto(saved);
@@ -77,7 +73,7 @@ public class HolidayServiceImpl implements HolidayService{
         UserWithTeamIdDto userDto = holidayDto.getUser();
         User user = userRepository.getById(userDto.getId());
         if(user.getTeam()!=null && saved.getStatus()== HolidayStatus.PENDING)
-            sendNotificationToTeamLead(savedHoliday);
+            sendNotificationToTeamLead(savedHoliday,NotificationType.SENT);
         
         return holidayMapper.entityToDto(saved);
     }
@@ -108,8 +104,12 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday u = holidayRepository.findByID(holidayDto.getId());
         u.setDetails(null);
         if(u!= null) {
+//            if(u.getUser().getType() == UserType.EMPLOYEE)
+//                sendNotificationToTeamLead(holidayMapper.entityToDto(u),NotificationType.UPDATE);
             ChangeHolidayData(holidayDto,u);
         }
+
+
         return holidayMapper.entityToDto(holidayRepository.save(u));
     }
 
@@ -169,7 +169,7 @@ public class HolidayServiceImpl implements HolidayService{
         userRepository.save(userToUpdate);
     }
 
-    private void sendNotificationToTeamLead(HolidayDto holidayDto){
+    private void sendNotificationToTeamLead(HolidayDto holidayDto,NotificationType type){
         User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
         User receiver = teamRepository.getById(sender.getTeam().getId()).getTeamLeader();
         UserWithTeamIdDto receiverDto = UserWithTeamIdDto.builder()
@@ -180,7 +180,7 @@ public class HolidayServiceImpl implements HolidayService{
         NotificationDto notificationDto = new NotificationDto();
         notificationDto.setReceiver(receiverDto);
         notificationDto.setSender(holidayDto.getUser());
-        notificationDto.setType(NotificationType.SENT);
+        notificationDto.setType(type);
         notificationDto.setSendDate(LocalDateTime.now());
         notificationDto.setSeen(false);
         notificationDto.setRequest(holidayDto);
@@ -253,7 +253,7 @@ public class HolidayServiceImpl implements HolidayService{
         DayOfWeek day = DayOfWeek.of(ld.get(ChronoField.DAY_OF_WEEK));
         return day == DayOfWeek.SUNDAY || day == DayOfWeek.SATURDAY;
     }
-    private Integer getNoHolidays(LocalDateTime start, LocalDateTime end){
+    public Integer getNoHolidays(LocalDateTime start, LocalDateTime end){
         Integer noHolidays = 0;
 
         for (LocalDateTime date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1))
