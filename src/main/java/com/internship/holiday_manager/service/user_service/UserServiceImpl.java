@@ -187,4 +187,11 @@ public class UserServiceImpl implements UserService {
         return this.userMapper.entityToDto(user.get());
     }
 
+
+    @Override
+    public Integer getNoHolidaysUser(Long id) {
+        User user = this.userRepository.findById(id).get();
+        return user.getNrHolidays();
+    }
+
 }

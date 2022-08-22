@@ -94,4 +94,10 @@ public class HolidayController {
         return new ResponseEntity<>(holidayService.getNoHolidays(sD, eD), HttpStatus.OK);
     }
 
+    @GetMapping("/holiday-info")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<HolidayDto> getHolidayById(@RequestParam Long id){
+        return new ResponseEntity<>(holidayService.getHolidayById(id), HttpStatus.OK);
+    }
+
 }

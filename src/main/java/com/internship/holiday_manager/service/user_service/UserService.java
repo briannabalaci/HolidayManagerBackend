@@ -62,4 +62,11 @@ public interface UserService {
      */
     UserDto getUserById(Long id);
 
+    /**
+     * We get the number of vacations days for the user
+     * @param id - the email of the user
+     * @return - the number of vacations days
+     */
+    Integer getNoHolidaysUser(Long id);
+
 }
