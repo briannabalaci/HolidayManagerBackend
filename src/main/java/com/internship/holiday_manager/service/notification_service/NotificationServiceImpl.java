@@ -72,4 +72,10 @@ public class NotificationServiceImpl implements NotificationService {
     public void setSeen(Long id) {
         notificationRepository.seenAll(id);
     }
+
+    @Override
+    public void deleteHolidaysNotification(Long id) {
+        //notificationRepository.findAll().stream().filter(x -> x.getRequest().getId().equals(id)).forEach(x -> notificationRepository.delete(x));
+        notificationRepository.deleteHolidaysNotification(id);
+    }
 }
