@@ -130,8 +130,7 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday holiday = holidayRepository.findByID(id);
         if (holiday != null) {
             if ( holiday.getStatus().equals(HolidayStatus.APPROVED)){
-                log.info("Nr vac " + getNoHolidays(holiday.getEndDate(), holiday.getEndDate()).toString());
-                getBackUserNoHolidays(holiday.getUser(), getNoHolidays(holiday.getEndDate(), holiday.getEndDate()));
+                getBackUserNoHolidays(holiday.getUser(), getNoHolidays(holiday.getStartDate(), holiday.getEndDate()));
             }
             holidayRepository.delete(holiday);
             return holidayMapper.entityToDto(holiday);
