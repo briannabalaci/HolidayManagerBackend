@@ -22,7 +22,9 @@ import javax.transaction.Transactional;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -125,6 +127,9 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto deleteHoliday(Long id) {
         Holiday holiday = holidayRepository.findByID(id);
         if (holiday != null) {
+            if ( holiday.getStatus().equals(HolidayStatus.APPROVED)){
+                getBackUserNoHolidays(holiday.getUser(), getNoHolidays(holiday.getStartDate(), holiday.getEndDate()));
+            }
             holidayRepository.delete(holiday);
             return holidayMapper.entityToDto(holiday);
         }
@@ -154,6 +159,10 @@ public class HolidayServiceImpl implements HolidayService{
 
     private void updateUserNoHolidays(User userToUpdate, Integer noHolidays){
         userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() - noHolidays);
+        userRepository.save(userToUpdate);
+    }
+    private void getBackUserNoHolidays(User userToUpdate, Integer noHolidays){
+        userToUpdate.setNrHolidays(userToUpdate.getNrHolidays() + noHolidays);
         userRepository.save(userToUpdate);
     }
 
@@ -242,7 +251,7 @@ public class HolidayServiceImpl implements HolidayService{
         DayOfWeek day = DayOfWeek.of(ld.get(ChronoField.DAY_OF_WEEK));
         return day == DayOfWeek.SUNDAY || day == DayOfWeek.SATURDAY;
     }
-    private Integer getNoHolidays(LocalDateTime start, LocalDateTime end){
+    public Integer getNoHolidays(LocalDateTime start, LocalDateTime end){
         Integer noHolidays = 0;
 
         for (LocalDateTime date = start; date.isBefore(end.plusDays(1)); date = date.plusDays(1))
