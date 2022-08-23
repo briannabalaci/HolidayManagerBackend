@@ -23,6 +23,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -320,4 +321,71 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto getHolidayById(Long id) {
         return this.holidayMapper.entityToDto(this.holidayRepository.findByID(id));
     }
+
+    @Override
+    public Integer checkRequestCreate(String email, HolidayType type, String startDate, String endDate) {
+
+        User user = this.userRepository.findByEmail(email);
+        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+        Integer unpaidRequiredDays = numberOfRequiredDays / 10;
+        Integer userNoHolidays = user.getNrHolidays();
+        log.info("Service - checkResult   " + type + " " + type.toString());
+
+        if(numberOfRequiredDays > userNoHolidays && type == HolidayType.REST){
+            return 0;
+        } else if(unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID){
+            return  0;
+        }
+
+        return 1;
+    }
+
+
+    @Override
+    public Integer checkRequestUpdate(String email, HolidayType type, String startDate, String endDate, Long holidayId) {
+        User user = this.userRepository.findByEmail(email);
+        Holiday holiday = this.holidayRepository.findByID(holidayId);
+
+        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        Integer numberOfRequiredDaysInitialRequest = this.getNoHolidays(holiday.getStartDate(), holiday.getEndDate());
+        Integer unpaidRequiredDaysInitialRequest = this.getNoUnpaidDays(numberOfRequiredDaysInitialRequest);
+
+        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+        Integer unpaidRequiredDays = this.getNoUnpaidDays(numberOfRequiredDays);
+
+        Integer userNoHolidays = user.getNrHolidays();
+
+        Integer daysToBeTakenOrAdded = 0;
+
+        if(type == HolidayType.REST){
+            daysToBeTakenOrAdded = numberOfRequiredDays - numberOfRequiredDaysInitialRequest;
+
+            if(daysToBeTakenOrAdded > userNoHolidays){
+                return 0;
+            }
+            else {
+                this.updateUserNoHolidays(user, daysToBeTakenOrAdded);
+                return 1;
+            }
+        } else if(type == HolidayType.UNPAID){
+            daysToBeTakenOrAdded = unpaidRequiredDays - unpaidRequiredDaysInitialRequest;
+
+            if(daysToBeTakenOrAdded > userNoHolidays){
+                return 0;
+            }
+            else {
+                this.updateUserNoHolidays(user, daysToBeTakenOrAdded);
+                return 1;
+            }
+        }
+        else {
+            return 1;
+        }
+    }
+
 }

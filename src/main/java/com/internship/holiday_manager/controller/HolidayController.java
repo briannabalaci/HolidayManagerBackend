@@ -106,10 +106,17 @@ public class HolidayController {
         return new ResponseEntity<>(holidayService.getHolidayById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/check-request")
+    @GetMapping("/check-request-create")
     @AllowTeamLeadAndEmployee
-    public ResponseEntity<Integer> checkRequest(@RequestParam String email, @RequestParam String startDate, @RequestParam String endDate){
-        return new ResponseEntity<>(0, HttpStatus.OK);
+    public ResponseEntity<Integer> checkRequestCreate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate){
+        return new ResponseEntity<Integer>(this.holidayService.checkRequestCreate(email, type, startDate, endDate), HttpStatus.OK);
     }
+
+    @GetMapping("/check-request-update")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkRequestUpdate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate, @RequestParam Long holidayId){
+        return new ResponseEntity<Integer>(this.holidayService.checkRequestUpdate(email, type, startDate, endDate, holidayId), HttpStatus.OK);
+    }
+
 
 }
