@@ -84,4 +84,11 @@ public class UserController {
         return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
     }
 
+
+    @PutMapping("/update-vacation-days")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<UserDto> updateNoHolidaysUser(@RequestParam("email") String email, @RequestParam("noDays") Integer noDays){
+        return new ResponseEntity<>(this.userService.updateNoHolidaysUser(email, noDays), HttpStatus.OK);
+    }
+
 }

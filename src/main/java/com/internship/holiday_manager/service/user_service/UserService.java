@@ -69,4 +69,13 @@ public interface UserService {
      */
     Integer getNoHolidaysUser(Long id);
 
+
+    /**
+     * We update the number of vacation days of the user
+     * @param email - the email of the user
+     * @param noDays - the new number of vacation days
+     * @return - the updated user
+     */
+    UserDto updateNoHolidaysUser(String email, Integer noDays);
+
 }
