@@ -194,4 +194,15 @@ public class UserServiceImpl implements UserService {
         return user.getNrHolidays();
     }
 
+    @Override
+    public UserDto updateNoHolidaysUser(String email, Integer noDays) {
+        User user = this.userRepository.findByEmail(email);
+
+        user.setNrHolidays(noDays);
+
+        User newUser = this.userRepository.save(user);
+
+        return this.userMapper.entityToDto(newUser);
+    }
+
 }
