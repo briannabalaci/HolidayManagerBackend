@@ -146,8 +146,11 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto updateHoliday(HolidayDto holidayDto) {
         Holiday u = holidayRepository.findByID(holidayDto.getId());
         u.setDetails(null);
-        ChangeHolidayData(holidayDto,u);
-
+        if(u!= null) {
+            if(u.getUser().getType() == UserType.EMPLOYEE )
+                sendNotificationToTeamLead(holidayMapper.entityToDto(u),NotificationType.UPDATE);
+            ChangeHolidayData(holidayDto,u);
+        }
         return holidayMapper.entityToDto(holidayRepository.save(u));
     }
 
@@ -281,7 +284,8 @@ public class HolidayServiceImpl implements HolidayService{
 
         sendNotificationToEmployee(holidayDto,NotificationType.MORE_DETAILS);
 
-        return this.updateHoliday(holidayDto);
+        return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
+
     }
 
     private boolean isWeekend(final LocalDateTime ld)
