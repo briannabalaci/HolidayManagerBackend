@@ -3,6 +3,7 @@ package com.internship.holiday_manager.controller;
 import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import com.internship.holiday_manager.utils.annotations.AllowAll;
@@ -82,6 +83,12 @@ public class UserController {
     @AllowTeamLeadAndEmployee
     public ResponseEntity<UserDto> getUser(@RequestParam("id") Long id){
         return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/filter-by-name")
+    @AllowTeamLead
+    public ResponseEntity<List<UserDto>> filterByName(@RequestBody UserNameDto userNameDto){
+        return new ResponseEntity<>(this.userService.filterByName(userNameDto),HttpStatus.OK);
     }
 
 }

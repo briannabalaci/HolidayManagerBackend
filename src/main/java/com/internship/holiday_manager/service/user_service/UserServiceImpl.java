@@ -4,6 +4,7 @@ import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
@@ -185,6 +186,11 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(Long id) {
         Optional<User> user = this.userRepository.findById(id);
         return this.userMapper.entityToDto(user.get());
+    }
+
+    @Override
+    public List<UserDto> filterByName(UserNameDto userNameDto) {
+        return userMapper.entitiesToDtos(userRepository.filterByName(userNameDto.getForname(),userNameDto.getSurname()));
     }
 
 }

@@ -4,6 +4,7 @@ import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.entity.User;
 
 import java.util.List;
@@ -62,4 +63,10 @@ public interface UserService {
      */
     UserDto getUserById(Long id);
 
+    /**
+     * Filter the users by their name
+     * @param userNameDto - forname + surname of the user
+     * @return the users that match the given parameters
+     */
+    List<UserDto> filterByName(UserNameDto userNameDto);
 }
