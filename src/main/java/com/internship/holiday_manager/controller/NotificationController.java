@@ -62,4 +62,11 @@ public class NotificationController {
         notificationService.setSeen(id);
         return new ResponseEntity<>("Notificari updatate cu succes", HttpStatus.OK);
     }
+    @PutMapping("/delete-read/{id}")
+    @AllowAll
+    public ResponseEntity<String> deleteRead(@PathVariable Long id){
+        notificationService.deleteRead(id);
+        return new ResponseEntity<>("Deleted seen notifications.", HttpStatus.OK);
+    }
+
 }
