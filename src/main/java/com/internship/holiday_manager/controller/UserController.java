@@ -32,8 +32,8 @@ public class UserController {
 
     @PostMapping("/add-user")
     @AllowAdmin
-    public ResponseEntity<String> addUser(@RequestBody RegisterDto dto){
-        if(!userService.userExists(dto)) {
+    public ResponseEntity<String> addUser(@RequestBody RegisterDto dto) {
+        if (!userService.userExists(dto)) {
             userService.createUser(dto);
             return new ResponseEntity<>("User created succesfully!", HttpStatus.OK);
         } else {
@@ -43,7 +43,7 @@ public class UserController {
 
     @PutMapping("/update-user")
     @AllowAdmin
-    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUserDto dto){
+    public ResponseEntity<UserDto> updateUser(@RequestBody UpdateUserDto dto) {
         return new ResponseEntity<>(userService.updateUser(dto), HttpStatus.OK);
     }
 
@@ -63,32 +63,37 @@ public class UserController {
 
     @GetMapping("/get-all-users")
     @AllowAdmin
-    public ResponseEntity<List<UserDto>> getAll(){
-        return new ResponseEntity<>(userService.getAll(),HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getAll() {
+        return new ResponseEntity<>(userService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/users-noteam")
     @AllowAdmin
-    public ResponseEntity<List<UserDto>> getUsersWithoutTeam(){
-        return new ResponseEntity<>(userService.getUsersWithoutTeam(),HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> getUsersWithoutTeam() {
+        return new ResponseEntity<>(userService.getUsersWithoutTeam(), HttpStatus.OK);
     }
 
     @GetMapping("/user-info")
     @AllowTeamLeadAndEmployee
-    public ResponseEntity<UserDto> getUser(@RequestParam("email") String email){
+    public ResponseEntity<UserDto> getUser(@RequestParam("email") String email) {
         return new ResponseEntity<>(this.userService.getUser(email), HttpStatus.OK);
     }
 
     @GetMapping("/user")
     @AllowTeamLeadAndEmployee
-    public ResponseEntity<UserDto> getUser(@RequestParam("id") Long id){
+    public ResponseEntity<UserDto> getUser(@RequestParam("id") Long id) {
         return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/update-vacation-days")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<UserDto> updateNoHolidaysUser(@RequestParam("email") String email, @RequestParam("noDays") Integer noDays) {
+        return new ResponseEntity<>(this.userService.updateNoHolidaysUser(email, noDays), HttpStatus.OK);
     }
 
     @GetMapping("/filter-by-name")
     @AllowTeamLead
-    public ResponseEntity<List<UserDto>> filterByName(@RequestBody UserNameDto userNameDto){
-        return new ResponseEntity<>(this.userService.filterByName(userNameDto),HttpStatus.OK);
+    public ResponseEntity<List<UserDto>> filterByName(@RequestBody UserNameDto userNameDto) {
+        return new ResponseEntity<>(this.userService.filterByName(userNameDto), HttpStatus.OK);
     }
-
 }

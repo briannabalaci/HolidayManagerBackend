@@ -2,6 +2,7 @@ package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
+import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 
@@ -28,6 +29,12 @@ public interface HolidayService {
 
     HolidayDto deleteHoliday(Long id);
 
+    /**
+     * Computes the number of unpaid vacations days for the given period
+     * @param days - the number of days of the vacation (the period of the vacation)
+     * @return - the number of unpaid vacations days
+     */
+    Integer getNoUnpaidDays(Integer days);
 
     /**
      * We get all the holiday requests with the given type
@@ -79,4 +86,14 @@ public interface HolidayService {
      * @return - the number of days from the interval
      */
     Integer getNoHolidays(LocalDateTime start, LocalDateTime end);
+
+
+    /**
+     * Searches the holiday based on its id
+     * @param id - the id of the holiday
+     * @return - the found holiday
+     */
+    HolidayDto getHolidayById(Long id);
+
+
 }

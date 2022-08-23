@@ -4,10 +4,10 @@ import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 import com.internship.holiday_manager.service.holiday_service.HolidayService;
+import com.internship.holiday_manager.service.notification_service.NotificationService;
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +22,11 @@ import java.util.List;
 public class HolidayController {
 
     private final HolidayService holidayService;
+    private final NotificationService notificationService;
 
-    public HolidayController(HolidayService holidayService) {
+    public HolidayController(HolidayService holidayService, NotificationService notificationService) {
         this.holidayService = holidayService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping("/add-holiday")
@@ -52,7 +54,9 @@ public class HolidayController {
     @DeleteMapping("/delete-holiday/{id}")
     @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> deleteHoliday(@PathVariable Long id) {
+        notificationService.deleteHolidaysNotification(id);
         return new ResponseEntity(holidayService.deleteHoliday(id), HttpStatus.OK);
+        //return new ResponseEntity(holidayService.deleteHoliday(id), HttpStatus.OK);
     }
 
     @GetMapping("/requests-filtered-by")
@@ -92,6 +96,12 @@ public class HolidayController {
         LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         return new ResponseEntity<>(holidayService.getNoHolidays(sD, eD), HttpStatus.OK);
+    }
+
+    @GetMapping("/holiday-info")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<HolidayDto> getHolidayById(@RequestParam Long id){
+        return new ResponseEntity<>(holidayService.getHolidayById(id), HttpStatus.OK);
     }
 
 }
