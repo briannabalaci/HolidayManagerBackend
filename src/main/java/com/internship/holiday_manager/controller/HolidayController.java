@@ -8,6 +8,8 @@ import com.internship.holiday_manager.service.notification_service.NotificationS
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
+import liquibase.pro.packaged.H;
+import liquibase.pro.packaged.S;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -102,6 +104,12 @@ public class HolidayController {
     @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> getHolidayById(@RequestParam Long id){
         return new ResponseEntity<>(holidayService.getHolidayById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/check-request")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkRequest(@RequestParam String email, @RequestParam String startDate, @RequestParam String endDate){
+        return new ResponseEntity<>(0, HttpStatus.OK);
     }
 
 }

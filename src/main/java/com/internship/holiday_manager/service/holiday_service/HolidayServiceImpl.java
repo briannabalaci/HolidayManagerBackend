@@ -137,7 +137,15 @@ public class HolidayServiceImpl implements HolidayService{
 
     @Override
     public HolidayDto updateHolidayRequest(HolidayDto holidayDto) {
-        holidayDto.setStatus(HolidayStatus.PENDING);
+        Holiday holiday = holidayRepository.findByID(holidayDto.getId());
+        User user = userRepository.findById(holiday.getUser().getId()).get();
+        if(user.getType() == UserType.TEAMLEAD){
+            holidayDto.setStatus(HolidayStatus.APPROVED);
+        }
+        else {
+            holidayDto.setStatus(HolidayStatus.PENDING);
+        }
+
         return this.updateHoliday(holidayDto);
     }
 
@@ -252,14 +260,12 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto approveHolidayRequest(Long id) {
         HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(id));
         HolidayDto updated;
-        User userToUpdate = userRepository.getById(holidayDto.getUser().getId());
 
         holidayDto.setStatus(HolidayStatus.APPROVED);
         holidayDto.setDetails(null);
-        updated = this.updateHoliday(holidayDto);
         sendNotificationToEmployee(holidayDto,NotificationType.APPROVED);
 
-        return updated;
+        return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
     }
 
     @Override
@@ -274,7 +280,7 @@ public class HolidayServiceImpl implements HolidayService{
 
         sendNotificationToEmployee(holidayDto,NotificationType.DENIED);
 
-        return this.updateHoliday(holidayDto);
+        return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
     }
 
     @Override
