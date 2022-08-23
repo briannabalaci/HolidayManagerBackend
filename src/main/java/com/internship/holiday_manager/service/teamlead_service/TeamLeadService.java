@@ -2,7 +2,10 @@ package com.internship.holiday_manager.service.teamlead_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.entity.enums.HolidayType;
+import com.itextpdf.text.DocumentException;
 
+
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 public interface TeamLeadService {
@@ -22,5 +25,5 @@ public interface TeamLeadService {
      */
     List<HolidayDto> getTeamRequests(Long teamId);
 
-
+    ByteArrayOutputStream getPDF(Long teamId) throws DocumentException;
 }
