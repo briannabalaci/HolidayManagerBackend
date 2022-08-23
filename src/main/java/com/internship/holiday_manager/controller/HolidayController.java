@@ -37,7 +37,7 @@ public class HolidayController {
     @PutMapping("/update-holiday")
     @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> updateHoliday(@RequestBody HolidayDto dto){
-        return new ResponseEntity<>(holidayService.updateHoliday(dto), HttpStatus.OK);
+        return new ResponseEntity<>(holidayService.updateHolidayRequest(dto), HttpStatus.OK);
     }
     @GetMapping("/get-all-holidays")
     @AllowEmployee
