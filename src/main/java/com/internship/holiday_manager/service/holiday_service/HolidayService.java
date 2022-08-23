@@ -19,6 +19,9 @@ public interface HolidayService {
      */
     HolidayDto setStatusHoliday(HolidayDto holidayDto);
 
+
+    HolidayDto updateHolidayRequest(HolidayDto holidayDto);
+
     HolidayDto createHoliday(HolidayDto holidayDto);
 
     HolidayDto updateHoliday(HolidayDto holidayDto);

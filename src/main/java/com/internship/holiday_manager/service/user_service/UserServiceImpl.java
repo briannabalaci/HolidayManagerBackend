@@ -4,6 +4,7 @@ import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
@@ -62,14 +63,14 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(RegisterDto dto) {
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
         User user = User.builder().email(dto.getEmail())
-                                    .password(dto.getPassword())
-                                    .surname(dto.getSurname())
-                                    .forname(dto.getForname())
-                                    .nrHolidays(dto.getNrHolidays())
-                                    .department(dto.getDepartment())
-                                    .type(dto.getType())
-                                    .role(dto.getRole())
-                                    .build();
+                .password(dto.getPassword())
+                .surname(dto.getSurname())
+                .forname(dto.getForname())
+                .nrHolidays(dto.getNrHolidays())
+                .department(dto.getDepartment())
+                .type(dto.getType())
+                .role(dto.getRole())
+                .build();
         User savedUser = userRepository.save(user);
         return userMapper.entityToDto(savedUser);
     }
@@ -83,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verifyPasswordAndCredentials(ChangePasswordDto dto) {
-        if(Objects.equals(dto.getOldPassword(), dto.getNewPassword())){
+        if (Objects.equals(dto.getOldPassword(), dto.getNewPassword())) {
             return false;
         }
         User user = userRepository.findByEmail(dto.getEmail());
@@ -95,7 +96,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean userExists(RegisterDto dto) {
         User user = userRepository.findByEmail(dto.getEmail());
-        return user!=null;
+        return user != null;
     }
 
     private void ChangeUserData(UpdateUserDto dto, User u) {
@@ -106,6 +107,7 @@ public class UserServiceImpl implements UserService {
         u.setNrHolidays(dto.getNrHolidays());
         u.setRole((dto.getRole()));
     }
+
     private void ChangeUserDataWithoutPassword(UpdateUserDto dto, User u) {
         u.setForname(dto.getForname());
         u.setSurname(dto.getSurname());
@@ -118,11 +120,10 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(UpdateUserDto dto) {
         User u = userRepository.findByEmail(dto.getEmail());
         if (u != null) {
-            if(dto.getPassword() != null){
+            if (dto.getPassword() != null) {
                 ChangeUserData(dto, u);
-            }
-            else {
-                ChangeUserDataWithoutPassword(dto,u);
+            } else {
+                ChangeUserDataWithoutPassword(dto, u);
             }
 
         }
@@ -162,9 +163,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public List<UserDto> getUsersWithoutTeam(){
+    public List<UserDto> getUsersWithoutTeam() {
         List<UserDto> dtos = new ArrayList<>();
-        for(User u: userRepository.findByTeamIsNullAndTypeNot(UserType.ADMIN)){
+        for (User u : userRepository.findByTeamIsNullAndTypeNot(UserType.ADMIN)) {
             UserDto user = UserDto.builder()
                     .id(u.getId())
                     .email(u.getEmail())
@@ -205,4 +206,8 @@ public class UserServiceImpl implements UserService {
         return this.userMapper.entityToDto(newUser);
     }
 
+    @Override
+    public List<UserDto> filterByName(UserNameDto userNameDto) {
+        return userMapper.entitiesToDtos(userRepository.filterByName(userNameDto.getForname(), userNameDto.getSurname()));
+    }
 }
