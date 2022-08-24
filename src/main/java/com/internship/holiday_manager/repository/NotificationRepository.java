@@ -20,4 +20,15 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
     @Transactional
     @Query("update Notification n set n.seen=true where n.receiver.id=:id")
     void seenAll(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query("delete from Notification n where n.request.id=:id ")
+    void deleteHolidaysNotification(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query("delete from Notification n where n.receiver.id=:id and n.seen=true")
+    void deleteSeenNotifications(@Param("id") Long id);
+
 }

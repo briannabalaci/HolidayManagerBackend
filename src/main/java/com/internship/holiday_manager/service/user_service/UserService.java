@@ -4,6 +4,7 @@ import com.internship.holiday_manager.dto.*;
 import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.entity.User;
 
 import java.util.List;
@@ -62,4 +63,25 @@ public interface UserService {
      */
     UserDto getUserById(Long id);
 
+    /**
+     * We get the number of vacations days for the user
+     * @param id - the email of the user
+     * @return - the number of vacations days
+     */
+    Integer getNoHolidaysUser(Long id);
+
+    /**
+     * We update the number of vacation days of the user
+     * @param email - the email of the user
+     * @param noDays - the new number of vacation days
+     * @return - the updated user
+     */
+    UserDto updateNoHolidaysUser(String email, Integer noDays);
+
+    /**
+     * Filter the users by their name
+     * @param userNameDto - forname + surname of the user
+     * @return the users that match the given parameters
+     */
+    List<UserDto> filterByName(UserNameDto userNameDto);
 }

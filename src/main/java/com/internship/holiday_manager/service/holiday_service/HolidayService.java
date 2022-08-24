@@ -1,7 +1,9 @@
 package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
+import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 
@@ -18,6 +20,9 @@ public interface HolidayService {
      */
     HolidayDto setStatusHoliday(HolidayDto holidayDto);
 
+
+    HolidayDto updateHolidayRequest(HolidayDto holidayDto);
+
     HolidayDto createHoliday(HolidayDto holidayDto);
 
     HolidayDto updateHoliday(HolidayDto holidayDto);
@@ -28,6 +33,12 @@ public interface HolidayService {
 
     HolidayDto deleteHoliday(Long id);
 
+    /**
+     * Computes the number of unpaid vacations days for the given period
+     * @param days - the number of days of the vacation (the period of the vacation)
+     * @return - the number of unpaid vacations days
+     */
+    Integer getNoUnpaidDays(Integer days);
 
     /**
      * We get all the holiday requests with the given type
@@ -79,4 +90,39 @@ public interface HolidayService {
      * @return - the number of days from the interval
      */
     Integer getNoHolidays(LocalDateTime start, LocalDateTime end);
+
+
+    /**
+     * Searches the holiday based on its id
+     * @param id - the id of the holiday
+     * @return - the found holiday
+     */
+    HolidayDto getHolidayById(Long id);
+
+    List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto);
+    List<HolidayDto> filterByType(HolidayType type);
+    List<HolidayDto> filterByUserName(String forname, String surname);
+
+    /**
+     * Check if the user has the necessary days in order to create the request
+     * @param email - the email of the user
+     * @param type - the type of the holiday
+     * @param startDate - the start date of the holiday
+     * @param endDate - the end date of the holiday
+     * @return - returns 1 if the request can be created and 0 otherwise
+     */
+    Integer checkRequestCreate(String email, HolidayType type,  String startDate, String endDate);
+
+
+    /**
+     * Check if the user has the necessary days in order to update the request's date
+     * @param email - the email of the user
+     * @param type - the type of the holiday
+     * @param startDate - the start date of the holiday
+     * @param endDate - the end date of the holiday
+     * @param holidayId - the id of the holiday before update
+     * @return - returns 1 if the request can be created and 0 otherwise
+     */
+    Integer checkRequestUpdate(String email, HolidayType type,  String startDate, String endDate, Long holidayId);
+
 }

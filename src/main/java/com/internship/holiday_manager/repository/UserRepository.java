@@ -20,6 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByTeamIsNullAndTypeNot(UserType userType);
 
+    @Query("SELECT u from User u where lower(u.forname) like lower(concat('%', :forname,'%')) or " +
+            "lower(u.forname) like lower(concat('%', :surname,'%')) or " +
+            "lower(u.surname) like lower(concat('%', :forname,'%')) or " +
+            "lower(u.surname) like lower(concat('%', :surname,'%'))")
+    List<User> filterByName(@Param("forname") String forname, @Param("surname") String surname);
 
 
 

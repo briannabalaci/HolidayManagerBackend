@@ -42,4 +42,10 @@ public interface NotificationService {
      */
     void setSeen(Long id);
 
+    /**
+     * @param id of the holiday that is associated with the notifications we want to delete
+     */
+    void deleteHolidaysNotification(Long id);
+
+    void deleteRead(Long id);
 }
