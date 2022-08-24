@@ -5,16 +5,16 @@ import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.dto.user.UserNameDto;
+import com.internship.holiday_manager.entity.*;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
-import com.internship.holiday_manager.repository.UserRepository;
+import com.internship.holiday_manager.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.internship.holiday_manager.entity.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,17 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final UserWithTeamIdMapper userWithTeamIdMapper;
 
+    @Autowired
+    private final NotificationRepository notificationRepository;
+
+    @Autowired
+    private final SubstituteRepository substituteRepository;
+
+    @Autowired
+    private final HolidayRepository holidayRepository;
+
+    @Autowired
+    private final DetailedHolidayRepository detailedHolidayRepository;
 
     public UserDto authentication(LoginUserDto dto) {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
@@ -134,6 +145,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String email) {
         User u = userRepository.findByEmail(email);
+
+        this.notificationRepository.deleteAll(this.notificationRepository.findByReceiver(u));
+        this.notificationRepository.deleteAll(this.notificationRepository.findBySender(u));
+
+        List<Holiday> holidays = this.holidayRepository.findByUserId(u.getId());
+        holidays.forEach(h ->
+        {
+            this.detailedHolidayRepository.delete(this.detailedHolidayRepository.findByHoliday(h));
+        });
+
+        this.holidayRepository.deleteAll(holidays);
+
+        if(u.getType().equals(UserType.TEAMLEAD)){
+            this.substituteRepository.deleteAll(this.substituteRepository.findByTeamLead(u));
+
+            List<Substitute> substitutes = this.substituteRepository.findBySubstitute(u);
+            substitutes.forEach(s -> s.setSubstitute(null));
+        }
+
         if (u != null) {
             userRepository.deleteById(u.getId());
         }

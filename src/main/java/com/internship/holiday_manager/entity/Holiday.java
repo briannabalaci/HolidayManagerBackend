@@ -40,7 +40,7 @@ public class Holiday {
     private String details;
 
     @ManyToOne()
-    @JoinColumn(name = "user_id", nullable = false )
+    @JoinColumn(name = "user_id")
     @JsonBackReference
     private User user;
 }
