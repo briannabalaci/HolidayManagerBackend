@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -209,5 +210,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> filterByName(UserNameDto userNameDto) {
         return userMapper.entitiesToDtos(userRepository.filterByName(userNameDto.getForname(), userNameDto.getSurname()));
+    }
+
+    @Override
+    public List<UserDto> getAllUsersWithoutTeamLead(Long teamLeadId) {
+        List<User> users = this.userRepository.findAll();
+
+        List<User> usersWithoutTeamLead = users.stream()
+                .filter(user ->!Objects.equals(user.getId(), teamLeadId))
+                .collect(Collectors.toList());
+
+        return userMapper.entitiesToDtos(usersWithoutTeamLead);
     }
 }
