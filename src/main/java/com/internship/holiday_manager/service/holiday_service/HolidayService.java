@@ -23,7 +23,7 @@ public interface HolidayService {
 
     HolidayDto updateHolidayRequest(HolidayDto holidayDto);
 
-    HolidayDto createHoliday(HolidayDto holidayDto);
+    HolidayDto createHoliday(HolidayDto holidayDto, Long substituteId);
 
     HolidayDto updateHoliday(HolidayDto holidayDto);
 

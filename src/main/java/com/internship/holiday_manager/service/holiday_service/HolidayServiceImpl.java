@@ -61,11 +61,17 @@ public class HolidayServiceImpl implements HolidayService{
     }
 
     @Override
-    public HolidayDto createHoliday(HolidayDto holidayDto) {
+    public HolidayDto createHoliday(HolidayDto holidayDto, Long substituteId) {
         HolidayDto updatedHolidayDto = this.setStatusHoliday(holidayDto);
 
         Holiday entityToSave = holidayMapper.dtoToEntity(updatedHolidayDto);
         Holiday saved = holidayRepository.save(entityToSave);
+
+        User owner = userRepository.findById(saved.getUser().getId()).get();
+
+        if(owner.getType() == UserType.TEAMLEAD){
+//            Substitute substitute
+        }
 
         if(saved.getStatus() == HolidayStatus.APPROVED || saved.getStatus() == HolidayStatus.PENDING) {
             this.decreaseNoHolidays(saved);
