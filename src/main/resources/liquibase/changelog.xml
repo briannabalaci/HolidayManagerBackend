@@ -7,4 +7,5 @@
     <include file="liquibase/20220802-holiday-changelog.xml" />
     <include file="liquibase/20220816-notification-changelog.xml" />
     <include file="liquibase/20220824-substitute-changelog.xml"/>
+    <include file="liquibase/20220824-detailed-holiday-changelog.xml"/>
 </databaseChangeLog>

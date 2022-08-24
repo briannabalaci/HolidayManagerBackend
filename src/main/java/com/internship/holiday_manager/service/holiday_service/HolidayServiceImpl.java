@@ -5,20 +5,14 @@ import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.dto.notification.NotificationDto;
 import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
-import com.internship.holiday_manager.entity.Holiday;
-import com.internship.holiday_manager.entity.Substitute;
-import com.internship.holiday_manager.entity.Team;
-import com.internship.holiday_manager.entity.User;
+import com.internship.holiday_manager.entity.*;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
 import com.internship.holiday_manager.entity.enums.NotificationType;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.mapper.UserMapper;
-import com.internship.holiday_manager.repository.HolidayRepository;
-import com.internship.holiday_manager.repository.SubstituteRepository;
-import com.internship.holiday_manager.repository.TeamRepository;
-import com.internship.holiday_manager.repository.UserRepository;
+import com.internship.holiday_manager.repository.*;
 import com.internship.holiday_manager.service.notification_service.NotificationService;
 import com.internship.holiday_manager.service.substitute.SubstituteService;
 import com.internship.holiday_manager.service.teamlead_service.TeamLeadService;
@@ -32,6 +26,8 @@ import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.time.LocalDateTime.now;
 
 @Service
 @Slf4j
@@ -47,7 +43,8 @@ public class HolidayServiceImpl implements HolidayService{
     private final HolidayMapper holidayMapper;
     private final UserMapper userMapper;
 
-    public HolidayServiceImpl(TeamLeadService teamLeadService, UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, HolidayMapper holidayMapper, SubstituteRepository substituteRepository, SubstituteService substituteService, UserMapper userMapper) {
+    private final DetailedHolidayRepository detailedHolidayRepository;
+    public HolidayServiceImpl(TeamLeadService teamLeadService, UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, HolidayMapper holidayMapper, SubstituteRepository substituteRepository, SubstituteService substituteService, UserMapper userMapper, DetailedHolidayRepository detailedHolidayRepository) {
 
         this.userRepository = userRepository;
         this.holidayRepository = holidayRepository;
@@ -58,6 +55,7 @@ public class HolidayServiceImpl implements HolidayService{
         this.substituteRepository = substituteRepository;
         this.substituteService = substituteService;
         this.userMapper = userMapper;
+        this.detailedHolidayRepository = detailedHolidayRepository;
     }
     public HolidayDto setStatusHoliday(HolidayDto holidayDto) {
         Long userId = holidayDto.getUser().getId();
@@ -72,10 +70,10 @@ public class HolidayServiceImpl implements HolidayService{
     private boolean isTeamLeadInHoliday(User teamlead){
         List<Holiday> requests = this.holidayRepository.findByUserId(teamlead.getId());
 
-        LocalDateTime dateTime = LocalDateTime.now();
+        LocalDateTime dateTime = now();
 
         List<Holiday> holidays = requests.stream()
-                .filter(h -> h.getStartDate().isBefore(dateTime) || h.getStartDate() == dateTime)
+                .filter(h -> h.getStartDate().isBefore(dateTime) || h.getStartDate() == dateTime || h.getEndDate() == dateTime)
                 .collect(Collectors.toList());
 
         return holidays.size() != 0;
@@ -91,6 +89,25 @@ public class HolidayServiceImpl implements HolidayService{
 
         this.substituteRepository.save(replacement);
     }
+
+    private void createDetailedHoliday(User user, Holiday holiday){
+        DetailedHoliday detailedHoliday = DetailedHoliday.builder()
+                .holiday(holiday)
+                .user(user)
+                .creationDate(now())
+                .build();
+
+        this.detailedHolidayRepository.save(detailedHoliday);
+    }
+
+    private User findSubstituteForTeamlead(User employee){
+        User teamLeader = employee.getTeam().getTeamLeader();
+
+        List<Substitute> substitutes = this.substituteRepository.findAll().stream().filter(s -> s.getTeamLead().equals(teamLeader)).filter(s -> { return s.getStartDate().isBefore(now()) || s.getStartDate().equals(now()) || s.getEndDate().equals(now());}).collect(Collectors.toList());
+
+        return substitutes.get(0).getSubstitute();
+    }
+
     @Override
     public HolidayDto createHoliday(HolidayDto holidayDto, Long substituteId) {
         HolidayDto updatedHolidayDto = this.setStatusHoliday(holidayDto);
@@ -98,12 +115,15 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday entityToSave = holidayMapper.dtoToEntity(updatedHolidayDto);
         Holiday saved = holidayRepository.save(entityToSave);
 
+
         if(saved.getStatus() == HolidayStatus.APPROVED || saved.getStatus() == HolidayStatus.PENDING) {
             this.decreaseNoHolidays(saved);
         }
 
         User user = userRepository.findById(saved.getUser().getId()).get();
         User teamLeader = user.getTeam().getTeamLeader();
+
+        createDetailedHoliday(user, saved);
 
         HolidayDto savedHoliday = holidayMapper.entityToDto(saved);
 
@@ -117,7 +137,7 @@ public class HolidayServiceImpl implements HolidayService{
             if (!isTeamLeadInHoliday(teamLeader))
                 sendNotificationToTeamLead(savedHoliday, NotificationType.SENT);
             else {
-                sendNotificationToSubstitute(savedHoliday, NotificationType.SENT, this.userRepository.getById(substituteId));
+                sendNotificationToSubstitute(savedHoliday, NotificationType.SENT, findSubstituteForTeamlead(user));
             }
         }
 
@@ -223,6 +243,7 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto deleteHoliday(Long id) {
         Holiday holiday = holidayRepository.findByID(id);
+        this.detailedHolidayRepository.delete(this.detailedHolidayRepository.findByHoliday(holiday));
         if (holiday != null) {
             if ( holiday.getStatus().equals(HolidayStatus.APPROVED) || holiday.getStatus().equals(HolidayStatus.PENDING)){
                 this.increaseNoHolidays(holiday);
@@ -243,7 +264,7 @@ public class HolidayServiceImpl implements HolidayService{
                 notificationDto.setReceiver(receiverDto);
                 notificationDto.setSender(holidayDto.getUser());
                 notificationDto.setType(NotificationType.CANCELED);
-                notificationDto.setSendDate(LocalDateTime.now());
+                notificationDto.setSendDate(now());
                 notificationDto.setSeen(false);
                 notificationDto.setRequest(null);
 
@@ -298,7 +319,7 @@ public class HolidayServiceImpl implements HolidayService{
         notificationDto.setReceiver(receiverDto);
         notificationDto.setSender(holidayDto.getUser());
         notificationDto.setType(type);
-        notificationDto.setSendDate(LocalDateTime.now());
+        notificationDto.setSendDate(now());
         notificationDto.setSeen(false);
         notificationDto.setRequest(holidayDto);
 
@@ -317,7 +338,7 @@ public class HolidayServiceImpl implements HolidayService{
         notificationDto.setReceiver(receiverDto);
         notificationDto.setSender(holidayDto.getUser());
         notificationDto.setType(type);
-        notificationDto.setSendDate(LocalDateTime.now());
+        notificationDto.setSendDate(now());
         notificationDto.setSeen(false);
         notificationDto.setRequest(holidayDto);
 
@@ -336,7 +357,7 @@ public class HolidayServiceImpl implements HolidayService{
         notificationDto.setReceiver(holidayDto.getUser());
         notificationDto.setSender(senderDto);
         notificationDto.setType(type);
-        notificationDto.setSendDate(LocalDateTime.now());
+        notificationDto.setSendDate(now());
         notificationDto.setSeen(false);
         notificationDto.setRequest(holidayDto);
 
@@ -619,7 +640,8 @@ public class HolidayServiceImpl implements HolidayService{
         LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId()).stream().filter(x -> x.getId()!=holidayId).collect(Collectors.toList());
+        List<Holiday> hds = holidayRepository.findByUserId(user.getId()).stream().filter(x -> !x.getId().equals(holidayId)).collect(Collectors.toList());
+
         for(Holiday x : hds){
             if(!(x.getStatus().equals(HolidayStatus.DENIED)) && (sD.isBefore(x.getStartDate()) && eD.isAfter(x.getStartDate()) ||
                     sD.isBefore(x.getEndDate()) && eD.isAfter(x.getEndDate()) ||
@@ -637,14 +659,44 @@ public class HolidayServiceImpl implements HolidayService{
         Team team = teamRepository.getById(user.getTeam().getId());
         return userRepository.getById(team.getTeamLeader().getId());
     }
+
+
+    private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, Substitute s){
+        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()))
+            return true;
+        return false;
+    }
+
     @Override
     public List<HolidayDto> getRequestsForSubstitute(Long substituteId) {
-        LocalDateTime now = LocalDateTime.now();
-        return holidayMapper.entitiesToDtos(
-                holidayRepository.findAll().stream()
-                        .filter( h -> substituteService.teamLeadersForWhichSubstituteIsActive(substituteId).contains(userMapper.entityToDto(getTeamLeaderForUser(h.getUser()))))
-                        .filter(h -> (h.getStartDate().isAfter(now) || h.getStartDate().isEqual(now)) && (now.isBefore(h.getEndDate()) || now.isEqual(h.getEndDate())))
-                        .collect(Collectors.toList()));
+        LocalDateTime now = now();
+
+        List<Holiday> holidays = new ArrayList<>();
+
+        //We take all the substitutes which have the substitute the one with the id substituteId
+        List<Substitute> substitutes = substituteRepository.findAll()
+                .stream()
+                .filter( s -> (s.getStartDate().isBefore(now) || s.getStartDate().isEqual(now)) && (now.isBefore(s.getEndDate()) || now.isEqual(s.getEndDate())))
+                .filter( s -> s.getSubstitute().getId().equals(substituteId))
+               .collect(Collectors.toList());
+
+        // We take all the detailed holidays requests of the users for which the teamleaders have the given substitute active (the one with substituteId), parse them and check for each of them if they were created
+        // after the teamlead went in vacation
+        holidayRepository.findAll().stream()
+                .filter(h -> {return substituteService.teamLeadersForWhichSubstituteIsActive(substituteId).contains(this.userMapper.entityToDto(h.getUser().getTeam().getTeamLeader())) && !h.getUser().getType().equals(UserType.TEAMLEAD);})
+                .map(h -> this.detailedHolidayRepository.findByHoliday(h))
+                .forEach(h ->
+                {
+                    substitutes.forEach(s ->
+                    {
+                        if(this.checkRequestCreatedWhileTeamleadGone(h, s)){
+                            holidays.add(this.holidayRepository.findByID(h.getHoliday().getId()));
+                        }
+                    });
+                });
+
+
+        return this.holidayMapper.entitiesToDtos(holidays);
 
     }
 

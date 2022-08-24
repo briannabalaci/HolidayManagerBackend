@@ -39,8 +39,8 @@ public class SubstituteServiceImpl implements SubstituteService {
         LocalDateTime now = LocalDateTime.now();
         List<User> teamLeaders = substituteRepository.findAll()
                 .stream()
-                .filter( s -> (s.getStartDate().isAfter(now) || s.getStartDate().isEqual(now)) && (now.isBefore(s.getEndDate()) || now.isEqual(s.getEndDate())))
-                .filter( s -> s.getSubstitute().equals(substituteId))
+                .filter( s -> (s.getStartDate().isBefore(now) || s.getStartDate().isEqual(now) || s.getEndDate().equals(now)))
+                .filter( s -> s.getSubstitute().getId().equals(substituteId))
                 .map( s -> s.getTeamLead())
                 .collect(Collectors.toList());
         return userMapper.entitiesToDtos(teamLeaders);

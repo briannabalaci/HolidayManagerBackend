@@ -10,31 +10,28 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
 @Data
 @Entity
-@Table(name="substitute")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Substitute {
-
+@Table(name="detailed_holiday")
+public class DetailedHoliday {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="start_date")
-    private LocalDateTime startDate;
-
-    @Column(name="end_date")
-    private LocalDateTime endDate;
+    @Column(name="creation_date")
+    private LocalDateTime creationDate;
 
     @OneToOne
-    @JoinColumn(name = "substitute_id")
+    @JoinColumn(name = "holiday_id", nullable = false)
     @JsonBackReference
-    private User substitute;
+    private Holiday holiday;
 
     @OneToOne
-    @JoinColumn(name = "teamlead_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
-    private User teamLead;
+    private User user;
 }
