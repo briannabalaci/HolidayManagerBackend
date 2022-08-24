@@ -109,8 +109,8 @@ public class HolidayController {
 
     @GetMapping("/filter")
     @AllowTeamLead
-    public ResponseEntity<List<HolidayDto>> filterByTypeAndUserName(@RequestParam(required = false) HolidayType type, @RequestParam(required = false) String forname, @RequestParam(required = false) String surname){
-        HolidayTypeAndUserName x = HolidayTypeAndUserName.builder().type(type).forname(forname).surname(surname).build();
+    public ResponseEntity<List<HolidayDto>> filterByTypeAndUserName(@RequestParam Long teamLeaderId,@RequestParam(required = false) HolidayType type, @RequestParam(required = false) String forname, @RequestParam(required = false) String surname){
+        HolidayTypeAndUserName x = HolidayTypeAndUserName.builder().type(type).forname(forname).surname(surname).teamLeaderId(teamLeaderId).build();
         return new ResponseEntity<>(holidayService.filterByTypeAndUserName(x), HttpStatus.OK);
     }
 
@@ -124,6 +124,12 @@ public class HolidayController {
     @AllowTeamLeadAndEmployee
     public ResponseEntity<Integer> checkRequestUpdate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate, @RequestParam Long holidayId){
         return new ResponseEntity<Integer>(this.holidayService.checkRequestUpdate(email, type, startDate, endDate, holidayId), HttpStatus.OK);
+    }
+
+    @GetMapping("/filter-type")
+    @AllowTeamLead
+    public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long teamLeaderId,@RequestParam(required = false) HolidayType type){
+        return new ResponseEntity<>(holidayService.filterByType(teamLeaderId, type), HttpStatus.OK);
     }
 
 }

@@ -100,8 +100,8 @@ public interface HolidayService {
     HolidayDto getHolidayById(Long id);
 
     List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto);
-    List<HolidayDto> filterByType(HolidayType type);
-    List<HolidayDto> filterByUserName(String forname, String surname);
+    List<HolidayDto> filterByType(Long teamLeaderId, HolidayType type);
+    List<HolidayDto> filterByUserName(Long teamLeaderId, String forname, String surname);
 
     /**
      * Check if the user has the necessary days in order to create the request

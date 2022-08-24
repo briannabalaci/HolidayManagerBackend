@@ -26,30 +26,33 @@ public interface HolidayRepository extends JpaRepository<Holiday,Long> {
 
     List<Holiday> findByUserId(Long userId);
 
-    @Query("SELECT h from Holiday h where h.type =:type and h.user.id in " +
-            "(SELECT u from User u where lower(u.forname) like lower(concat('%', :forname,'%')) or " +
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and" +
+            " h.type =:type and h.user.id in " +
+            "(SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :forname,'%')) or " +
             "lower(u.forname) like lower(concat('%', :surname,'%')) or " +
             "lower(u.surname) like lower(concat('%', :forname,'%')) or " +
-            "lower(u.surname) like lower(concat('%', :surname,'%')))")
-    List<Holiday> filterByTypeAndUserName(@Param("type") HolidayType type,@Param("forname") String forname, @Param("surname") String surname);
+            "lower(u.surname) like lower(concat('%', :surname,'%'))))", nativeQuery = true)
+    List<Holiday> filterByTypeAndUserName(@Param("teamleadId") Long teamleadId,@Param("type") HolidayType type,@Param("forname") String forname, @Param("surname") String surname);
 
-    @Query("SELECT h from Holiday h where h.type =:type and h.user.id in " +
-            "(SELECT u from User u where lower(u.forname) like lower(concat('%', :name,'%')) or " +
-            "lower(u.surname) like lower(concat('%', :name,'%'))) ")
-    List<Holiday> filterByTypeAndOneUserName(@Param("type") HolidayType type,@Param("name") String name);
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and " +
+            " h.type =:type and h.user.id in " +
+            "(SELECT u from User u where u.id != teamleadId and ( u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :name,'%')) or " +
+            "lower(u.surname) like lower(concat('%', :name,'%'))))) ", nativeQuery = true)
+    List<Holiday> filterByTypeAndOneUserName(@Param("teamleadId") Long teamleadId,@Param("type") HolidayType type,@Param("name") String name);
 
-    List<Holiday> findAllByType(HolidayType type);
-    @Query("SELECT h from Holiday h where h.user.id in " +
-            "(SELECT u from User u where lower(u.forname) like lower(concat('%', :forname,'%')) or " +
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.user.id in " +
+            "SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :forname,'%')) or " +
             "lower(u.forname) like lower(concat('%', :surname,'%')) or " +
             "lower(u.surname) like lower(concat('%', :forname,'%')) or " +
-            "lower(u.surname) like lower(concat('%', :surname,'%')))")
-    List<Holiday> filterByUserName(@Param("surname") String surname, @Param("forname") String forname);
-    @Query("SELECT h from Holiday h where h.user.id in " +
-            "(SELECT u from User u where lower(u.forname) like lower(concat('%', :name,'%')) or " +
-            "lower(u.surname) like lower(concat('%', :name,'%')))")
-    List<Holiday> filterByOneUserName(@Param("name") String name);
+            "lower(u.surname) like lower(concat('%', :surname,'%')))", nativeQuery = true)
+    List<Holiday> filterByUserName(@Param("teamleadId") Long teamleadId,@Param("surname") String surname, @Param("forname") String forname);
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.user.id in " +
+            "(SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :name,'%')) or " +
+            "lower(u.surname) like lower(concat('%', :name,'%'))))", nativeQuery = true)
+    List<Holiday> filterByOneUserName(@Param("teamleadId") Long teamleadId,@Param("name") String name);
 
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.type =:type and h.user.id !=teamleadId", nativeQuery = true)
+    List<Holiday> filterByType(@Param("teamleadId") Long teamleadId, @Param("type") HolidayType type);
 
 }
 
