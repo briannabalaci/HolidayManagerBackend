@@ -34,7 +34,6 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationDto createNotification(NotificationDto dto) {
         Notification entityToSave = notificationMapper.dtoToEntity(dto);
         Notification saved = notificationRepository.save(entityToSave);
-        log.info("New notification created");
         notifyFrontend("notification","New notification! ");
 
         return notificationMapper.entityToDto(saved);

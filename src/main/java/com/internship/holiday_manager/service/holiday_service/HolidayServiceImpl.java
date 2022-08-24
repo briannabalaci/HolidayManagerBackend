@@ -397,6 +397,11 @@ public class HolidayServiceImpl implements HolidayService{
         User user = this.userRepository.findByEmail(email);
         Holiday holiday = this.holidayRepository.findByID(holidayId);
 
+
+        if(holiday.getStatus() == HolidayStatus.DENIED) {
+            decreaseNoHolidays(holiday);
+        }
+
         LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
