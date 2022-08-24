@@ -3,10 +3,19 @@ package com.internship.holiday_manager.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
+@Data
+@Entity
+@Table(name="substitute")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Substitute {
 
     @Id
