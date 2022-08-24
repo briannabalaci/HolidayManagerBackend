@@ -40,7 +40,7 @@ public class HolidayController {
     @PutMapping("/update-holiday")
     @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> updateHoliday(@RequestBody HolidayDto dto){
-        return new ResponseEntity<>(holidayService.updateHoliday(dto), HttpStatus.OK);
+        return new ResponseEntity<>(holidayService.updateHolidayRequest(dto), HttpStatus.OK);
     }
     @GetMapping("/get-all-holidays")
     @AllowEmployee
@@ -112,6 +112,18 @@ public class HolidayController {
     public ResponseEntity<List<HolidayDto>> filterByTypeAndUserName(@RequestParam(required = false) HolidayType type, @RequestParam(required = false) String forname, @RequestParam(required = false) String surname){
         HolidayTypeAndUserName x = HolidayTypeAndUserName.builder().type(type).forname(forname).surname(surname).build();
         return new ResponseEntity<>(holidayService.filterByTypeAndUserName(x), HttpStatus.OK);
+    }
+
+    @GetMapping("/check-request-create")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkRequestCreate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate){
+        return new ResponseEntity<Integer>(this.holidayService.checkRequestCreate(email, type, startDate, endDate), HttpStatus.OK);
+    }
+
+    @GetMapping("/check-request-update")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkRequestUpdate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate, @RequestParam Long holidayId){
+        return new ResponseEntity<Integer>(this.holidayService.checkRequestUpdate(email, type, startDate, endDate, holidayId), HttpStatus.OK);
     }
 
 }

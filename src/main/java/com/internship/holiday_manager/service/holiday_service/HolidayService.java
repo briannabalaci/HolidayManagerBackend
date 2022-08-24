@@ -20,6 +20,9 @@ public interface HolidayService {
      */
     HolidayDto setStatusHoliday(HolidayDto holidayDto);
 
+
+    HolidayDto updateHolidayRequest(HolidayDto holidayDto);
+
     HolidayDto createHoliday(HolidayDto holidayDto);
 
     HolidayDto updateHoliday(HolidayDto holidayDto);
@@ -99,4 +102,27 @@ public interface HolidayService {
     List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto);
     List<HolidayDto> filterByType(HolidayType type);
     List<HolidayDto> filterByUserName(String forname, String surname);
+
+    /**
+     * Check if the user has the necessary days in order to create the request
+     * @param email - the email of the user
+     * @param type - the type of the holiday
+     * @param startDate - the start date of the holiday
+     * @param endDate - the end date of the holiday
+     * @return - returns 1 if the request can be created and 0 otherwise
+     */
+    Integer checkRequestCreate(String email, HolidayType type,  String startDate, String endDate);
+
+
+    /**
+     * Check if the user has the necessary days in order to update the request's date
+     * @param email - the email of the user
+     * @param type - the type of the holiday
+     * @param startDate - the start date of the holiday
+     * @param endDate - the end date of the holiday
+     * @param holidayId - the id of the holiday before update
+     * @return - returns 1 if the request can be created and 0 otherwise
+     */
+    Integer checkRequestUpdate(String email, HolidayType type,  String startDate, String endDate, Long holidayId);
+
 }
