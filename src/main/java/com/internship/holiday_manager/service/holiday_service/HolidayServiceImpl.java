@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -372,21 +373,19 @@ public class HolidayServiceImpl implements HolidayService{
     }
     @Override
     public Integer checkRequestCreate(String email, HolidayType type, String startDate, String endDate) {
-
         User user = this.userRepository.findByEmail(email);
-        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+            Integer unpaidRequiredDays = numberOfRequiredDays / 10;
+            Integer userNoHolidays = user.getNrHolidays();
+            log.info("Service - checkResult   " + type + " " + type.toString());
 
-        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
-        Integer unpaidRequiredDays = numberOfRequiredDays / 10;
-        Integer userNoHolidays = user.getNrHolidays();
-        log.info("Service - checkResult   " + type + " " + type.toString());
-
-        if(numberOfRequiredDays > userNoHolidays && type == HolidayType.REST){
-            return 0;
-        } else if(unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID){
-            return  0;
-        }
+            if (numberOfRequiredDays > userNoHolidays && type == HolidayType.REST) {
+                return 0;
+            } else if (unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID) {
+                return 0;
+            }
 
         return 1;
     }
@@ -439,6 +438,46 @@ public class HolidayServiceImpl implements HolidayService{
         else {
             return 1;
         }
+    }
+
+    @Override
+    public Integer checkIfDatesOverlap(String email, String startDate, String endDate) {
+        User user = this.userRepository.findByEmail(email);
+        LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId());
+        for(Holiday x : hds){
+            if(!(x.getStatus().equals(HolidayStatus.DENIED)) && (sD.isBefore(x.getStartDate()) && eD.isAfter(x.getStartDate()) ||
+                    sD.isBefore(x.getEndDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isBefore(x.getStartDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isAfter(x.getStartDate()) && eD.isBefore(x.getEndDate()) ||
+                    sD.isEqual(x.getStartDate()) || sD.isEqual(x.getEndDate()) ||
+                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate())))
+                return 0;
+        };
+
+        return 1;
+    }
+
+    @Override
+    public Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId) {
+        User user = this.userRepository.findByEmail(email);
+        LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId()).stream().filter(x -> x.getId()!=holidayId).collect(Collectors.toList());
+        for(Holiday x : hds){
+            if(!(x.getStatus().equals(HolidayStatus.DENIED)) && (sD.isBefore(x.getStartDate()) && eD.isAfter(x.getStartDate()) ||
+                    sD.isBefore(x.getEndDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isBefore(x.getStartDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isAfter(x.getStartDate()) && eD.isBefore(x.getEndDate()) ||
+                    sD.isEqual(x.getStartDate()) || sD.isEqual(x.getEndDate()) ||
+                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate())))
+                return 0;
+        };
+
+        return 1;
     }
 
 }

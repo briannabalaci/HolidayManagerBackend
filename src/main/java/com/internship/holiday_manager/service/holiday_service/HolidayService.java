@@ -125,4 +125,7 @@ public interface HolidayService {
      */
     Integer checkRequestUpdate(String email, HolidayType type,  String startDate, String endDate, Long holidayId);
 
+    Integer checkIfDatesOverlap(String email, String startDate, String endDate);
+
+    Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId);
 }
