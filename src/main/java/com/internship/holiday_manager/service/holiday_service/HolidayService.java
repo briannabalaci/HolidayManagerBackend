@@ -1,6 +1,7 @@
 package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
@@ -95,5 +96,7 @@ public interface HolidayService {
      */
     HolidayDto getHolidayById(Long id);
 
-
+    List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto);
+    List<HolidayDto> filterByType(HolidayType type);
+    List<HolidayDto> filterByUserName(String forname, String surname);
 }

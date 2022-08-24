@@ -1,8 +1,11 @@
 package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.dto.notification.NotificationDto;
+import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.User;
@@ -309,5 +312,34 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto getHolidayById(Long id) {
         return this.holidayMapper.entityToDto(this.holidayRepository.findByID(id));
+    }
+
+
+    @Override
+    public List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto) {
+        if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getForname(), dto.getSurname()));
+        else if(dto.getType()==null && dto.getForname()==null && dto.getSurname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getSurname()));
+        else if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()==null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getForname()));
+        else if(dto.getType()!=null && dto.getForname()==null && dto.getSurname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getSurname()));
+        else if(dto.getType()!=null && dto.getForname()!=null && dto.getSurname()==null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getForname()));
+        else if(dto.getType()!=null && dto.getForname()==null && dto.getForname()==null)
+            return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(dto.getType()));
+        else return holidayMapper.entitiesToDtos(holidayRepository.findAll());
+
+    }
+
+    @Override
+    public List<HolidayDto> filterByType(HolidayType type) {
+        return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(type));
+    }
+
+    @Override
+    public List<HolidayDto> filterByUserName(String forname, String surname) {
+        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(forname, surname));
     }
 }
