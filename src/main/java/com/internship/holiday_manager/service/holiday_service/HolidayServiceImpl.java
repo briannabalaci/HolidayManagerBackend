@@ -26,6 +26,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,13 +105,16 @@ public class HolidayServiceImpl implements HolidayService{
 
         //send notification only if the user is part of a team
         if(user.getTeam()!=null && saved.getStatus()== HolidayStatus.PENDING) {
+
             User teamLeader = user.getTeam().getTeamLeader();
             User substitute = this.userRepository.getById(substituteId);
+
             if (!isTeamLeadInHoliday(teamLeader))
                 sendNotificationToTeamLead(savedHoliday, NotificationType.SENT);
             else
                 sendNotificationToSubstitute(savedHoliday, NotificationType.SENT, substitute);
         }
+
         return holidayMapper.entityToDto(saved);
     }
 
@@ -397,33 +401,120 @@ public class HolidayServiceImpl implements HolidayService{
 
     @Override
     public List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto) {
-        if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getTeamLeaderId(), dto.getForname(), dto.getSurname()));
-        else if(dto.getType()==null && dto.getForname()==null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getTeamLeaderId(), dto.getSurname()));
-        else if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getTeamLeaderId(), dto.getForname()));
-        else if(dto.getType()!=null && dto.getForname()==null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getTeamLeaderId(), dto.getType(), dto.getSurname()));
-        else if(dto.getType()!=null && dto.getForname()!=null && dto.getSurname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getTeamLeaderId(), dto.getType(), dto.getForname()));
-        else if(dto.getType()!=null && dto.getForname()==null && dto.getForname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByType(dto.getTeamLeaderId(), dto.getType()));
-        else if(dto.getType()!=null && dto.getForname()!=null && dto.getForname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndUserName(dto.getTeamLeaderId(), dto.getType(), dto.getForname(), dto.getSurname()));
+        String forname = dto.getForname();
+        String surname = dto.getSurname();
+        Long teamLeaderId = dto.getTeamLeaderId();
+        HolidayType type = dto.getType();
 
-        return teamLeadService.getTeamRequests(userRepository.getById(dto.getTeamLeaderId()).getTeam().getId());
+
+        User teamlead = this.userRepository.getById(teamLeaderId);
+        List<User> members = this.teamRepository.getById(teamlead.getTeam().getId()).getMembers();
+
+        List<Holiday> holidays = new ArrayList<>();
+
+        if(forname != null && surname == null){
+            if(type == null) {
+                members = new ArrayList<>();
+            }
+            else {
+                members = new ArrayList<>();
+            }
+        } else if(forname == null && surname != null){
+            if(type == null){
+                members.forEach(member -> {
+                            if (!member.getType().name().equals("TEAMLEAD") && (member.getSurname().toLowerCase().contains(surname.toLowerCase()) || member.getForname().toLowerCase().contains(surname.toLowerCase())))
+                                holidays.addAll(this.holidayRepository.findByUserId(member.getId()));
+                        }
+                );
+            }
+            else {
+                members.forEach(member -> {
+                            if (!member.getType().name().equals("TEAMLEAD") && (member.getSurname().toLowerCase().contains(surname.toLowerCase()) || member.getForname().toLowerCase().contains(surname.toLowerCase())))
+                                holidays.addAll(this.holidayRepository.findByUserId(member.getId()).stream().filter(h -> h.getType() == type).collect(Collectors.toList()));
+                        }
+                );
+            }
+        } else if(forname != null && surname != null){
+            if(type == null){
+                members.forEach(member -> {
+                            if (!member.getType().name().equals("TEAMLEAD") && member.getForname().toLowerCase().contains(forname.toLowerCase()) && member.getSurname().toLowerCase().contains(surname.toLowerCase()))
+                                holidays.addAll(this.holidayRepository.findByUserId(member.getId()));
+                        }
+                );
+            } else {
+                members.forEach(member -> {
+                            if (!member.getType().name().equals("TEAMLEAD") && member.getForname().toLowerCase().contains(forname.toLowerCase()) && member.getSurname().toLowerCase().contains(surname.toLowerCase()))
+                                holidays.addAll(this.holidayRepository.findByUserId(member.getId()).stream().filter(h -> h.getType() == type).collect(Collectors.toList()));
+                        }
+                );
+            }
+        } else {
+            if(type == null){
+                members.forEach(member -> {
+                            if (!member.getType().name().equals("TEAMLEAD"))
+                                holidays.addAll(this.holidayRepository.findByUserId(member.getId()));
+                        }
+                );
+            } else {
+                members.forEach(member -> {
+                            if (!member.getType().name().equals("TEAMLEAD"))
+                                holidays.addAll(this.holidayRepository.findByUserId(member.getId()).stream().filter(h -> h.getType() == type).collect(Collectors.toList()));
+                        }
+                );
+            }
+        }
+
+        return holidayMapper.entitiesToDtos(holidays);
 
     }
 
     @Override
     public List<HolidayDto> filterByType(Long teamLeaderId, HolidayType type) {
-        return holidayMapper.entitiesToDtos(holidayRepository.filterByType(teamLeaderId, type));
+        User teamlead = this.userRepository.getById(teamLeaderId);
+
+        List<User> members = this.teamRepository.getById(teamlead.getTeam().getId()).getMembers();
+
+        List<Holiday> holidays = new ArrayList<>();
+
+
+        members.forEach(member -> {
+                    if (!member.getType().name().equals("TEAMLEAD"))
+                        holidays.addAll(this.holidayRepository.findByUserId(member.getId()).stream().filter(h -> h.getType().name().equals(type)).collect(Collectors.toList()));
+                }
+        );
+
+        return holidayMapper.entitiesToDtos(holidays);
     }
 
     @Override
     public List<HolidayDto> filterByUserName(Long teamLeaderId, String forname, String surname) {
-        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(teamLeaderId, forname, surname));
+
+        User teamlead = this.userRepository.getById(teamLeaderId);
+        List<User> members = this.teamRepository.getById(teamlead.getTeam().getId()).getMembers();
+
+        List<Holiday> holidays = new ArrayList<>();
+
+        if(forname != null && surname == null){
+            members.forEach(member -> {
+                        if (!member.getType().name().equals("TEAMLEAD") && member.getForname().contains(forname))
+                            holidays.addAll(this.holidayRepository.findByUserId(member.getId()));
+                    }
+            );
+        } else if(forname == null && surname != null){
+            members.forEach(member -> {
+                        if (!member.getType().name().equals("TEAMLEAD") && member.getSurname().contains(surname))
+                            holidays.addAll(this.holidayRepository.findByUserId(member.getId()));
+                    }
+            );
+        } else if(forname != null && surname != null){
+            members.forEach(member -> {
+                        if (!member.getType().name().equals("TEAMLEAD") && member.getForname().contains(forname) && member.getSurname().contains(surname))
+                            holidays.addAll(this.holidayRepository.findByUserId(member.getId()));
+                    }
+            );
+        }
+
+        return holidayMapper.entitiesToDtos(holidays);
     }
     @Override
     public Integer checkRequestCreate(String email, HolidayType type, String startDate, String endDate) {
