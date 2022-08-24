@@ -217,7 +217,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = this.userRepository.findAll();
 
         List<User> usersWithoutTeamLead = users.stream()
-                .filter(user ->!Objects.equals(user.getId(), teamLeadId))
+                .filter(user ->!Objects.equals(user.getId(), teamLeadId) && user.getType() == UserType.TEAMLEAD)
                 .collect(Collectors.toList());
 
         return userMapper.entitiesToDtos(usersWithoutTeamLead);
