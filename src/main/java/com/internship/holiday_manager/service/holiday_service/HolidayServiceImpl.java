@@ -1,8 +1,11 @@
 package com.internship.holiday_manager.service.holiday_service;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.dto.notification.NotificationDto;
+import com.internship.holiday_manager.dto.user.UserDto;
+import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.User;
@@ -23,6 +26,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -137,7 +141,15 @@ public class HolidayServiceImpl implements HolidayService{
 
     @Override
     public HolidayDto updateHolidayRequest(HolidayDto holidayDto) {
-        holidayDto.setStatus(HolidayStatus.PENDING);
+        Holiday holiday = holidayRepository.findByID(holidayDto.getId());
+        User user = userRepository.findById(holiday.getUser().getId()).get();
+        if(user.getType() == UserType.TEAMLEAD){
+            holidayDto.setStatus(HolidayStatus.APPROVED);
+        }
+        else {
+            holidayDto.setStatus(HolidayStatus.PENDING);
+        }
+
         return this.updateHoliday(holidayDto);
     }
 
@@ -252,14 +264,12 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto approveHolidayRequest(Long id) {
         HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(id));
         HolidayDto updated;
-        User userToUpdate = userRepository.getById(holidayDto.getUser().getId());
 
         holidayDto.setStatus(HolidayStatus.APPROVED);
         holidayDto.setDetails(null);
-        updated = this.updateHoliday(holidayDto);
         sendNotificationToEmployee(holidayDto,NotificationType.APPROVED);
 
-        return updated;
+        return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
     }
 
     @Override
@@ -274,7 +284,7 @@ public class HolidayServiceImpl implements HolidayService{
 
         sendNotificationToEmployee(holidayDto,NotificationType.DENIED);
 
-        return this.updateHoliday(holidayDto);
+        return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
     }
 
     @Override
@@ -314,4 +324,98 @@ public class HolidayServiceImpl implements HolidayService{
     public HolidayDto getHolidayById(Long id) {
         return this.holidayMapper.entityToDto(this.holidayRepository.findByID(id));
     }
+
+    @Override
+    public List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto) {
+        if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getForname(), dto.getSurname()));
+        else if(dto.getType()==null && dto.getForname()==null && dto.getSurname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getSurname()));
+        else if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()==null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getForname()));
+        else if(dto.getType()!=null && dto.getForname()==null && dto.getSurname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getSurname()));
+        else if(dto.getType()!=null && dto.getForname()!=null && dto.getSurname()==null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getForname()));
+        else if(dto.getType()!=null && dto.getForname()==null && dto.getForname()==null)
+            return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(dto.getType()));
+        else return holidayMapper.entitiesToDtos(holidayRepository.findAll());
+
+    }
+
+    @Override
+    public List<HolidayDto> filterByType(HolidayType type) {
+        return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(type));
+    }
+
+    @Override
+    public List<HolidayDto> filterByUserName(String forname, String surname) {
+        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(forname, surname));
+    }
+    @Override
+    public Integer checkRequestCreate(String email, HolidayType type, String startDate, String endDate) {
+
+        User user = this.userRepository.findByEmail(email);
+        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+        Integer unpaidRequiredDays = numberOfRequiredDays / 10;
+        Integer userNoHolidays = user.getNrHolidays();
+        log.info("Service - checkResult   " + type + " " + type.toString());
+
+        if(numberOfRequiredDays > userNoHolidays && type == HolidayType.REST){
+            return 0;
+        } else if(unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID){
+            return  0;
+        }
+
+        return 1;
+    }
+
+
+    @Override
+    public Integer checkRequestUpdate(String email, HolidayType type, String startDate, String endDate, Long holidayId) {
+        User user = this.userRepository.findByEmail(email);
+        Holiday holiday = this.holidayRepository.findByID(holidayId);
+
+        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        Integer numberOfRequiredDaysInitialRequest = this.getNoHolidays(holiday.getStartDate(), holiday.getEndDate());
+        Integer unpaidRequiredDaysInitialRequest = this.getNoUnpaidDays(numberOfRequiredDaysInitialRequest);
+
+        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+        Integer unpaidRequiredDays = this.getNoUnpaidDays(numberOfRequiredDays);
+
+        Integer userNoHolidays = user.getNrHolidays();
+
+        Integer daysToBeTakenOrAdded = 0;
+
+        if(type == HolidayType.REST){
+            daysToBeTakenOrAdded = numberOfRequiredDays - numberOfRequiredDaysInitialRequest;
+
+            if(daysToBeTakenOrAdded > userNoHolidays){
+                return 0;
+            }
+            else {
+                this.updateUserNoHolidays(user, daysToBeTakenOrAdded);
+                return 1;
+            }
+        } else if(type == HolidayType.UNPAID){
+            daysToBeTakenOrAdded = unpaidRequiredDays - unpaidRequiredDaysInitialRequest;
+
+            if(daysToBeTakenOrAdded > userNoHolidays){
+                return 0;
+            }
+            else {
+                this.updateUserNoHolidays(user, daysToBeTakenOrAdded);
+                return 1;
+            }
+        }
+        else {
+            return 1;
+        }
+    }
+
 }

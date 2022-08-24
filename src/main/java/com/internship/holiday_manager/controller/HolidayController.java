@@ -1,5 +1,6 @@
 package com.internship.holiday_manager.controller;
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
+import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
@@ -8,6 +9,7 @@ import com.internship.holiday_manager.service.notification_service.NotificationS
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/holiday")
 @CrossOrigin
+@Slf4j
 public class HolidayController {
 
     private final HolidayService holidayService;
@@ -102,6 +105,25 @@ public class HolidayController {
     @AllowTeamLeadAndEmployee
     public ResponseEntity<HolidayDto> getHolidayById(@RequestParam Long id){
         return new ResponseEntity<>(holidayService.getHolidayById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/filter")
+    @AllowTeamLead
+    public ResponseEntity<List<HolidayDto>> filterByTypeAndUserName(@RequestParam(required = false) HolidayType type, @RequestParam(required = false) String forname, @RequestParam(required = false) String surname){
+        HolidayTypeAndUserName x = HolidayTypeAndUserName.builder().type(type).forname(forname).surname(surname).build();
+        return new ResponseEntity<>(holidayService.filterByTypeAndUserName(x), HttpStatus.OK);
+    }
+
+    @GetMapping("/check-request-create")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkRequestCreate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate){
+        return new ResponseEntity<Integer>(this.holidayService.checkRequestCreate(email, type, startDate, endDate), HttpStatus.OK);
+    }
+
+    @GetMapping("/check-request-update")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkRequestUpdate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate, @RequestParam Long holidayId){
+        return new ResponseEntity<Integer>(this.holidayService.checkRequestUpdate(email, type, startDate, endDate, holidayId), HttpStatus.OK);
     }
 
 }
