@@ -129,4 +129,6 @@ public interface HolidayService {
 
     Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId);
 
+    List<HolidayDto> getRequestsForSubstitute(Long substituteId);
+
 }
