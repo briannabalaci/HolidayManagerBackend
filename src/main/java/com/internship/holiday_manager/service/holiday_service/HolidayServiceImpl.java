@@ -107,12 +107,13 @@ public class HolidayServiceImpl implements HolidayService{
         if(user.getTeam()!=null && saved.getStatus()== HolidayStatus.PENDING) {
 
             User teamLeader = user.getTeam().getTeamLeader();
-            User substitute = this.userRepository.getById(substituteId);
 
             if (!isTeamLeadInHoliday(teamLeader))
                 sendNotificationToTeamLead(savedHoliday, NotificationType.SENT);
-            else
+            else {
+                User substitute = this.userRepository.getById(substituteId);
                 sendNotificationToSubstitute(savedHoliday, NotificationType.SENT, substitute);
+            }
         }
 
         return holidayMapper.entityToDto(saved);
