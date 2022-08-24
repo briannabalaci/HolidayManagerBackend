@@ -18,6 +18,7 @@ import com.internship.holiday_manager.repository.SubstituteRepository;
 import com.internship.holiday_manager.repository.TeamRepository;
 import com.internship.holiday_manager.repository.UserRepository;
 import com.internship.holiday_manager.service.notification_service.NotificationService;
+import com.internship.holiday_manager.service.teamlead_service.TeamLeadService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -36,15 +37,18 @@ public class HolidayServiceImpl implements HolidayService{
     private final HolidayRepository holidayRepository;
     private final TeamRepository teamRepository;
     private final NotificationService notificationService;
+    private final TeamLeadService teamLeadService;
     private final HolidayMapper holidayMapper;
 
     private final SubstituteRepository substituteRepository;
 
-    public HolidayServiceImpl(UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, HolidayMapper holidayMapper, SubstituteRepository substituteRepository) {
+    public HolidayServiceImpl(TeamLeadService teamLeadService, UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, HolidayMapper holidayMapper, SubstituteRepository substituteRepository) {
+
         this.userRepository = userRepository;
         this.holidayRepository = holidayRepository;
         this.teamRepository = teamRepository;
         this.notificationService = notificationService;
+        this.teamLeadService = teamLeadService;
         this.holidayMapper = holidayMapper;
         this.substituteRepository = substituteRepository;
     }
@@ -214,7 +218,26 @@ public class HolidayServiceImpl implements HolidayService{
                 this.increaseNoHolidays(holiday);
             }
             holidayRepository.delete(holiday);
-            return holidayMapper.entityToDto(holiday);
+            HolidayDto holidayDto = holidayMapper.entityToDto(holiday);
+
+            //send notification
+            User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
+            User receiver = teamRepository.getById(sender.getTeam().getId()).getTeamLeader();
+            UserWithTeamIdDto receiverDto = UserWithTeamIdDto.builder()
+                    .id(receiver.getId()).email(receiver.getEmail()).forname(receiver.getForname()).surname(receiver.getSurname()).department(receiver.getDepartment())
+                    .role(receiver.getRole()).nrHolidays(receiver.getNrHolidays()).type(receiver.getType()).teamId(receiver.getTeam().getId())
+                    .build();
+
+            NotificationDto notificationDto = new NotificationDto();
+            notificationDto.setReceiver(receiverDto);
+            notificationDto.setSender(holidayDto.getUser());
+            notificationDto.setType(NotificationType.CANCELED);
+            notificationDto.setSendDate(LocalDateTime.now());
+            notificationDto.setSeen(false);
+            notificationDto.setRequest(null);
+
+            notificationService.createNotification(notificationDto);
+            return holidayDto;
         }
         return null;
     }
@@ -375,29 +398,32 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto) {
         if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getForname(), dto.getSurname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getTeamLeaderId(), dto.getForname(), dto.getSurname()));
         else if(dto.getType()==null && dto.getForname()==null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getSurname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getTeamLeaderId(), dto.getSurname()));
         else if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getForname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getTeamLeaderId(), dto.getForname()));
         else if(dto.getType()!=null && dto.getForname()==null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getSurname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getTeamLeaderId(), dto.getType(), dto.getSurname()));
         else if(dto.getType()!=null && dto.getForname()!=null && dto.getSurname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getForname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getTeamLeaderId(), dto.getType(), dto.getForname()));
         else if(dto.getType()!=null && dto.getForname()==null && dto.getForname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(dto.getType()));
-        else return holidayMapper.entitiesToDtos(holidayRepository.findAll());
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByType(dto.getTeamLeaderId(), dto.getType()));
+        else if(dto.getType()!=null && dto.getForname()!=null && dto.getForname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndUserName(dto.getTeamLeaderId(), dto.getType(), dto.getForname(), dto.getSurname()));
+
+        return teamLeadService.getTeamRequests(userRepository.getById(dto.getTeamLeaderId()).getTeam().getId());
 
     }
 
     @Override
-    public List<HolidayDto> filterByType(HolidayType type) {
-        return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(type));
+    public List<HolidayDto> filterByType(Long teamLeaderId, HolidayType type) {
+        return holidayMapper.entitiesToDtos(holidayRepository.filterByType(teamLeaderId, type));
     }
 
     @Override
-    public List<HolidayDto> filterByUserName(String forname, String surname) {
-        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(forname, surname));
+    public List<HolidayDto> filterByUserName(Long teamLeaderId, String forname, String surname) {
+        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(teamLeaderId, forname, surname));
     }
     @Override
     public Integer checkRequestCreate(String email, HolidayType type, String startDate, String endDate) {
