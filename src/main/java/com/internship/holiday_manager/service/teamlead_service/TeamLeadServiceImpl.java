@@ -30,11 +30,13 @@ import java.io.IOException;
 
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+
 public class TeamLeadServiceImpl implements TeamLeadService{
 
     @Autowired
@@ -76,122 +78,172 @@ public class TeamLeadServiceImpl implements TeamLeadService{
         List<User> members = this.teamRepository.getById(teamId).getMembers();
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Document document = new Document(PageSize.LETTER, 15, 15, 5 , 5);;
+        Document document = new Document(PageSize.B2, 5, 5, 5 , 5);;
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
         document.newPage();
-        float [] pointColumnWidthsMembersTable = {150f, 150f,350f,150f};
-        PdfPTable membersTable = new PdfPTable(pointColumnWidthsMembersTable);
 
 
-        PdfPCell c1 = new PdfPCell(new Phrase("Surname"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        membersTable.addCell(c1);
+        Font tableHeadFont=new Font(Font.FontFamily.HELVETICA, 12);
+        tableHeadFont.setColor(230, 132, 11);
+        Font userDetailsParagraphFont=new Font(Font.FontFamily.HELVETICA, 20);
+        float [] pointColumnWidthsRequestsTable = {250f, 250f,250f,250f,250f,350f};
 
-        c1 = new PdfPCell(new Phrase("Forname"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        membersTable.addCell(c1);
+        members.forEach(user -> {
+                    if(!user.getType().name().equals("TEAMLEAD")){
+                        Paragraph userParagraph = new Paragraph();
 
-        c1 = new PdfPCell(new Phrase("Email"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        membersTable.addCell(c1);
 
-        c1 = new PdfPCell(new Phrase("nrHolidays"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        membersTable.addCell(c1);
-        membersTable.setHeaderRows(1);
-        for(User u : members){
-            PdfPCell surnameCell = new PdfPCell(Phrase.getInstance(u.getSurname()));
-            surnameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            membersTable.addCell(surnameCell);
+                        Paragraph userDetailsParagraph=new Paragraph(user.getForname()+" "+user.getSurname()+"- holiday days: "+user.getNrHolidays(),userDetailsParagraphFont);
+                        userDetailsParagraph.setAlignment(Element.ALIGN_LEFT);
+                        userDetailsParagraph.setIndentationLeft(140f);
+                        userDetailsParagraph.setSpacingAfter(15f);
+                        userParagraph.add(userDetailsParagraph);
 
-            PdfPCell fornameCell = new PdfPCell(Phrase.getInstance(u.getForname()));
-            fornameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            membersTable.addCell(fornameCell);
 
-            PdfPCell emailCell = new PdfPCell(Phrase.getInstance(u.getEmail()));
-            emailCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            membersTable.addCell(emailCell);
+                        PdfPTable requestsTable = new PdfPTable(pointColumnWidthsRequestsTable);
+                        requestsTable.setHeaderRows(1);
+                        PdfPCell c1 = new PdfPCell(new Phrase("Start Date",tableHeadFont));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
+                        c1.setPadding(10f);
+                        requestsTable.addCell(c1);
 
-            PdfPCell NrHolidays = new PdfPCell(Phrase.getInstance(u.getNrHolidays().toString()));
-            NrHolidays.setHorizontalAlignment(Element.ALIGN_CENTER);
-            membersTable.addCell(NrHolidays);
+                        c1 = new PdfPCell(new Phrase("End Date",tableHeadFont));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
+                        c1.setPadding(10f);
+                        requestsTable.addCell(c1);
 
+                        c1 = new PdfPCell(new Phrase("Substitute",tableHeadFont));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
+                        c1.setPadding(10f);
+                        requestsTable.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase("Type",tableHeadFont));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
+                        c1.setPadding(10f);
+                        requestsTable.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase("Status",tableHeadFont));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
+                        c1.setPadding(10f);
+                        requestsTable.addCell(c1);
+
+                        c1 = new PdfPCell(new Phrase("Details",tableHeadFont));
+                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
+                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+                        c1.setPadding(10f);
+                        requestsTable.addCell(c1);
+
+
+
+
+
+
+
+
+                        List<Holiday> holidays = new ArrayList<>();
+                        holidays.addAll(this.holidayRepository.findByUserId(user.getId()));
+int i=0;
+        for(Holiday h : holidays){
+            if(h.getStatus()!=HolidayStatus.DENIED) {
+i++;
+                PdfPCell startDateCell = new PdfPCell(Phrase.getInstance(h.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                PdfPCell endDateCell = new PdfPCell(Phrase.getInstance(h.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                PdfPCell substituteCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
+                PdfPCell typeCell = new PdfPCell(Phrase.getInstance(h.getType().toString()));
+                PdfPCell statusCell = new PdfPCell(Phrase.getInstance(h.getStatus().toString()));
+
+
+
+
+                startDateCell.setPadding(7f);
+                endDateCell.setPadding(7f);
+                substituteCell.setPadding(7f);
+                typeCell.setPadding(7f);
+                statusCell.setPadding(7f);
+
+
+                startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                substituteCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+
+                requestsTable.addCell(startDateCell);
+                requestsTable.addCell(endDateCell);
+                requestsTable.addCell(substituteCell);
+                requestsTable.addCell(typeCell);
+                requestsTable.addCell(statusCell);
+                if (h.getDetails() != null) {
+                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails()));
+                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    requestsTable.addCell(detailsCell);
+                } else {
+                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
+                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    requestsTable.addCell(detailsCell);
+                }
+            }
         }
 
+        if(i==0){
+            PdfPCell startDateCell = new PdfPCell(Phrase.getInstance("-"));
+            PdfPCell endDateCell =new PdfPCell(Phrase.getInstance("-"));
+            PdfPCell substituteCell = new PdfPCell(Phrase.getInstance("-"));
+            PdfPCell typeCell =new PdfPCell(Phrase.getInstance("-"));
+            PdfPCell statusCell = new PdfPCell(Phrase.getInstance("-"));
+            PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
 
 
-        float [] pointColumnWidthsRequestsTable = {250f,250f, 250f,250f,250f,250f,350f};
-        PdfPTable requestsTable = new PdfPTable(pointColumnWidthsRequestsTable);
-        c1 = new PdfPCell(new Phrase("Member"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        c1 = new PdfPCell(new Phrase("Start Date"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        c1 = new PdfPCell(new Phrase("End Date"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        c1 = new PdfPCell(new Phrase("Substitute"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        c1 = new PdfPCell(new Phrase("Type"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        c1 = new PdfPCell(new Phrase("Status"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        c1 = new PdfPCell(new Phrase("Details"));
-        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-        requestsTable.addCell(c1);
-
-        List<Holiday> holidays = new ArrayList<>();
-
-        members.forEach(holiday -> {
-                    if(!holiday.getType().name().equals("TEAMLEAD"))
-                        holidays.addAll(this.holidayRepository.findByUserId(holiday.getId()));
-                }
-        );
-        for(Holiday h : holidays){
-            PdfPCell memberCell = new PdfPCell(Phrase.getInstance(h.getUser().getForname()+" "+h.getUser().getSurname()));
-            memberCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(memberCell);
-
-            PdfPCell startDateCell = new PdfPCell(Phrase.getInstance(h.getStartDate().toString()));
-            startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(startDateCell);
-
-            PdfPCell endDateCell = new PdfPCell(Phrase.getInstance(h.getEndDate().toString()));
-            endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(endDateCell);
-
-            PdfPCell substituteCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
-            substituteCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(substituteCell);
-
-            PdfPCell typeCell = new PdfPCell(Phrase.getInstance(h.getType().toString()));
-            typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(typeCell);
-
-            PdfPCell statusCell = new PdfPCell(Phrase.getInstance(h.getStatus().toString()));
-            statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(statusCell);
-
-            PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails().toString()));
             detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
             requestsTable.addCell(detailsCell);
+            startDateCell.setPadding(7f);
+            endDateCell.setPadding(7f);
+            substituteCell.setPadding(7f);
+            typeCell.setPadding(7f);
+            statusCell.setPadding(7f);
+
+
+            startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            substituteCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+
+            requestsTable.addCell(startDateCell);
+            requestsTable.addCell(endDateCell);
+            requestsTable.addCell(substituteCell);
+            requestsTable.addCell(typeCell);
+            requestsTable.addCell(statusCell);
+
+
+
+
+
+
+
         }
 
 
-     document.add(membersTable);
-        document.add(new Paragraph(" "));
-     document.add(requestsTable);
+                        try {userParagraph.add(requestsTable);
+                            document.add(new Paragraph(" "));
+                            document.add(userParagraph);
+                        } catch (DocumentException e) {
+                            e.printStackTrace();
+                        }
+
+                    }}
+        );
+
+     //document.add(membersTable);
+
 
 
 
