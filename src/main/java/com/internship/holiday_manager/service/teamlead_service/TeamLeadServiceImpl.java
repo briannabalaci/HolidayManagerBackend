@@ -154,7 +154,8 @@ int i=0;
 i++;
                 PdfPCell startDateCell = new PdfPCell(Phrase.getInstance(h.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
                 PdfPCell endDateCell = new PdfPCell(Phrase.getInstance(h.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
-                PdfPCell substituteCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
+
+
                 PdfPCell typeCell = new PdfPCell(Phrase.getInstance(h.getType().toString()));
                 PdfPCell statusCell = new PdfPCell(Phrase.getInstance(h.getStatus().toString()));
 
@@ -163,21 +164,28 @@ i++;
 
                 startDateCell.setPadding(7f);
                 endDateCell.setPadding(7f);
-                substituteCell.setPadding(7f);
+                if (h.getSubstitute() != null) {
+                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
+                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    substitutCell.setPadding(7f);
+                    requestsTable.addCell(substitutCell);
+                }
+                else{  PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
+                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    substitutCell.setPadding(7f);
+                    requestsTable.addCell(substitutCell);}
                 typeCell.setPadding(7f);
                 statusCell.setPadding(7f);
 
 
                 startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                substituteCell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
 
 
                 requestsTable.addCell(startDateCell);
                 requestsTable.addCell(endDateCell);
-                requestsTable.addCell(substituteCell);
                 requestsTable.addCell(typeCell);
                 requestsTable.addCell(statusCell);
                 if (h.getDetails() != null) {
