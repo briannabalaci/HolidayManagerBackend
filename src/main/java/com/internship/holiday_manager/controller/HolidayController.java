@@ -120,10 +120,22 @@ public class HolidayController {
         return new ResponseEntity<Integer>(this.holidayService.checkRequestCreate(email, type, startDate, endDate), HttpStatus.OK);
     }
 
+
+
     @GetMapping("/check-request-update")
     @AllowTeamLeadAndEmployee
     public ResponseEntity<Integer> checkRequestUpdate(@RequestParam String email, @RequestParam HolidayType type, @RequestParam String startDate, @RequestParam String endDate, @RequestParam Long holidayId){
         return new ResponseEntity<Integer>(this.holidayService.checkRequestUpdate(email, type, startDate, endDate, holidayId), HttpStatus.OK);
     }
+    @GetMapping("/check-date-overlap")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkDateOverlap(@RequestParam String email,@RequestParam String startDate, @RequestParam String endDate){
+        return new ResponseEntity<Integer>(this.holidayService.checkIfDatesOverlap(email, startDate, endDate), HttpStatus.OK);
+    }
 
+    @GetMapping("/check-date-overlap-update")
+    @AllowTeamLeadAndEmployee
+    public ResponseEntity<Integer> checkDateOverlapUpdate(@RequestParam String email,@RequestParam String startDate, @RequestParam String endDate, @RequestParam Long holidayId){
+        return new ResponseEntity<Integer>(this.holidayService.checkIfDatesOverlapUpdate(email, startDate, endDate, holidayId), HttpStatus.OK);
+    }
 }
