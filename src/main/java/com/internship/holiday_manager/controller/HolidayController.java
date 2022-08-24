@@ -145,6 +145,11 @@ public class HolidayController {
     public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long teamLeaderId,@RequestParam(required = false) HolidayType type){
         return new ResponseEntity<>(holidayService.filterByType(teamLeaderId, type), HttpStatus.OK);
     }
+    @GetMapping("/substitute-requests")
+    @AllowTeamLead
+    public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long id){
+        return new ResponseEntity<>(holidayService.getRequestsForSubstitute(id), HttpStatus.OK);
+    }
 
 
 }
