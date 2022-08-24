@@ -164,16 +164,6 @@ i++;
 
                 startDateCell.setPadding(7f);
                 endDateCell.setPadding(7f);
-                if (h.getSubstitute() != null) {
-                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
-                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    substitutCell.setPadding(7f);
-                    requestsTable.addCell(substitutCell);
-                }
-                else{  PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
-                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    substitutCell.setPadding(7f);
-                    requestsTable.addCell(substitutCell);}
                 typeCell.setPadding(7f);
                 statusCell.setPadding(7f);
 
@@ -186,8 +176,22 @@ i++;
 
                 requestsTable.addCell(startDateCell);
                 requestsTable.addCell(endDateCell);
+
+                if (h.getSubstitute() != null) {
+                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
+                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    substitutCell.setPadding(7f);
+                    requestsTable.addCell(substitutCell);
+                }
+                else{  PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
+                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    substitutCell.setPadding(7f);
+                    requestsTable.addCell(substitutCell);}
+
                 requestsTable.addCell(typeCell);
                 requestsTable.addCell(statusCell);
+
+
                 if (h.getDetails() != null) {
                     PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails()));
                     detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
