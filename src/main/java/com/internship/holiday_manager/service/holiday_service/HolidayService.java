@@ -25,7 +25,7 @@ public interface HolidayService {
 
     HolidayDto createHoliday(HolidayDto holidayDto, Long substituteId);
 
-    HolidayDto updateHoliday(HolidayDto holidayDto);
+    HolidayDto updateHoliday(HolidayDto holidayDto, Long substituteId);
 
     List<HolidayDto> getAll();
 
