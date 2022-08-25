@@ -22,4 +22,12 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="20220825-substitute-002" author="mbledea2">
+        <addColumn tableName="SUBSTITUTE">
+            <column name="HOLIDAY_ID" type="BIGINT">
+                <constraints foreignKeyName="fk_holiday_id" references="holiday(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

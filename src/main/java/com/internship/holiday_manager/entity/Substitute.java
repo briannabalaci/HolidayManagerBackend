@@ -37,4 +37,9 @@ public class Substitute {
     @JoinColumn(name = "teamlead_id")
     @JsonBackReference
     private User teamLead;
+
+    @OneToOne
+    @JoinColumn(name = "holiday_id")
+    @JsonBackReference
+    private Holiday holiday;
 }

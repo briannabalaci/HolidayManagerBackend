@@ -204,7 +204,7 @@ public class HolidayServiceImpl implements HolidayService{
     }
 
     @Override
-    public HolidayDto updateHolidayRequest(HolidayDto holidayDto) {
+    public HolidayDto updateHolidayRequest(HolidayDto holidayDto, Long substituteId) {
         Holiday holiday = holidayRepository.findByID(holidayDto.getId());
         User user = userRepository.findById(holiday.getUser().getId()).get();
         if(user.getType() == UserType.TEAMLEAD){
@@ -212,6 +212,10 @@ public class HolidayServiceImpl implements HolidayService{
         }
         else {
             holidayDto.setStatus(HolidayStatus.PENDING);
+        }
+
+        if(user.getType().equals(UserType.TEAMLEAD)){
+            
         }
 
         return this.updateHoliday(holidayDto);

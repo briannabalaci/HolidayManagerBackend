@@ -8,7 +8,7 @@ import com.internship.holiday_manager.entity.Substitute;
 import org.mapstruct.Mapper;
 
 import java.util.List;
-@Mapper(componentModel = "spring", uses = UserMapper.class)
+@Mapper(componentModel = "spring", uses = {UserMapper.class, HolidayMapper.class})
 public interface SubstituteMapper {
 
     SubstituteDto entityToDto(Substitute entity);
