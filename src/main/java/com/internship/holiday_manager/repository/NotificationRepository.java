@@ -2,6 +2,7 @@ package com.internship.holiday_manager.repository;
 
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.Notification;
+import com.internship.holiday_manager.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -30,5 +31,9 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
     @Transactional
     @Query("delete from Notification n where n.receiver.id=:id and n.seen=true")
     void deleteSeenNotifications(@Param("id") Long id);
+
+    List<Notification> findByReceiver(User user);
+
+    List<Notification> findBySender(User user);
 
 }

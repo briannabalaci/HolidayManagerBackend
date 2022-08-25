@@ -34,6 +34,6 @@ public class Notification {
     private NotificationType type;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "request_id", nullable = false)
+    @JoinColumn(name = "request_id")
     private Holiday request;
 }

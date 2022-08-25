@@ -4,8 +4,6 @@ import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.dto.holiday.HolidayTypeAndUserName;
 import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.dto.notification.NotificationDto;
-import com.internship.holiday_manager.dto.user.UserDto;
-import com.internship.holiday_manager.dto.user.UserNameDto;
 import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.User;
@@ -18,19 +16,16 @@ import com.internship.holiday_manager.repository.HolidayRepository;
 import com.internship.holiday_manager.repository.TeamRepository;
 import com.internship.holiday_manager.repository.UserRepository;
 import com.internship.holiday_manager.service.notification_service.NotificationService;
+import com.internship.holiday_manager.service.teamlead_service.TeamLeadService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -40,13 +35,15 @@ public class HolidayServiceImpl implements HolidayService{
     private final HolidayRepository holidayRepository;
     private final TeamRepository teamRepository;
     private final NotificationService notificationService;
+    private final TeamLeadService teamLeadService;
     private final HolidayMapper holidayMapper;
 
-    public HolidayServiceImpl(UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, HolidayMapper holidayMapper) {
+    public HolidayServiceImpl(UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, TeamLeadService teamLeadService, HolidayMapper holidayMapper) {
         this.userRepository = userRepository;
         this.holidayRepository = holidayRepository;
         this.teamRepository = teamRepository;
         this.notificationService = notificationService;
+        this.teamLeadService = teamLeadService;
         this.holidayMapper = holidayMapper;
     }
     public HolidayDto setStatusHoliday(HolidayDto holidayDto) {
@@ -186,7 +183,26 @@ public class HolidayServiceImpl implements HolidayService{
                 this.increaseNoHolidays(holiday);
             }
             holidayRepository.delete(holiday);
-            return holidayMapper.entityToDto(holiday);
+            HolidayDto holidayDto = holidayMapper.entityToDto(holiday);
+
+            //send notification
+            User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
+            User receiver = teamRepository.getById(sender.getTeam().getId()).getTeamLeader();
+            UserWithTeamIdDto receiverDto = UserWithTeamIdDto.builder()
+                    .id(receiver.getId()).email(receiver.getEmail()).forname(receiver.getForname()).surname(receiver.getSurname()).department(receiver.getDepartment())
+                    .role(receiver.getRole()).nrHolidays(receiver.getNrHolidays()).type(receiver.getType()).teamId(receiver.getTeam().getId())
+                    .build();
+
+            NotificationDto notificationDto = new NotificationDto();
+            notificationDto.setReceiver(receiverDto);
+            notificationDto.setSender(holidayDto.getUser());
+            notificationDto.setType(NotificationType.CANCELED);
+            notificationDto.setSendDate(LocalDateTime.now());
+            notificationDto.setSeen(false);
+            notificationDto.setRequest(null);
+
+            notificationService.createNotification(notificationDto);
+            return holidayDto;
         }
         return null;
     }
@@ -328,47 +344,48 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public List<HolidayDto> filterByTypeAndUserName(HolidayTypeAndUserName dto) {
         if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getForname(), dto.getSurname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(dto.getTeamLeaderId(), dto.getForname(), dto.getSurname()));
         else if(dto.getType()==null && dto.getForname()==null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getSurname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getTeamLeaderId(), dto.getSurname()));
         else if(dto.getType()==null && dto.getForname()!=null && dto.getSurname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getForname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByOneUserName(dto.getTeamLeaderId(), dto.getForname()));
         else if(dto.getType()!=null && dto.getForname()==null && dto.getSurname()!=null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getSurname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getTeamLeaderId(), dto.getType(), dto.getSurname()));
         else if(dto.getType()!=null && dto.getForname()!=null && dto.getSurname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getType(), dto.getForname()));
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndOneUserName(dto.getTeamLeaderId(), dto.getType(), dto.getForname()));
         else if(dto.getType()!=null && dto.getForname()==null && dto.getForname()==null)
-            return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(dto.getType()));
-        else return holidayMapper.entitiesToDtos(holidayRepository.findAll());
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByType(dto.getTeamLeaderId(), dto.getType()));
+        else if(dto.getType()!=null && dto.getForname()!=null && dto.getForname()!=null)
+            return holidayMapper.entitiesToDtos(holidayRepository.filterByTypeAndUserName(dto.getTeamLeaderId(), dto.getType(), dto.getForname(), dto.getSurname()));
+
+        return teamLeadService.getTeamRequests(userRepository.getById(dto.getTeamLeaderId()).getTeam().getId());
 
     }
 
     @Override
-    public List<HolidayDto> filterByType(HolidayType type) {
-        return holidayMapper.entitiesToDtos(holidayRepository.findAllByType(type));
+    public List<HolidayDto> filterByType(Long teamLeaderId, HolidayType type) {
+        return holidayMapper.entitiesToDtos(holidayRepository.filterByType(teamLeaderId, type));
     }
 
     @Override
-    public List<HolidayDto> filterByUserName(String forname, String surname) {
-        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(forname, surname));
+    public List<HolidayDto> filterByUserName(Long teamLeaderId, String forname, String surname) {
+        return holidayMapper.entitiesToDtos(holidayRepository.filterByUserName(teamLeaderId, forname, surname));
     }
     @Override
     public Integer checkRequestCreate(String email, HolidayType type, String startDate, String endDate) {
-
         User user = this.userRepository.findByEmail(email);
-        LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+            Integer unpaidRequiredDays = numberOfRequiredDays / 10;
+            Integer userNoHolidays = user.getNrHolidays();
+            log.info("Service - checkResult   " + type + " " + type.toString());
 
-        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
-        Integer unpaidRequiredDays = numberOfRequiredDays / 10;
-        Integer userNoHolidays = user.getNrHolidays();
-        log.info("Service - checkResult   " + type + " " + type.toString());
-
-        if(numberOfRequiredDays > userNoHolidays && type == HolidayType.REST){
-            return 0;
-        } else if(unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID){
-            return  0;
-        }
+            if (numberOfRequiredDays > userNoHolidays && type == HolidayType.REST) {
+                return 0;
+            } else if (unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID) {
+                return 0;
+            }
 
         return 1;
     }
@@ -378,6 +395,10 @@ public class HolidayServiceImpl implements HolidayService{
     public Integer checkRequestUpdate(String email, HolidayType type, String startDate, String endDate, Long holidayId) {
         User user = this.userRepository.findByEmail(email);
         Holiday holiday = this.holidayRepository.findByID(holidayId);
+
+        if(holiday.getStatus() == HolidayStatus.DENIED) {
+            decreaseNoHolidays(holiday);
+        }
 
         LocalDateTime sD =  LocalDateTime. parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime eD = LocalDateTime. parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -416,6 +437,46 @@ public class HolidayServiceImpl implements HolidayService{
         else {
             return 1;
         }
+    }
+
+    @Override
+    public Integer checkIfDatesOverlap(String email, String startDate, String endDate) {
+        User user = this.userRepository.findByEmail(email);
+        LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId());
+        for(Holiday x : hds){
+            if(!(x.getStatus().equals(HolidayStatus.DENIED)) && (sD.isBefore(x.getStartDate()) && eD.isAfter(x.getStartDate()) ||
+                    sD.isBefore(x.getEndDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isBefore(x.getStartDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isAfter(x.getStartDate()) && eD.isBefore(x.getEndDate()) ||
+                    sD.isEqual(x.getStartDate()) || sD.isEqual(x.getEndDate()) ||
+                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate())))
+                return 0;
+        };
+
+        return 1;
+    }
+    @Override
+    public Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId) {
+        User user = this.userRepository.findByEmail(email);
+        LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId()).stream().filter(x -> !x.getId().equals(holidayId)).collect(Collectors.toList());
+
+        for(Holiday x : hds){
+            if(!(x.getStatus().equals(HolidayStatus.DENIED)) && (sD.isBefore(x.getStartDate()) && eD.isAfter(x.getStartDate()) ||
+                    sD.isBefore(x.getEndDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isBefore(x.getStartDate()) && eD.isAfter(x.getEndDate()) ||
+                    sD.isAfter(x.getStartDate()) && eD.isBefore(x.getEndDate()) ||
+                    sD.isEqual(x.getStartDate()) || sD.isEqual(x.getEndDate()) ||
+                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate()))) {
+                return 0;
+            }
+        };
+
+        return 1;
     }
 
 }
