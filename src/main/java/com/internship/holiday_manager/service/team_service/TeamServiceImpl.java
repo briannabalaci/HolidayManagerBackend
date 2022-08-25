@@ -40,13 +40,14 @@ public class TeamServiceImpl implements TeamService{
     }
 
     private Team createTeam(TeamAddDto teamDTO) throws Exception {
-        if(teamRepository.findByName(teamDTO.getName()) != null) throw new Exception("A team with the same name already exists!\n");
+        if(teamRepository.findByName(teamDTO.getName()) != null){
+            throw new Exception("A team with the same name already exists!\n");
+        }
 
         User teamLead = userRepository.getById(teamDTO.getTeamLeaderId());
         Team entityToSave = Team.builder().name(teamDTO.getName())
                 .teamLeader(teamLead)
                 .build();
-        log.info(entityToSave.toString());
         Team saved = teamRepository.save(entityToSave);
         log.info("SAVED: "+saved.toString());
         log.info("New team created");
@@ -79,14 +80,17 @@ public class TeamServiceImpl implements TeamService{
 
     private Team updateTeam(TeamUpdateDto teamDTO) throws Exception {
         Team found = teamRepository.findByName(teamDTO.getName());
-        if( found != null && !found.getId().equals(teamDTO.getId())) throw new Exception("A team with the same name already exists!\n");
+        if(found.getTeamLeader()!=null) {
+            if (found != null && !found.getId().equals(teamDTO.getId()))
+                throw new Exception("A team with the same name already exists!\n");
+        }
 
         Team team = teamRepository.getById(teamDTO.getId());
         User oldTeamLead = team.getTeamLeader();
-        if(!oldTeamLead.getId().equals(teamDTO.getTeamLeaderId())) {
-            revertTeamLeadToEmployee(team);
-            team.setTeamLeader(userRepository.getById(teamDTO.getTeamLeaderId()));
+        if (oldTeamLead != null && !oldTeamLead.getId().equals(teamDTO.getTeamLeaderId())) {
+                revertTeamLeadToEmployee(team);
         }
+        team.setTeamLeader(userRepository.getById(teamDTO.getTeamLeaderId()));
         team.setName(teamDTO.getName());
         team.getMembers().clear();
         List<User> members = new ArrayList<>();

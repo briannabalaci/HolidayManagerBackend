@@ -38,10 +38,13 @@ public class TeamController {
     @AllowAdmin
     @PutMapping("/update")
     public ResponseEntity<TeamDto> update(@RequestBody TeamUpdateDto entityDto) throws Exception {
+        log.info("Afisez in update hellooo?");
         try {
+            log.info("Afisez in update in try.......?");
             return new ResponseEntity<>(teamService.update(entityDto), HttpStatus.OK);
         }catch(Exception e){
-            log.info("Intra pe catch");
+            log.info("Intra pe catch in update");
+            log.info("Message: "+e.getMessage().toString());
             return new ResponseEntity<>(new TeamDto(),HttpStatus.OK);
         }
     }
