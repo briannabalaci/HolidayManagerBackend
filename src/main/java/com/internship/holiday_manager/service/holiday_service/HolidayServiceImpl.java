@@ -109,7 +109,7 @@ public class HolidayServiceImpl implements HolidayService{
     private User findSubstituteForTeamlead(User employee){
         User teamLeader = employee.getTeam().getTeamLeader();
 
-        List<Substitute> substitutes = this.substituteRepository.findAll().stream().filter(s -> s.getTeamLead().equals(teamLeader)).filter(s -> { return s.getStartDate().isBefore(now()) || s.getStartDate().equals(now()) || s.getEndDate().equals(now());}).collect(Collectors.toList());
+        List<Substitute> substitutes = this.substituteRepository.findAll().stream().filter(s -> s.getTeamLead().equals(teamLeader)).filter(s -> { return (s.getStartDate().isBefore(now()) || s.getStartDate().isEqual(now())) && (now().isBefore(s.getEndDate()) || now().isEqual(s.getEndDate()));}).collect(Collectors.toList());
 
         if(substitutes.size() == 1){
             return substitutes.get(0).getSubstitute();
@@ -822,7 +822,8 @@ public class HolidayServiceImpl implements HolidayService{
 
 
     private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, Substitute s){
-        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()))
+        log.info("holiday creation time: " + d.getCreationDate() + " teamlead holiday start date: " + s.getStartDate() + " end date " + s.getEndDate());
+        if((d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate())) && (d.getCreationDate().equals(s.getEndDate()) || d.getCreationDate().isBefore(s.getEndDate())))
             return true;
         return false;
     }
