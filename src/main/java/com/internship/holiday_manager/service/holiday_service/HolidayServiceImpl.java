@@ -739,7 +739,7 @@ public class HolidayServiceImpl implements HolidayService{
 
 
     private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, Substitute s){
-        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()))
+        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()) || d.getCreationDate().isBefore(s.getEndDate()))
             return true;
         return false;
     }
