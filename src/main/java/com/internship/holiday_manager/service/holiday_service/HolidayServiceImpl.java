@@ -738,8 +738,8 @@ public class HolidayServiceImpl implements HolidayService{
     }
 
 
-    private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, DetailedHoliday dd){
-        if(d.getCreationDate().isAfter(dd.getCreationDate()) || d.getCreationDate().equals(dd.getCreationDate()))
+    private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, Substitute s){
+        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()))
             return true;
         return false;
     }
@@ -759,8 +759,6 @@ public class HolidayServiceImpl implements HolidayService{
 
         List<DetailedHoliday> detailedSubstitutes = new ArrayList<>();
 
-        substitutes.forEach(s -> {detailedSubstitutes.add(this.detailedHolidayRepository.findByHoliday(s.getHoliday()));});
-
 
         // We take all the detailed holidays requests of the users for which the teamleaders have the given substitute active (the one with substituteId), parse them and check for each of them if they were created
         // after the teamlead went in vacation
@@ -769,9 +767,9 @@ public class HolidayServiceImpl implements HolidayService{
                 .map(h -> this.detailedHolidayRepository.findByHoliday(h))
                 .forEach(h ->
                 {
-                    detailedSubstitutes.forEach(d ->
+                    substitutes.forEach(s ->
                     {
-                        if(this.checkRequestCreatedWhileTeamleadGone(h, d)){
+                        if(this.checkRequestCreatedWhileTeamleadGone(h, s)){
                             holidays.add(this.holidayRepository.findByID(h.getHoliday().getId()));
                         }
                     });
