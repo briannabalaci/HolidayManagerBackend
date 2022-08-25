@@ -570,7 +570,6 @@ public class HolidayServiceImpl implements HolidayService{
         User user = this.userRepository.findByEmail(email);
         Holiday holiday = this.holidayRepository.findByID(holidayId);
 
-
         if(holiday.getStatus() == HolidayStatus.DENIED) {
             decreaseNoHolidays(holiday);
         }
@@ -633,7 +632,6 @@ public class HolidayServiceImpl implements HolidayService{
 
         return 1;
     }
-
     @Override
     public Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId) {
         User user = this.userRepository.findByEmail(email);
@@ -648,8 +646,9 @@ public class HolidayServiceImpl implements HolidayService{
                     sD.isBefore(x.getStartDate()) && eD.isAfter(x.getEndDate()) ||
                     sD.isAfter(x.getStartDate()) && eD.isBefore(x.getEndDate()) ||
                     sD.isEqual(x.getStartDate()) || sD.isEqual(x.getEndDate()) ||
-                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate())))
+                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate()))) {
                 return 0;
+            }
         };
 
         return 1;
