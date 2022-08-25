@@ -82,7 +82,14 @@ public class TeamLeadServiceImpl implements TeamLeadService{
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
         document.newPage();
+        Paragraph documentParagraph = new Paragraph();
 
+        Font titleParagraphFont=new Font(Font.FontFamily.HELVETICA, 30);
+        Paragraph titleParagraph = new Paragraph("TEAM LEAD REPORT",titleParagraphFont);
+        titleParagraph.setAlignment(Element.ALIGN_CENTER);
+        titleParagraph.setSpacingAfter(40f);
+
+        documentParagraph.add(titleParagraph);
 
         Font tableHeadFont=new Font(Font.FontFamily.HELVETICA, 12);
         tableHeadFont.setColor(230, 132, 11);
@@ -94,7 +101,7 @@ public class TeamLeadServiceImpl implements TeamLeadService{
                         Paragraph userParagraph = new Paragraph();
 
 
-                        Paragraph userDetailsParagraph=new Paragraph(user.getForname()+" "+user.getSurname()+"- holiday days: "+user.getNrHolidays(),userDetailsParagraphFont);
+                        Paragraph userDetailsParagraph=new Paragraph(user.getForname()+" "+user.getSurname()+" - holiday days: "+user.getNrHolidays(),userDetailsParagraphFont);
                         userDetailsParagraph.setAlignment(Element.ALIGN_LEFT);
                         userDetailsParagraph.setIndentationLeft(140f);
                         userDetailsParagraph.setSpacingAfter(15f);
@@ -164,16 +171,6 @@ i++;
 
                 startDateCell.setPadding(7f);
                 endDateCell.setPadding(7f);
-                if (h.getSubstitute() != null) {
-                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
-                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    substitutCell.setPadding(7f);
-                    requestsTable.addCell(substitutCell);
-                }
-                else{  PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
-                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    substitutCell.setPadding(7f);
-                    requestsTable.addCell(substitutCell);}
                 typeCell.setPadding(7f);
                 statusCell.setPadding(7f);
 
@@ -186,8 +183,22 @@ i++;
 
                 requestsTable.addCell(startDateCell);
                 requestsTable.addCell(endDateCell);
+
+                if (h.getSubstitute() != null) {
+                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
+                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    substitutCell.setPadding(7f);
+                    requestsTable.addCell(substitutCell);
+                }
+                else{  PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
+                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    substitutCell.setPadding(7f);
+                    requestsTable.addCell(substitutCell);}
+
                 requestsTable.addCell(typeCell);
                 requestsTable.addCell(statusCell);
+
+
                 if (h.getDetails() != null) {
                     PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails()));
                     detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -242,14 +253,15 @@ i++;
 
                         try {userParagraph.add(requestsTable);
                             document.add(new Paragraph(" "));
-                            document.add(userParagraph);
+                            documentParagraph.add(userParagraph);
+
                         } catch (DocumentException e) {
                             e.printStackTrace();
                         }
 
                     }}
         );
-
+        document.add(documentParagraph);
      //document.add(membersTable);
 
 

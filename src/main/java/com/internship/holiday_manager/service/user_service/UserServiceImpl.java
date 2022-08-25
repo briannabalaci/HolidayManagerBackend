@@ -5,9 +5,12 @@ import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.dto.user.UserNameDto;
+import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
+import com.internship.holiday_manager.repository.HolidayRepository;
+import com.internship.holiday_manager.repository.NotificationRepository;
 import com.internship.holiday_manager.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private final UserWithTeamIdMapper userWithTeamIdMapper;
 
+
+    @Autowired
+    private final HolidayRepository holidayRepository;
+
+    @Autowired
+    private final NotificationRepository notificationRepository;
 
     public UserDto authentication(LoginUserDto dto) {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
@@ -133,10 +142,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(String email) {
         User u = userRepository.findByEmail(email);
+
+        this.notificationRepository.deleteAll(this.notificationRepository.findByReceiver(u));
+        this.notificationRepository.deleteAll(this.notificationRepository.findBySender(u));
+
+        List<Holiday> holidays = this.holidayRepository.findByUserId(u.getId());
+        this.holidayRepository.deleteAll(holidays);
+
         if (u != null) {
             userRepository.deleteById(u.getId());
         }
     }
+
 
     @Override
     public UserDto findUserById(Long id) {
