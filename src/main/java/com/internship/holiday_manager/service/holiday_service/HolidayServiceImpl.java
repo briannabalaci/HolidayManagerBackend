@@ -24,7 +24,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
@@ -670,7 +672,7 @@ public class HolidayServiceImpl implements HolidayService{
     public List<HolidayDto> getRequestsForSubstitute(Long substituteId) {
         LocalDateTime now = now();
 
-        List<Holiday> holidays = new ArrayList<>();
+        Set<Holiday> holidays = new HashSet<>();
 
         //We take all the substitutes which have the substitute the one with the id substituteId
         List<Substitute> substitutes = substituteRepository.findAll()
@@ -694,8 +696,10 @@ public class HolidayServiceImpl implements HolidayService{
                     });
                 });
 
-
-        return this.holidayMapper.entitiesToDtos(holidays);
+        log.info("Am ajuns in substitute " + holidays.size());
+        List<Holiday> holidayList = new ArrayList<>();
+        holidayList.addAll(holidays);
+        return this.holidayMapper.entitiesToDtos(holidayList);
 
     }
 
