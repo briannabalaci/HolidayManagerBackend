@@ -278,7 +278,7 @@ public class HolidayServiceImpl implements HolidayService{
             if(u.getUser().getType() == UserType.EMPLOYEE ){
                 User teamLeader = user.getTeam().getTeamLeader();
                 if(this.isTeamLeadInHoliday(teamLeader)){
-                    sendNotificationToSubstitute(holidayMapper.entityToDto(u), NotificationType.UPDATE_SUBSTITUTE, this.userRepository.getById(substituteId));
+                    sendNotificationToSubstitute(holidayMapper.entityToDto(u), NotificationType.UPDATE_SUBSTITUTE, findSubstituteForTeamlead(user));
 
                     ChangeHolidayData(holidayDto,u);
                     Holiday updatedHoliday = holidayRepository.save(u);
@@ -739,7 +739,7 @@ public class HolidayServiceImpl implements HolidayService{
 
 
     private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, Substitute s){
-        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()) || d.getCreationDate().isBefore(s.getEndDate()))
+        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()))
             return true;
         return false;
     }
