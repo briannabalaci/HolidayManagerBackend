@@ -460,16 +460,16 @@ public class HolidayServiceImpl implements HolidayService{
         User user = this.userRepository.findByEmail(email);
         LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId()).stream().filter(x -> x.getId()!=holidayId).collect(Collectors.toList());
+        List<Holiday> hds = holidayRepository.findUsersHolidays(user.getId()).stream().filter(x -> !x.getId().equals(holidayId)).collect(Collectors.toList());
         for(Holiday x : hds){
             if(!(x.getStatus().equals(HolidayStatus.DENIED)) && (sD.isBefore(x.getStartDate()) && eD.isAfter(x.getStartDate()) ||
                     sD.isBefore(x.getEndDate()) && eD.isAfter(x.getEndDate()) ||
                     sD.isBefore(x.getStartDate()) && eD.isAfter(x.getEndDate()) ||
                     sD.isAfter(x.getStartDate()) && eD.isBefore(x.getEndDate()) ||
                     sD.isEqual(x.getStartDate()) || sD.isEqual(x.getEndDate()) ||
-                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate())))
+                    eD.isEqual(x.getStartDate()) || eD.isEqual(x.getEndDate()))) {
                 return 0;
+            }
         };
 
         return 1;
