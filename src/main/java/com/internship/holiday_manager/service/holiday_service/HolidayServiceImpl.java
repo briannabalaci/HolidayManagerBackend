@@ -354,6 +354,8 @@ public class HolidayServiceImpl implements HolidayService{
         return null;
     }
 
+
+
     @Override
     public List<HolidayDto> getRequestsByType(Long teamLeaderId, HolidayType type) {
         List<Holiday> entities = this.holidayRepository.findAllByTypeAndUserId(type, teamLeaderId);
