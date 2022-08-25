@@ -342,7 +342,10 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto deleteHoliday(Long id) {
         Holiday holiday = holidayRepository.findByID(id);
-        Substitute s = this.substituteRepository.findByHoliday(holiday);
+        User user = holiday.getUser();
+        User teamLeader = user.getTeam().getTeamLeader();
+        User substituter = this.findSubstituteForTeamlead(teamLeader);
+
         HolidayDto holidayDto = holidayMapper.entityToDto(holiday);
 
 
@@ -352,8 +355,8 @@ public class HolidayServiceImpl implements HolidayService{
             }
             //send notification
             if(holidayDto.getUser().getType()==UserType.EMPLOYEE) {
-                if(s!=null){//send notif to the substitute
-                    sendNotificationDeleteRequest(userWithTeamIdDtoMapper.dtoToEntity(holidayDto.getUser()),s.getSubstitute(), NotificationType.CANCELED_SUBSTITUTE);
+                if(substituter!=null){//send notif to the substitute
+                    sendNotificationDeleteRequest(user,substituter, NotificationType.CANCELED_SUBSTITUTE);
                 }
                 else { //send notif to the teamlead
                     User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
@@ -362,6 +365,8 @@ public class HolidayServiceImpl implements HolidayService{
                 }
             }
             else if(holiday.getUser().getType()==UserType.TEAMLEAD ){
+                Substitute s = this.substituteRepository.findByHoliday(holiday);
+
                 if(s!=null){ //there is substitute
                     sendNotificationDeleteRequest(s.getTeamLead(),s.getSubstitute(),NotificationType.END_SUBSTITUTE);
                 }
@@ -371,6 +376,8 @@ public class HolidayServiceImpl implements HolidayService{
 
         this.detailedHolidayRepository.delete(this.detailedHolidayRepository.findByHoliday(holiday));
         if(holiday.getUser().getType().equals(UserType.TEAMLEAD)){
+            Substitute s = this.substituteRepository.findByHoliday(holiday);
+
             if(s!=null) {// if the user is a teamlead and there is a substitute
                 this.substituteRepository.delete(s);
             }
