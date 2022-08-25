@@ -5,11 +5,17 @@ import com.internship.holiday_manager.dto.user.LoginUserDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.dto.user.UserNameDto;
+
 import com.internship.holiday_manager.entity.*;
 import com.internship.holiday_manager.entity.enums.UserType;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
 import com.internship.holiday_manager.repository.*;
+
+import com.internship.holiday_manager.entity.Holiday;
+import com.internship.holiday_manager.repository.HolidayRepository;
+import com.internship.holiday_manager.repository.NotificationRepository;
+import com.internship.holiday_manager.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +54,7 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private final DetailedHolidayRepository detailedHolidayRepository;
+    
 
     public UserDto authentication(LoginUserDto dto) {
         return userMapper.entityToDto(userRepository.findByEmailAndPassword(dto.getEmail(), dto.getPassword()));
@@ -150,6 +157,7 @@ public class UserServiceImpl implements UserService {
         this.notificationRepository.deleteAll(this.notificationRepository.findBySender(u));
 
         List<Holiday> holidays = this.holidayRepository.findByUserId(u.getId());
+
         holidays.forEach(h ->
         {
             this.detailedHolidayRepository.delete(this.detailedHolidayRepository.findByHoliday(h));
@@ -168,6 +176,7 @@ public class UserServiceImpl implements UserService {
             userRepository.deleteById(u.getId());
         }
     }
+
 
     @Override
     public UserDto findUserById(Long id) {
