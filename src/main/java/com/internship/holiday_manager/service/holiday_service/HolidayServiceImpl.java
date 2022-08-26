@@ -109,9 +109,12 @@ public class HolidayServiceImpl implements HolidayService{
     private User findSubstituteForTeamlead(User employee){
         User teamLeader = employee.getTeam().getTeamLeader();
 
-        List<Substitute> substitutes = this.substituteRepository.findAll().stream().filter(s -> s.getTeamLead().equals(teamLeader)).filter(s -> { return s.getStartDate().isBefore(now()) || s.getStartDate().equals(now()) || s.getEndDate().equals(now());}).collect(Collectors.toList());
+        List<Substitute> substitutes = this.substituteRepository.findAll().stream().filter(s -> s.getTeamLead().equals(teamLeader)).filter(s -> { return (s.getStartDate().isBefore(now()) || s.getStartDate().isEqual(now())) && (now().isBefore(s.getEndDate()) || now().isEqual(s.getEndDate()));}).collect(Collectors.toList());
 
-        return substitutes.get(0).getSubstitute();
+        if(substitutes.size() == 1){
+            return substitutes.get(0).getSubstitute();
+        }
+        return null;
     }
 
     @Override
@@ -241,24 +244,22 @@ public class HolidayServiceImpl implements HolidayService{
     }
     @Override
     public HolidayDto updateHoliday(HolidayDto holidayDto, Long substituteId) {
-        Holiday u = holidayRepository.findByID(holidayDto.getId());
-        u.setDetails(null);
+        Holiday holiday = holidayRepository.findByID(holidayDto.getId());
+        holiday.setDetails(null);
 
-        User user = u.getUser();
+        User user = this.userRepository.getById(holiday.getUser().getId());
 
-        if(u!= null) {
+        if(holiday!= null) {
 
-            Holiday holiday = holidayRepository.findByID(holidayDto.getId());
-
-            if(u.getType().equals(UserType.TEAMLEAD)){
+            if(user.getType().equals(UserType.TEAMLEAD)){
                 Substitute substitute = this.substituteRepository.findByHoliday(holiday);
                 if(substitute.getSubstitute().getId() != substituteId){
 
-                    sendNotificationToSubstitute(holidayMapper.entityToDto(u), NotificationType.MADE_SUBSTITUTE, this.userRepository.getById(substituteId));
-                    sendNotificationToSubstitute(holidayMapper.entityToDto(u), NotificationType.END_SUBSTITUTE, substitute.getSubstitute());
+                    sendNotificationToSubstitute(holidayMapper.entityToDto(holiday), NotificationType.MADE_SUBSTITUTE, this.userRepository.getById(substituteId));
+                    sendNotificationToSubstitute(holidayMapper.entityToDto(holiday), NotificationType.END_SUBSTITUTE, substitute.getSubstitute());
 
-                    ChangeHolidayData(holidayDto,u);
-                    Holiday updatedHoliday = holidayRepository.save(u);
+                    ChangeHolidayData(holidayDto,holiday);
+                    Holiday updatedHoliday = holidayRepository.save(holiday);
 
                     this.updateReplacement(substitute, updatedHoliday, substituteId);
                     this.updateDetailedHoliday(holiday, updatedHoliday);
@@ -266,10 +267,10 @@ public class HolidayServiceImpl implements HolidayService{
                     return holidayMapper.entityToDto(updatedHoliday);
 
                 } else {
-                    sendNotificationToSubstitute(holidayMapper.entityToDto(u), NotificationType.UPDATE_SUBSTITUTE, substitute.getSubstitute());
+                    sendNotificationToSubstitute(holidayMapper.entityToDto(holiday), NotificationType.UPDATE_SUBSTITUTE, substitute.getSubstitute());
 
-                    ChangeHolidayData(holidayDto,u);
-                    Holiday updatedHoliday = holidayRepository.save(u);
+                    ChangeHolidayData(holidayDto,holiday);
+                    Holiday updatedHoliday = holidayRepository.save(holiday);
 
                     this.updateReplacement(substitute, updatedHoliday, substituteId);
                     this.updateDetailedHoliday(holiday, updatedHoliday);
@@ -278,22 +279,22 @@ public class HolidayServiceImpl implements HolidayService{
                 }
             }
 
-            if(u.getUser().getType() == UserType.EMPLOYEE ){
+            if(user.getType() == UserType.EMPLOYEE ){
                 User teamLeader = user.getTeam().getTeamLeader();
                 if(this.isTeamLeadInHoliday(teamLeader)){
-                    sendNotificationToSubstitute(holidayMapper.entityToDto(u), NotificationType.UPDATE_SUBSTITUTE, findSubstituteForTeamlead(user));
+                    sendNotificationToSubstitute(holidayMapper.entityToDto(holiday), NotificationType.UPDATE_SUBSTITUTE, findSubstituteForTeamlead(user));
 
-                    ChangeHolidayData(holidayDto,u);
-                    Holiday updatedHoliday = holidayRepository.save(u);
+                    ChangeHolidayData(holidayDto,holiday);
+                    Holiday updatedHoliday = holidayRepository.save(holiday);
 
                     this.updateDetailedHoliday(holiday, updatedHoliday);
 
                     return holidayMapper.entityToDto(updatedHoliday);
                 } else {
-                    sendNotificationToTeamLead(holidayMapper.entityToDto(u), NotificationType.UPDATE);
+                    sendNotificationToTeamLead(holidayMapper.entityToDto(holiday), NotificationType.UPDATE);
 
-                    ChangeHolidayData(holidayDto,u);
-                    Holiday updatedHoliday = holidayRepository.save(u);
+                    ChangeHolidayData(holidayDto,holiday);
+                    Holiday updatedHoliday = holidayRepository.save(holiday);
 
                     this.updateDetailedHoliday(holiday, updatedHoliday);
 
@@ -341,7 +342,10 @@ public class HolidayServiceImpl implements HolidayService{
     @Override
     public HolidayDto deleteHoliday(Long id) {
         Holiday holiday = holidayRepository.findByID(id);
-        Substitute s = this.substituteRepository.findByHoliday(holiday);
+        User user = holiday.getUser();
+        User teamLeader = user.getTeam().getTeamLeader();
+        User substituter = this.findSubstituteForTeamlead(teamLeader);
+
         HolidayDto holidayDto = holidayMapper.entityToDto(holiday);
 
 
@@ -351,8 +355,8 @@ public class HolidayServiceImpl implements HolidayService{
             }
             //send notification
             if(holidayDto.getUser().getType()==UserType.EMPLOYEE) {
-                if(s!=null){//send notif to the substitute
-                    sendNotificationDeleteRequest(userWithTeamIdDtoMapper.dtoToEntity(holidayDto.getUser()),s.getSubstitute(), NotificationType.CANCELED_SUBSTITUTE);
+                if(substituter!=null){//send notif to the substitute
+                    sendNotificationDeleteRequest(user,substituter, NotificationType.CANCELED_SUBSTITUTE);
                 }
                 else { //send notif to the teamlead
                     User sender = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
@@ -361,6 +365,8 @@ public class HolidayServiceImpl implements HolidayService{
                 }
             }
             else if(holiday.getUser().getType()==UserType.TEAMLEAD ){
+                Substitute s = this.substituteRepository.findByHoliday(holiday);
+
                 if(s!=null){ //there is substitute
                     sendNotificationDeleteRequest(s.getTeamLead(),s.getSubstitute(),NotificationType.END_SUBSTITUTE);
                 }
@@ -370,6 +376,8 @@ public class HolidayServiceImpl implements HolidayService{
 
         this.detailedHolidayRepository.delete(this.detailedHolidayRepository.findByHoliday(holiday));
         if(holiday.getUser().getType().equals(UserType.TEAMLEAD)){
+            Substitute s = this.substituteRepository.findByHoliday(holiday);
+
             if(s!=null) {// if the user is a teamlead and there is a substitute
                 this.substituteRepository.delete(s);
             }
@@ -468,39 +476,87 @@ public class HolidayServiceImpl implements HolidayService{
 
         notificationService.createNotification(notificationDto);
     }
+
+    private void sendNotificationToEmployeeFromSubstitute(HolidayDto holidayDto, NotificationType type, User substitute){
+        User receiver = userRepository.getById(holidayDto.getUser().getId()); // the user that made the holiday request
+        UserWithTeamIdDto senderDto = UserWithTeamIdDto.builder()
+                .id(substitute.getId()).email(substitute.getEmail()).forname(substitute.getForname()).surname(substitute.getSurname()).department(substitute.getDepartment())
+                .role(substitute.getRole()).nrHolidays(substitute.getNrHolidays()).type(substitute.getType()).teamId(substitute.getTeam().getId())
+                .build();
+
+        NotificationDto notificationDto = new NotificationDto();
+        notificationDto.setReceiver(holidayDto.getUser());
+        notificationDto.setSender(senderDto);
+        notificationDto.setType(type);
+        notificationDto.setSendDate(now());
+        notificationDto.setSeen(false);
+        notificationDto.setRequest(holidayDto);
+
+        notificationService.createNotification(notificationDto);
+    }
+
     @Override
     public HolidayDto approveHolidayRequest(Long id) {
         HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(id));
         HolidayDto updated;
 
+        Holiday holiday = this.holidayRepository.getById(id);
+        User user = holiday.getUser();
+        User teamLeader = user.getTeam().getTeamLeader();
+        User substitute = this.findSubstituteForTeamlead(teamLeader);
+
         holidayDto.setStatus(HolidayStatus.APPROVED);
         holidayDto.setDetails(null);
-        sendNotificationToEmployee(holidayDto,NotificationType.APPROVED);
+
+        if(substitute != null){
+            sendNotificationToEmployeeFromSubstitute(holidayDto, NotificationType.APPROVED_SUBSTITUTE, substitute);
+        }
+        else {
+            sendNotificationToEmployee(holidayDto,NotificationType.APPROVED);
+        }
 
         return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
     }
 
     @Override
     public HolidayDto denyHolidayRequest(Long id) {
+        Holiday holiday = this.holidayRepository.getById(id);
         HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(id));
+        User user = holiday.getUser();
+        User teamLeader = user.getTeam().getTeamLeader();
+        User substitute = this.findSubstituteForTeamlead(teamLeader);
+
+        if(substitute != null){
+            sendNotificationToEmployeeFromSubstitute(holidayDto, NotificationType.DENIED_SUBSTITUTE, substitute);
+        }
+        else {
+            sendNotificationToEmployee(holidayDto,NotificationType.DENIED);
+        }
+
         holidayDto.setStatus(HolidayStatus.DENIED);
         holidayDto.setDetails(null);
 
-        Holiday holiday = holidayMapper.dtoToEntity(holidayDto);
-
         increaseNoHolidays(holiday);
-
-        sendNotificationToEmployee(holidayDto,NotificationType.DENIED);
 
         return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
     }
 
     @Override
     public HolidayDto requestMoreDetails(UpdateDetailsHolidayDto updateDetailsHolidayDto) {
+        Holiday holiday = this.holidayRepository.getById(updateDetailsHolidayDto.getId());
+        User user = holiday.getUser();
+        User teamLeader = user.getTeam().getTeamLeader();
+        User substitute = this.findSubstituteForTeamlead(teamLeader);
+
         HolidayDto holidayDto = holidayMapper.entityToDto(holidayRepository.getById(updateDetailsHolidayDto.getId()));
         holidayDto.setDetails(updateDetailsHolidayDto.getDetails());
 
-        sendNotificationToEmployee(holidayDto,NotificationType.MORE_DETAILS);
+        if(substitute != null){
+            sendNotificationToEmployeeFromSubstitute(holidayDto, NotificationType.MORE_DETAILS_SUBSTITUTE, substitute);
+        }
+        else {
+            sendNotificationToEmployee(holidayDto,NotificationType.MORE_DETAILS);
+        }
 
         return holidayMapper.entityToDto(holidayRepository.save(holidayMapper.dtoToEntity(holidayDto)));
 
@@ -766,7 +822,8 @@ public class HolidayServiceImpl implements HolidayService{
 
 
     private boolean checkRequestCreatedWhileTeamleadGone(DetailedHoliday d, Substitute s){
-        if(d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate()) || d.getCreationDate().equals(s.getEndDate()))
+        log.info("holiday creation time: " + d.getCreationDate() + " teamlead holiday start date: " + s.getStartDate() + " end date " + s.getEndDate());
+        if((d.getCreationDate().isAfter(s.getStartDate()) || d.getCreationDate().equals(s.getStartDate())) && (d.getCreationDate().equals(s.getEndDate()) || d.getCreationDate().isBefore(s.getEndDate())))
             return true;
         return false;
     }
