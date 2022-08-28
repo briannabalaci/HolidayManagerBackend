@@ -96,4 +96,5 @@ public class UserController {
     public ResponseEntity<List<UserDto>> filterByName(@RequestBody UserNameDto userNameDto) {
         return new ResponseEntity<>(this.userService.filterByName(userNameDto), HttpStatus.OK);
     }
+
 }

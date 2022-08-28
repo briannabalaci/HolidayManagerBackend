@@ -17,9 +17,14 @@ import com.internship.holiday_manager.repository.TeamRepository;
 import com.internship.holiday_manager.repository.UserRepository;
 import com.internship.holiday_manager.service.notification_service.NotificationService;
 import com.internship.holiday_manager.service.teamlead_service.TeamLeadService;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -568,5 +573,91 @@ public class HolidayServiceImpl implements HolidayService{
 
         return 1;
     }
+
+    public byte[] generateHrPDF(HolidayDto holidayDto){
+        Holiday holiday = holidayMapper.dtoToEntity(holidayDto);
+       User emp=holiday.getUser();
+       //User teamLead=emp.getTeam().getTeamLeader();
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        Document document = new Document(PageSize.A4, 5, 5, 5 , 5);
+
+
+
+try{
+
+
+        PdfWriter.getInstance(document, byteArrayOutputStream);
+        document.open();
+        document.newPage();
+        Paragraph documentParagraph = new Paragraph();
+
+        Font titleParagraphFont=new Font(Font.FontFamily.HELVETICA, 12);
+        Paragraph titleParagraph = new Paragraph("Cerere concediu de odihna / Urlaubsantrag",titleParagraphFont);
+        titleParagraph.setAlignment(Element.ALIGN_CENTER);
+document.add(titleParagraph);
+
+        Font firstParagraphFont=new Font(Font.FontFamily.HELVETICA, 12);
+        Paragraph firstParagraph=new Paragraph();
+    documentParagraph.add(firstParagraph);
+        Phrase p1=new Phrase("Dl/Dna "+emp.getForname()+" "+emp.getSurname()+" angajat in funcția de "+emp.getRole()+" solicit plecarea in concediu pe anul");
+        Font yearPhraseFont=new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+        Phrase year=new Phrase(LocalDateTime.MAX.getYear());
+        Phrase p2=new Phrase("de la data de " +holiday.getStartDate() + " pana la data de "+holiday.getEndDate()+" adica "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi.");
+        firstParagraph.add(p1);
+        firstParagraph.add(year);
+        firstParagraph.add(p2);
+        firstParagraph.setFont(firstParagraphFont);
+
+        Font secondParagraphFont=new Font(Font.FontFamily.HELVETICA, 12,Font.BOLD);
+        Paragraph secondParagraph=new Paragraph("Declar pe proprie raspundere ca managerul a fost informat despre intentia de a pleca in concediu.");
+    documentParagraph.add(secondParagraph);
+        Font thirdParagraphFont=new Font(Font.FontFamily.HELVETICA, 12,Font.BOLD);
+        Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat impreuna cu Supervizorul meu, pe durata concediului voi fi inlocuit pe proiecte de catre "+holiday.getSubstitute()+".");
+        thirdParagraph.setFont(thirdParagraphFont);
+        documentParagraph.add(thirdParagraph);
+
+
+        Font userSignatureFont=new Font(Font.FontFamily.HELVETICA, 12);
+        Paragraph userSignatureParagraph=new Paragraph();
+        Paragraph userName=new Paragraph("Nume și prenume ");
+        Paragraph userSignatureText=new Paragraph("Semnatura ");
+        Paragraph userSignature=new Paragraph("_________________________________________");
+        userSignatureParagraph.add(userName);
+        userSignatureParagraph.add(userSignatureText);
+        userSignatureParagraph.add(userSignature);
+
+        userSignatureParagraph.setAlignment(Element.ALIGN_LEFT);
+
+
+    documentParagraph.add(userSignatureParagraph);
+
+
+
+        Font aprobareParagraphFont=new Font(Font.FontFamily.HELVETICA, 12);
+        Paragraph aprobareParagraph=new Paragraph();
+        Font aprobareFont= new Font(Font.FontFamily.HELVETICA, 12,Font.BOLD);
+        Paragraph aprobare=new Paragraph("Se aproba / Genehmigt, ");
+        aprobare.setFont(aprobareFont);
+        Paragraph aprobareName=new Paragraph("Nume și prenume ");
+        Paragraph aprobareSignature=new Paragraph("Semnatura ");
+        Paragraph aprobareSig=new Paragraph("_________________________________________");
+        aprobareParagraph.add(aprobare);
+        aprobareParagraph.add(aprobareName);
+        aprobareParagraph.add(aprobareSignature);
+        aprobareParagraph.add(aprobareSig);
+    aprobareParagraph.setAlignment(Element.ALIGN_RIGHT);
+    documentParagraph.add(aprobareParagraph);
+        document.add(documentParagraph);
+
+
+        }
+catch (Exception e){}
+        document.close();
+        return byteArrayOutputStream.toByteArray();
+    }
+
+
+
 
 }

@@ -97,7 +97,7 @@ public class TeamLeadServiceImpl implements TeamLeadService{
         float [] pointColumnWidthsRequestsTable = {250f, 250f,250f,250f,250f,350f};
 
         members.forEach(user -> {
-                    if(!user.getType().name().equals("TEAMLEAD")){
+
                         Paragraph userParagraph = new Paragraph();
 
 
@@ -259,7 +259,7 @@ i++;
                             e.printStackTrace();
                         }
 
-                    }}
+                    }
         );
         document.add(documentParagraph);
      //document.add(membersTable);
