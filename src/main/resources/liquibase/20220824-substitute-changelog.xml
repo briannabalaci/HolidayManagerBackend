@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="20220824-substitute-001" author="mbledea2">
+        <createTable tableName="SUBSTITUTE">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="START_DATE" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="END_DATE" type="TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="SUBSTITUTE_ID" type="BIGINT">
+                <constraints foreignKeyName="fk_substitute_id" references="users(id)"/>
+            </column>
+            <column name="TEAMLEAD_ID" type="BIGINT">
+                <constraints foreignKeyName="fk_teamlead_id" references="users(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20220825-substitute-002" author="mbledea2">
+        <addColumn tableName="SUBSTITUTE">
+            <column name="HOLIDAY_ID" type="BIGINT">
+                <constraints foreignKeyName="fk_holiday_id" references="holiday(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

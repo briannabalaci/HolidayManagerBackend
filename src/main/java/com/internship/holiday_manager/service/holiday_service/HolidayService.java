@@ -22,11 +22,11 @@ public interface HolidayService {
     HolidayDto setStatusHoliday(HolidayDto holidayDto);
 
 
-    HolidayDto updateHolidayRequest(HolidayDto holidayDto);
+    HolidayDto updateHolidayRequest(HolidayDto holidayDto, Long substituteId);
 
-    HolidayDto createHoliday(HolidayDto holidayDto);
+    HolidayDto createHoliday(HolidayDto holidayDto, Long substituteId);
 
-    HolidayDto updateHoliday(HolidayDto holidayDto);
+    HolidayDto updateHoliday(HolidayDto holidayDto, Long substituteId);
 
     List<HolidayDto> getAll();
 
@@ -122,12 +122,17 @@ public interface HolidayService {
      * @param startDate - the start date of the holiday
      * @param endDate - the end date of the holiday
      * @param holidayId - the id of the holiday before update
-     * @return - returns 1 if the request can be created and 0 otherwise
+     * @return - returns 1 if the request can be updated and 0 otherwise
      */
     Integer checkRequestUpdate(String email, HolidayType type,  String startDate, String endDate, Long holidayId);
 
     Integer checkIfDatesOverlap(String email, String startDate, String endDate);
 
     Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId);
+
     public byte[] generateHrPDF(HolidayDto holidayDto);
+
+    List<HolidayDto> getRequestsForSubstitute(Long substituteId);
+
+
 }

@@ -26,7 +26,7 @@ public interface HolidayRepository extends JpaRepository<Holiday,Long> {
 
     List<Holiday> findByUserId(Long userId);
 
-    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and" +
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and " +
             " h.type =:type and h.user.id in " +
             "(SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :forname,'%')) or " +
             "lower(u.forname) like lower(concat('%', :surname,'%')) or " +
@@ -40,18 +40,20 @@ public interface HolidayRepository extends JpaRepository<Holiday,Long> {
             "lower(u.surname) like lower(concat('%', :name,'%'))))) ", nativeQuery = true)
     List<Holiday> filterByTypeAndOneUserName(@Param("teamleadId") Long teamleadId,@Param("type") HolidayType type,@Param("name") String name);
 
-    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.user.id in " +
-            "SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :forname,'%')) or " +
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.user.id in" +
+            "(SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :forname,'%')) or " +
             "lower(u.forname) like lower(concat('%', :surname,'%')) or " +
             "lower(u.surname) like lower(concat('%', :forname,'%')) or " +
-            "lower(u.surname) like lower(concat('%', :surname,'%')))", nativeQuery = true)
+            "lower(u.surname) like lower(concat('%', :surname,'%'))))", nativeQuery = true)
     List<Holiday> filterByUserName(@Param("teamleadId") Long teamleadId,@Param("surname") String surname, @Param("forname") String forname);
+
     @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.user.id in " +
             "(SELECT u from User u where u.id != teamleadId and ( lower(u.forname) like lower(concat('%', :name,'%')) or " +
             "lower(u.surname) like lower(concat('%', :name,'%'))))", nativeQuery = true)
     List<Holiday> filterByOneUserName(@Param("teamleadId") Long teamleadId,@Param("name") String name);
 
-    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId and h.type =:type and h.user.id !=teamleadId", nativeQuery = true)
+    @Query(value = "SELECT h from Holiday h where h.user.team.teamLeader.id =:teamleadId" +
+            " and h.type =:type and h.user.id != teamleadId", nativeQuery = true)
     List<Holiday> filterByType(@Param("teamleadId") Long teamleadId, @Param("type") HolidayType type);
 
 }

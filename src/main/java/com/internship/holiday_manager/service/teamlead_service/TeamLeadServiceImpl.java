@@ -37,7 +37,7 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 
-public class TeamLeadServiceImpl implements TeamLeadService{
+public class TeamLeadServiceImpl implements TeamLeadService {
 
     @Autowired
     private final HolidayRepository holidayRepository;
@@ -62,217 +62,182 @@ public class TeamLeadServiceImpl implements TeamLeadService{
         List<Holiday> holidays = new ArrayList<>();
 
         members.forEach(holiday -> {
-                                    if(!holiday.getType().name().equals("TEAMLEAD"))
-                                        holidays.addAll(this.holidayRepository.findByUserId(holiday.getId()));
-                                    }
-                        );
+                    if (!holiday.getType().name().equals("TEAMLEAD"))
+                        holidays.addAll(this.holidayRepository.findByUserId(holiday.getId()));
+                }
+        );
 
         // TODO: - still in doubts if i need this line or not
         // dtos.forEach(h -> { h.getUser().setTeamId(teamId);});
 
         return holidayMapper.entitiesToDtos(holidays);
     }
-// List<HolidayDto> holidays= getTeamRequests(teamId);
+
+    // List<HolidayDto> holidays= getTeamRequests(teamId);
     @Override
     public byte[] getPDF(Long teamId) throws DocumentException {
         List<User> members = this.teamRepository.getById(teamId).getMembers();
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        Document document = new Document(PageSize.B2, 5, 5, 5 , 5);;
+        Document document = new Document(PageSize.B2, 5, 5, 5, 5);
+        ;
         PdfWriter.getInstance(document, byteArrayOutputStream);
         document.open();
         document.newPage();
         Paragraph documentParagraph = new Paragraph();
-
-        Font titleParagraphFont=new Font(Font.FontFamily.HELVETICA, 30);
-        Paragraph titleParagraph = new Paragraph("TEAM LEAD REPORT",titleParagraphFont);
+        Font titleParagraphFont = new Font(Font.FontFamily.HELVETICA, 30);
+        Paragraph titleParagraph = new Paragraph("TEAM LEAD REPORT", titleParagraphFont);
         titleParagraph.setAlignment(Element.ALIGN_CENTER);
         titleParagraph.setSpacingAfter(40f);
-
         documentParagraph.add(titleParagraph);
-
-        Font tableHeadFont=new Font(Font.FontFamily.HELVETICA, 12);
+        Font tableHeadFont = new Font(Font.FontFamily.HELVETICA, 12);
         tableHeadFont.setColor(230, 132, 11);
-        Font userDetailsParagraphFont=new Font(Font.FontFamily.HELVETICA, 20);
-        float [] pointColumnWidthsRequestsTable = {250f, 250f,250f,250f,250f,350f};
-
+        Font userDetailsParagraphFont = new Font(Font.FontFamily.HELVETICA, 20);
+        float[] pointColumnWidthsRequestsTable = {250f, 250f, 250f, 250f, 250f, 350f};
         members.forEach(user -> {
 
                         Paragraph userParagraph = new Paragraph();
 
-
-                        Paragraph userDetailsParagraph=new Paragraph(user.getForname()+" "+user.getSurname()+" - holiday days: "+user.getNrHolidays(),userDetailsParagraphFont);
+                        Paragraph userDetailsParagraph = new Paragraph(user.getForname() + " " + user.getSurname() + " - holiday days: " + user.getNrHolidays(), userDetailsParagraphFont);
                         userDetailsParagraph.setAlignment(Element.ALIGN_LEFT);
                         userDetailsParagraph.setIndentationLeft(140f);
                         userDetailsParagraph.setSpacingAfter(15f);
                         userParagraph.add(userDetailsParagraph);
 
-
                         PdfPTable requestsTable = new PdfPTable(pointColumnWidthsRequestsTable);
                         requestsTable.setHeaderRows(1);
-                        PdfPCell c1 = new PdfPCell(new Phrase("Start Date",tableHeadFont));
+                        PdfPCell c1 = new PdfPCell(new Phrase("Start Date", tableHeadFont));
                         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-
-                        c1 = new PdfPCell(new Phrase("End Date",tableHeadFont));
+                        c1 = new PdfPCell(new Phrase("End Date", tableHeadFont));
                         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-
-                        c1 = new PdfPCell(new Phrase("Substitute",tableHeadFont));
+                        c1 = new PdfPCell(new Phrase("Substitute", tableHeadFont));
                         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-
-                        c1 = new PdfPCell(new Phrase("Type",tableHeadFont));
+                        c1 = new PdfPCell(new Phrase("Type", tableHeadFont));
                         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-
-                        c1 = new PdfPCell(new Phrase("Status",tableHeadFont));
+                        c1 = new PdfPCell(new Phrase("Status", tableHeadFont));
                         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-
-                        c1 = new PdfPCell(new Phrase("Details",tableHeadFont));
+                        c1 = new PdfPCell(new Phrase("Details", tableHeadFont));
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setHorizontalAlignment(Element.ALIGN_CENTER);
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-
-
-
-
-
-
 
 
                         List<Holiday> holidays = new ArrayList<>();
                         holidays.addAll(this.holidayRepository.findByUserId(user.getId()));
-int i=0;
-        for(Holiday h : holidays){
-            if(h.getStatus()!=HolidayStatus.DENIED) {
-i++;
-                PdfPCell startDateCell = new PdfPCell(Phrase.getInstance(h.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
-                PdfPCell endDateCell = new PdfPCell(Phrase.getInstance(h.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                        int i = 0;
+                        for (Holiday h : holidays) {
+                            if (h.getStatus() != HolidayStatus.DENIED) {
+                                i++;
+                                PdfPCell startDateCell = new PdfPCell(Phrase.getInstance(h.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+                                PdfPCell endDateCell = new PdfPCell(Phrase.getInstance(h.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))));
+
+                                PdfPCell typeCell = new PdfPCell(Phrase.getInstance(h.getType().toString()));
+                                PdfPCell statusCell = new PdfPCell(Phrase.getInstance(h.getStatus().toString()));
 
 
-                PdfPCell typeCell = new PdfPCell(Phrase.getInstance(h.getType().toString()));
-                PdfPCell statusCell = new PdfPCell(Phrase.getInstance(h.getStatus().toString()));
+                                startDateCell.setPadding(7f);
+                                endDateCell.setPadding(7f);
+                                typeCell.setPadding(7f);
+                                statusCell.setPadding(7f);
+
+                                startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+                                requestsTable.addCell(startDateCell);
+                                requestsTable.addCell(endDateCell);
+                                if (h.getSubstitute() != null) {
+                                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
+                                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                    substitutCell.setPadding(7f);
+                                    requestsTable.addCell(substitutCell);
+                                } else {
+                                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
+                                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                    substitutCell.setPadding(7f);
+                                    requestsTable.addCell(substitutCell);
+                                }
+                                requestsTable.addCell(typeCell);
+                                requestsTable.addCell(statusCell);
+
+                                if (h.getDetails() != null) {
+                                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails()));
+                                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                    requestsTable.addCell(detailsCell);
+                                } else {
+                                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
+                                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                                    requestsTable.addCell(detailsCell);
+                                }
+                            }
+                        }
+                        if (i == 0) {
+                            PdfPCell startDateCell = new PdfPCell(Phrase.getInstance("-"));
+                            PdfPCell endDateCell = new PdfPCell(Phrase.getInstance("-"));
+                            PdfPCell substituteCell = new PdfPCell(Phrase.getInstance("-"));
+                            PdfPCell typeCell = new PdfPCell(Phrase.getInstance("-"));
+                            PdfPCell statusCell = new PdfPCell(Phrase.getInstance("-"));
+                            PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
+
+                            detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                            requestsTable.addCell(detailsCell);
+                            startDateCell.setPadding(7f);
+                            endDateCell.setPadding(7f);
+                            substituteCell.setPadding(7f);
+                            typeCell.setPadding(7f);
+                            statusCell.setPadding(7f);
+
+                            startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                            endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                            substituteCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                            typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                            statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+                            requestsTable.addCell(startDateCell);
+                            requestsTable.addCell(endDateCell);
+                            requestsTable.addCell(substituteCell);
+                            requestsTable.addCell(typeCell);
+                            requestsTable.addCell(statusCell);
 
 
+                        }
 
-
-                startDateCell.setPadding(7f);
-                endDateCell.setPadding(7f);
-                typeCell.setPadding(7f);
-                statusCell.setPadding(7f);
-
-
-                startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
-
-                requestsTable.addCell(startDateCell);
-                requestsTable.addCell(endDateCell);
-
-                if (h.getSubstitute() != null) {
-                    PdfPCell substitutCell = new PdfPCell(Phrase.getInstance(h.getSubstitute()));
-                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    substitutCell.setPadding(7f);
-                    requestsTable.addCell(substitutCell);
-                }
-                else{  PdfPCell substitutCell = new PdfPCell(Phrase.getInstance("-"));
-                    substitutCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    substitutCell.setPadding(7f);
-                    requestsTable.addCell(substitutCell);}
-
-                requestsTable.addCell(typeCell);
-                requestsTable.addCell(statusCell);
-
-
-                if (h.getDetails() != null) {
-                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails()));
-                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    requestsTable.addCell(detailsCell);
-                } else {
-                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
-                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                    requestsTable.addCell(detailsCell);
-                }
-            }
-        }
-
-        if(i==0){
-            PdfPCell startDateCell = new PdfPCell(Phrase.getInstance("-"));
-            PdfPCell endDateCell =new PdfPCell(Phrase.getInstance("-"));
-            PdfPCell substituteCell = new PdfPCell(Phrase.getInstance("-"));
-            PdfPCell typeCell =new PdfPCell(Phrase.getInstance("-"));
-            PdfPCell statusCell = new PdfPCell(Phrase.getInstance("-"));
-            PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
-
-
-            detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            requestsTable.addCell(detailsCell);
-            startDateCell.setPadding(7f);
-            endDateCell.setPadding(7f);
-            substituteCell.setPadding(7f);
-            typeCell.setPadding(7f);
-            statusCell.setPadding(7f);
-
-
-            startDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            endDateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            substituteCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            typeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
-
-            requestsTable.addCell(startDateCell);
-            requestsTable.addCell(endDateCell);
-            requestsTable.addCell(substituteCell);
-            requestsTable.addCell(typeCell);
-            requestsTable.addCell(statusCell);
-
-
-
-
-
-
-
-        }
-
-
-                        try {userParagraph.add(requestsTable);
+                        try {
+                            userParagraph.add(requestsTable);
                             document.add(new Paragraph(" "));
                             documentParagraph.add(userParagraph);
-
                         } catch (DocumentException e) {
                             e.printStackTrace();
                         }
 
-                    }
-        );
+
+
+
+                    });
+
+
+
         document.add(documentParagraph);
-     //document.add(membersTable);
-
-
-
-
-
+        //document.add(membersTable);
 
 
         document.close();
         return byteArrayOutputStream.toByteArray();
-
     }
-
 }

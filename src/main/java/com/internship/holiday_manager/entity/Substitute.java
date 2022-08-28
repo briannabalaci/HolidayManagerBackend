@@ -3,15 +3,21 @@ package com.internship.holiday_manager.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-
 @Data
 @Entity
-@Table(name="holiday")
-public class Holiday {
+@Table(name="substitute")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Substitute {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,25 +28,18 @@ public class Holiday {
     @Column(name="end_date")
     private LocalDateTime endDate;
 
-    @Column(name="substitute")
-    private String substitute;
-
-    @Column(name="document")
-    private byte[] document;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name="type")
-    private HolidayType type;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name="status")
-    private HolidayStatus status;
-
-    @Column(name="details")
-    private String details;
-
-    @ManyToOne()
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "substitute_id")
     @JsonBackReference
-    private User user;
+    private User substitute;
+
+    @OneToOne
+    @JoinColumn(name = "teamlead_id")
+    @JsonBackReference
+    private User teamLead;
+
+    @OneToOne
+    @JoinColumn(name = "holiday_id")
+    @JsonBackReference
+    private Holiday holiday;
 }

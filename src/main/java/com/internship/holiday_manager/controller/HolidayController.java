@@ -35,13 +35,13 @@ public class HolidayController {
 
     @PostMapping("/add-holiday")
     @AllowTeamLeadAndEmployee
-    public ResponseEntity<HolidayDto> addHoliday(@RequestBody HolidayDto dto){
-        return new ResponseEntity<>(holidayService.createHoliday(dto), HttpStatus.OK);
+    public ResponseEntity<HolidayDto> addHoliday(@RequestBody HolidayDto dto, @RequestParam Long substituteId){
+        return new ResponseEntity<>(holidayService.createHoliday(dto, substituteId), HttpStatus.OK);
     }
     @PutMapping("/update-holiday")
     @AllowTeamLeadAndEmployee
-    public ResponseEntity<HolidayDto> updateHoliday(@RequestBody HolidayDto dto){
-        return new ResponseEntity<>(holidayService.updateHolidayRequest(dto), HttpStatus.OK);
+    public ResponseEntity<HolidayDto> updateHoliday(@RequestBody HolidayDto dto, @RequestParam Long substituteId){
+        return new ResponseEntity<>(holidayService.updateHolidayRequest(dto, substituteId), HttpStatus.OK);
     }
     @GetMapping("/get-all-holidays")
     @AllowEmployee
@@ -146,9 +146,10 @@ public class HolidayController {
     public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long teamLeaderId,@RequestParam(required = false) HolidayType type){
         return new ResponseEntity<>(holidayService.filterByType(teamLeaderId, type), HttpStatus.OK);
     }
+
     @PostMapping("/send-to-hr")
     @AllowEmployee
-    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto){
+    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto) {
         byte[] array = holidayService.generateHrPDF(holidayDto);
 
 
@@ -161,6 +162,12 @@ public class HolidayController {
                                 .filename("Holiday_PDF")
                                 .build().toString())
                 .body(resource);
+    }
+    @GetMapping("/substitute-requests")
+    @AllowTeamLead
+    public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long id){
+        return new ResponseEntity<>(holidayService.getRequestsForSubstitute(id), HttpStatus.OK);
+
     }
 
 

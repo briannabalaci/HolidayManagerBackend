@@ -31,4 +31,8 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="20220824-holiday-002" author="mbedea2">
+        <dropNotNullConstraint tableName="HOLIDAY" columnName="USER_ID"/>
+    </changeSet>
 </databaseChangeLog>

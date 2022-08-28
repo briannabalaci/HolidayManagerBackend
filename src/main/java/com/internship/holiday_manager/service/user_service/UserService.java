@@ -84,4 +84,7 @@ public interface UserService {
      * @return the users that match the given parameters
      */
     List<UserDto> filterByName(UserNameDto userNameDto);
+
+
+    List<UserDto> getAllUsersWithoutTeamLead(Long teamLeadId);
 }

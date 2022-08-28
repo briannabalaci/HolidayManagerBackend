@@ -80,11 +80,9 @@ public class TeamServiceImpl implements TeamService{
 
     private Team updateTeam(TeamUpdateDto teamDTO) throws Exception {
         Team found = teamRepository.findByName(teamDTO.getName());
-        if(found.getTeamLeader()!=null) {
-            if (found != null && !found.getId().equals(teamDTO.getId()))
-                throw new Exception("A team with the same name already exists!\n");
+        if(found!=null && !found.getId().equals(teamDTO.getId())) {
+            throw new Exception("A team with the same name already exists!\n");
         }
-
         Team team = teamRepository.getById(teamDTO.getId());
         User oldTeamLead = team.getTeamLeader();
         if (oldTeamLead != null && !oldTeamLead.getId().equals(teamDTO.getTeamLeaderId())) {
@@ -101,7 +99,6 @@ public class TeamServiceImpl implements TeamService{
             members.add(x);
         }
         team.setMembers(members);
-
         Team saved = teamRepository.save(team);
         log.info("Team updated");
         return saved;
