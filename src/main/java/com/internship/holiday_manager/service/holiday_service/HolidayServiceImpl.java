@@ -823,8 +823,9 @@ public class HolidayServiceImpl implements HolidayService{
 
     public byte[] generateHrPDF(HolidayDto holidayDto){
         Holiday holiday = holidayMapper.dtoToEntity(holidayDto);
+        System.out.println(holiday);
        User emp=holiday.getUser();
-       //User teamLead=emp.getTeam().getTeamLeader();
+       User teamLead=this.getTeamLeaderForUser(emp);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         Document document = new Document(PageSize.A4, 5, 5, 5 , 5);
@@ -860,7 +861,7 @@ document.add(titleParagraph);
         Paragraph secondParagraph=new Paragraph("Declar pe proprie raspundere ca managerul a fost informat despre intentia de a pleca in concediu.");
     documentParagraph.add(secondParagraph);
         Font thirdParagraphFont=new Font(Font.FontFamily.HELVETICA, 12,Font.BOLD);
-        Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat impreuna cu Supervizorul meu, pe durata concediului voi fi inlocuit pe proiecte de catre "+holiday.getSubstitute()+".");
+        Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat impreuna cu Supervizorul meu "+teamLead.getForname()+" "+teamLead.getSurname()+", pe durata concediului voi fi inlocuit pe proiecte de catre "+holiday.getSubstitute()+".");
         thirdParagraph.setFont(thirdParagraphFont);
         documentParagraph.add(thirdParagraph);
 
