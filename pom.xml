@@ -92,6 +92,12 @@
             <version>5.5.13.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-ses</artifactId>
+            <version>1.11.443</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
