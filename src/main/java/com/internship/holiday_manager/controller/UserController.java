@@ -1,9 +1,11 @@
 package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.dto.*;
+import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.dto.user.UpdateUserDto;
 import com.internship.holiday_manager.dto.user.UserDto;
 import com.internship.holiday_manager.dto.user.UserNameDto;
+import com.internship.holiday_manager.service.substitute.SubstituteService;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowAdmin;
 import com.internship.holiday_manager.utils.annotations.AllowAll;
@@ -26,8 +28,11 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final SubstituteService substituteService;
+
+    public UserController(UserService userService, SubstituteService substituteService) {
         this.userService = userService;
+        this.substituteService = substituteService;
     }
 
     @PostMapping("/add-user")
@@ -101,6 +106,12 @@ public class UserController {
     @AllowTeamLead
     public ResponseEntity<List<UserDto>> getAllUsersWithoutTeamLead(@RequestParam Long teamLeadId){
         return new ResponseEntity<>(this.userService.getAllUsersWithoutTeamLead(teamLeadId), HttpStatus.OK);
+    }
+
+    @AllowTeamLead
+    @GetMapping("/substitute")
+    public ResponseEntity<UserDto> getSubstitute(@RequestBody HolidayDto holidayDto) {
+        return new ResponseEntity<UserDto>(substituteService.getSubstituteOfTeamLead(holidayDto), HttpStatus.OK);
     }
 
 }
