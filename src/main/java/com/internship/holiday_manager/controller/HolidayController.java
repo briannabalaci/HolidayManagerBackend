@@ -9,12 +9,14 @@ import com.internship.holiday_manager.service.notification_service.NotificationS
 import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
+import com.itextpdf.text.DocumentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -149,11 +151,11 @@ public class HolidayController {
 
     @PostMapping("/send-to-hr")
     @AllowEmployee
-    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto) {
+    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto) throws MessagingException, DocumentException {
         byte[] array = holidayService.generateHrPDF(holidayDto);
 
-
         ByteArrayResource resource = new ByteArrayResource(array);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .contentLength(resource.contentLength())
