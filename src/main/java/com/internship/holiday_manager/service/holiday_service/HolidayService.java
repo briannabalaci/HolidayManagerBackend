@@ -6,6 +6,7 @@ import com.internship.holiday_manager.dto.holiday.UpdateDetailsHolidayDto;
 import com.internship.holiday_manager.entity.Holiday;
 import com.internship.holiday_manager.entity.enums.HolidayStatus;
 import com.internship.holiday_manager.entity.enums.HolidayType;
+import com.itextpdf.text.DocumentException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -129,6 +130,9 @@ public interface HolidayService {
 
     Integer checkIfDatesOverlapUpdate(String email, String startDate, String endDate, Long holidayId);
 
+    public byte[] generateHrPDF(HolidayDto holidayDto);
+
     List<HolidayDto> getRequestsForSubstitute(Long substituteId);
+
 
 }

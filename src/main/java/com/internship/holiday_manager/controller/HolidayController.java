@@ -10,8 +10,9 @@ import com.internship.holiday_manager.utils.annotations.AllowEmployee;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -145,10 +146,28 @@ public class HolidayController {
     public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long teamLeaderId,@RequestParam(required = false) HolidayType type){
         return new ResponseEntity<>(holidayService.filterByType(teamLeaderId, type), HttpStatus.OK);
     }
+
+    @PostMapping("/send-to-hr")
+    @AllowEmployee
+    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto) {
+        byte[] array = holidayService.generateHrPDF(holidayDto);
+
+
+        ByteArrayResource resource = new ByteArrayResource(array);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .contentLength(resource.contentLength())
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment()
+                                .filename("Holiday_PDF")
+                                .build().toString())
+                .body(resource);
+    }
     @GetMapping("/substitute-requests")
     @AllowTeamLead
     public ResponseEntity<List<HolidayDto>> filterByType(@RequestParam Long id){
         return new ResponseEntity<>(holidayService.getRequestsForSubstitute(id), HttpStatus.OK);
+
     }
 
 

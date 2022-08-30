@@ -94,7 +94,7 @@ public class TeamLeadServiceImpl implements TeamLeadService {
         Font userDetailsParagraphFont = new Font(Font.FontFamily.HELVETICA, 20);
         float[] pointColumnWidthsRequestsTable = {250f, 250f, 250f, 250f, 250f, 350f};
         members.forEach(user -> {
-                    if (!user.getType().name().equals("TEAMLEAD")) {
+
                         Paragraph userParagraph = new Paragraph();
 
                         Paragraph userDetailsParagraph = new Paragraph(user.getForname() + " " + user.getSurname() + " - holiday days: " + user.getNrHolidays(), userDetailsParagraphFont);
@@ -225,9 +225,14 @@ public class TeamLeadServiceImpl implements TeamLeadService {
                         } catch (DocumentException e) {
                             e.printStackTrace();
                         }
-                    }
-                }
-        );
+
+
+
+
+                    });
+
+
+
         document.add(documentParagraph);
         //document.add(membersTable);
 

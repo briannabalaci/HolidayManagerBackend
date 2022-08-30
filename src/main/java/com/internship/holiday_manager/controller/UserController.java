@@ -97,10 +97,12 @@ public class UserController {
         return new ResponseEntity<>(this.userService.filterByName(userNameDto), HttpStatus.OK);
     }
 
+
     @GetMapping("/substitutes")
     @AllowTeamLead
     public ResponseEntity<List<UserDto>> getAllUsersWithoutTeamLead(@RequestParam Long teamLeadId){
         return new ResponseEntity<>(this.userService.getAllUsersWithoutTeamLead(teamLeadId), HttpStatus.OK);
     }
+
 
 }
