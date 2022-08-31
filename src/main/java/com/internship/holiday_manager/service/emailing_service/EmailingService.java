@@ -6,5 +6,5 @@ import javax.mail.MessagingException;
 
 public interface EmailingService {
 
-    public void sendEmail(String invitedUserEmail, byte[] pdf) throws MessagingException;
+    public void sendEmail( byte[] pdf, String name, String senderEmail) throws MessagingException;
 }
