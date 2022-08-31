@@ -832,6 +832,7 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday holiday = holidayRepository.getById(holidayDto.getId());
         System.out.println(holiday);
         User emp=holiday.getUser();
+        String name = emp.getSurname() + " " +emp.getForname();
         //User teamLead=this.getTeamLeaderForUser(emp);
 
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -1114,7 +1115,7 @@ public class HolidayServiceImpl implements HolidayService{
         }
         document.add(new Paragraph(""));
         document.close();
-        emailingService.sendEmail("brianna.balaci@mhp.com",byteArrayOutputStream.toByteArray());
+//        emailingService.sendEmail(byteArrayOutputStream.toByteArray(),name, emp.getEmail());
 
         return byteArrayOutputStream.toByteArray();
     }

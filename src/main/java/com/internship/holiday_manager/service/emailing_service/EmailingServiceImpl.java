@@ -43,7 +43,7 @@ import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 public class EmailingServiceImpl implements EmailingService{
     private final AmazonSimpleEmailService amazonSimpleEmailService;
     @Override
-    public void sendEmail(String invitedUserEmail, byte[] pdf) throws MessagingException {
+    public void sendEmail(byte[] pdf, String name, String senderEmail) throws MessagingException {
 //        String htmlBody ="<h1> A new request needs approval </h1>"
 //                + "⭐";
 //        System.out.println(htmlBody);
@@ -54,6 +54,7 @@ public class EmailingServiceImpl implements EmailingService{
 //                        .withBody(new Body().withHtml(new Content(htmlBody))))
 //                .withSource("tara-adela.hudrea@mhp.com");
 //        return amazonSimpleEmailService.sendEmail(request);
+
         Session session = Session.getDefaultInstance(new Properties());
 
         // Create a new MimeMessage object.
@@ -61,7 +62,7 @@ public class EmailingServiceImpl implements EmailingService{
 
         // Add subject, from and to lines.
         message.setSubject("Subject of the email", "UTF-8");
-        message.setFrom(new InternetAddress("brianna.balaci@mhp.com"));
+        message.setFrom(new InternetAddress(senderEmail));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("tara-adela.hudrea@mhp.com"));
 
         MimeMultipart msg_body = new MimeMultipart("alternative");
@@ -72,7 +73,9 @@ public class EmailingServiceImpl implements EmailingService{
         textPart.setContent("The body of the email", "text/plain; charset=UTF-8");
 
         MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent("<h1> A new request needs approval </h1>","text/html; charset=UTF-8");
+        htmlPart.setContent("<h3> A new request needs to be approved </h3>" +
+                "<p> The user "+name+" made a new request. Take a look and decide if you want to approve the " +
+                "holiday request or not. </p>","text/html; charset=UTF-8");
 
         // Add the text and HTML parts to the child container.
         msg_body.addBodyPart(textPart);
@@ -93,19 +96,12 @@ public class EmailingServiceImpl implements EmailingService{
         MimeBodyPart att = new MimeBodyPart();
         DataSource fds = new ByteArrayDataSource(pdf,"application/pdf");
         att.setDataHandler(new DataHandler(fds));
-        att.setFileName("filename.pdf");
+        att.setFileName("CerereConcediu"+name+".pdf");
 
         // Add the attachment to the message.
         msg.addBodyPart(att);
 
         try {
-            System.out.println("Attempting to send an email through Amazon SES "
-                    +"using the AWS SDK for Java...");
-
-            // Print the raw email content on the console
-            PrintStream out = System.out;
-            message.writeTo(out);
-
             // Send the email.
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             message.writeTo(outputStream);
