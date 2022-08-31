@@ -1056,7 +1056,7 @@ public class HolidayServiceImpl implements HolidayService{
 
                 Font userSignatureFont=fontNormal;
                 Paragraph userSignatureParagraph=new Paragraph();
-                Paragraph DateAndAngajat=new Paragraph("Data:________");
+                Paragraph DateAndAngajat=new Paragraph("Data:"+java.time.LocalDate.now().toString());
                 DateAndAngajat.add(glue);
                 DateAndAngajat.add("Angajat");
                 documentParagraph.add(userSignatureParagraph);
