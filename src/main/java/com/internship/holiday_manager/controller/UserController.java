@@ -109,9 +109,9 @@ public class UserController {
     }
 
     @AllowTeamLead
-    @GetMapping("/substitute")
-    public ResponseEntity<UserDto> getSubstitute(@RequestBody HolidayDto holidayDto) {
-        return new ResponseEntity<UserDto>(substituteService.getSubstituteOfTeamLead(holidayDto), HttpStatus.OK);
+    @GetMapping("/substitute/{id}")
+    public ResponseEntity<UserDto> getSubstitute(@PathVariable Long id) {
+        return new ResponseEntity<UserDto>(substituteService.getSubstituteOfTeamLead(id), HttpStatus.OK);
     }
 
 }

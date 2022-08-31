@@ -9,6 +9,7 @@ import com.internship.holiday_manager.entity.User;
 import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.mapper.SubstituteMapper;
 import com.internship.holiday_manager.mapper.UserMapper;
+import com.internship.holiday_manager.repository.HolidayRepository;
 import com.internship.holiday_manager.repository.SubstituteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,15 @@ public class SubstituteServiceImpl implements SubstituteService {
     private final SubstituteRepository substituteRepository;
     private final SubstituteMapper substituteMapper;
     private final HolidayMapper holidayMapper;
+
+    private final HolidayRepository holidayRepository;
     private final UserMapper userMapper;
 
-    public SubstituteServiceImpl(SubstituteRepository substituteRepository, SubstituteMapper substituteMapper, HolidayMapper holidayMapper, UserMapper userMapper) {
+    public SubstituteServiceImpl(SubstituteRepository substituteRepository, SubstituteMapper substituteMapper, HolidayMapper holidayMapper, HolidayRepository holidayRepository, UserMapper userMapper) {
         this.substituteRepository = substituteRepository;
         this.substituteMapper = substituteMapper;
         this.holidayMapper = holidayMapper;
+        this.holidayRepository = holidayRepository;
         this.userMapper = userMapper;
     }
 
@@ -53,8 +57,8 @@ public class SubstituteServiceImpl implements SubstituteService {
         return userMapper.entitiesToDtos(teamLeaders);
     }
 
-    public UserDto getSubstituteOfTeamLead(HolidayDto holidayDto) {
-        Holiday holiday = holidayMapper.dtoToEntity(holidayDto);
+    public UserDto getSubstituteOfTeamLead(Long holidayId) {
+        Holiday holiday = holidayRepository.getById(holidayId);
         User rez = substituteRepository.findByHoliday(holiday).getSubstitute();
         return userMapper.entityToDto(rez);
     }

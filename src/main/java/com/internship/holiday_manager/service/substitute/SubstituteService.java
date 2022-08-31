@@ -13,5 +13,5 @@ public interface SubstituteService {
     List<SubstituteDto> getAll();
     List<UserDto> teamLeadersForWhichSubstituteIsActive(Long substituteId);
 
-    public UserDto getSubstituteOfTeamLead(HolidayDto holidayDto);
+    public UserDto getSubstituteOfTeamLead(Long holidayId);
 }
