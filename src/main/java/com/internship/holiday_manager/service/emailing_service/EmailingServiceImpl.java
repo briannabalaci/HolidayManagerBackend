@@ -61,7 +61,7 @@ public class EmailingServiceImpl implements EmailingService{
         MimeMessage message = new MimeMessage(session);
 
         // Add subject, from and to lines.
-        message.setSubject("Subject of the email", "UTF-8");
+        message.setSubject("New holiday request", "UTF-8");
         message.setFrom(new InternetAddress(senderEmail));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("tara-adela.hudrea@mhp.com"));
 
@@ -73,9 +73,10 @@ public class EmailingServiceImpl implements EmailingService{
         textPart.setContent("The body of the email", "text/plain; charset=UTF-8");
 
         MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setContent("<h3> A new request needs to be approved </h3>" +
-                "<p> The user "+name+" made a new request. Take a look and decide if you want to approve the " +
-                "holiday request or not. </p>","text/html; charset=UTF-8");
+        htmlPart.setContent("<h3> ⭐ A new holiday request needs approval. ⭐</h3>" +
+                "<p> The user "+name+" created a new holiday request. </p>" +
+                "<p> Take a look and decide if you want to approve " +
+                "it or not. </p>","text/html; charset=UTF-8");
 
         // Add the text and HTML parts to the child container.
         msg_body.addBodyPart(textPart);
