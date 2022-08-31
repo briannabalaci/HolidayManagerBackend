@@ -17,6 +17,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -151,7 +152,7 @@ public class HolidayController {
 
     @PostMapping("/send-to-hr")
     @AllowEmployee
-    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto) throws MessagingException, DocumentException {
+    public ResponseEntity<Resource> sendToHr(@RequestBody HolidayDto holidayDto) throws MessagingException, DocumentException, IOException {
         byte[] array = holidayService.generateHrPDF(holidayDto);
 
         ByteArrayResource resource = new ByteArrayResource(array);
