@@ -3,12 +3,14 @@ package com.internship.holiday_manager.controller;
 
 import com.internship.holiday_manager.dto.holiday.HolidayDto;
 import com.internship.holiday_manager.dto.user.UserDto;
-import com.internship.holiday_manager.entity.enums.HolidayType;
+import com.internship.holiday_manager.dto.user.UserWithTeamIdDto;
+import com.internship.holiday_manager.service.substitute.SubstituteService;
 import com.internship.holiday_manager.service.teamlead_service.TeamLeadService;
 import com.internship.holiday_manager.service.user_service.UserService;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLead;
 import com.internship.holiday_manager.utils.annotations.AllowTeamLeadAndEmployee;
 import com.itextpdf.text.DocumentException;
+import org.apache.tomcat.jni.User;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
@@ -25,9 +27,12 @@ public class TeamLeadController {
     private final TeamLeadService teamLeadService;
     private final UserService userService;
 
+
+
     public TeamLeadController(TeamLeadService teamLeadService, UserService userService) {
         this.teamLeadService = teamLeadService;
         this.userService = userService;
+
     }
 
     @AllowTeamLeadAndEmployee
@@ -62,4 +67,7 @@ public class TeamLeadController {
 
 
     }
+
+
+
 }
