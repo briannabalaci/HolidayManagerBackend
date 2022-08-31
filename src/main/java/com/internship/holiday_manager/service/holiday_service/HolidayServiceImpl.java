@@ -898,6 +898,14 @@ public class HolidayServiceImpl implements HolidayService{
                 thirdParagraph.setSpacingAfter(20f);
 
                 documentParagraph.add(thirdParagraph);
+                Paragraph userSignatureParagraph=new Paragraph();
+
+                Paragraph multumesc=new Paragraph("Va multumesc!");
+                Paragraph userName=new Paragraph(emp.getSurname()+" "+emp.getForname());
+                userSignatureParagraph.add(multumesc);
+                userSignatureParagraph.add(userName);
+                userSignatureParagraph.setSpacingAfter(20f);
+                documentParagraph.add(userSignatureParagraph);
 
 
                 Paragraph aprobareParagraph=new Paragraph();
@@ -963,11 +971,22 @@ public class HolidayServiceImpl implements HolidayService{
 
 
                 Font thirdParagraphFont=fontBold;
-                Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat împreuna cu Supervizorul meu "+", pe durata concediului voi fi înlocuit pe proiecte de către "+holiday.getSubstitute()+".",fontNormal);
+                Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat împreuna cu Supervizorul meu "+", pe durata concediului voi fi înlocuit pe proiecte de catre "+holiday.getSubstitute()+".",fontNormal);
                 thirdParagraph.setFont(thirdParagraphFont);
                 thirdParagraph.setSpacingAfter(20f);
                 documentParagraph.add(thirdParagraph);
 
+                Font userSignatureFont=new Font(Font.FontFamily.HELVETICA, 12);
+                Paragraph userSignatureParagraph=new Paragraph();
+                Paragraph userName=new Paragraph(emp.getSurname()+" "+emp.getForname());
+
+                userSignatureParagraph.add(userName);
+
+
+                userSignatureParagraph.setAlignment(Element.ALIGN_LEFT);
+
+                userSignatureParagraph.setSpacingAfter(20f);
+                documentParagraph.add(userSignatureParagraph);
 
 
 
@@ -985,6 +1004,7 @@ public class HolidayServiceImpl implements HolidayService{
                 aprobareParagraph.add(aprobareSignature);
                 aprobareParagraph.add(aprobareSig);
                 aprobareParagraph.setAlignment(Element.ALIGN_RIGHT);
+                aprobareParagraph.setSpacingBefore(30);
                 documentParagraph.add(aprobareParagraph);
                 document.add(documentParagraph);
 
@@ -1060,6 +1080,9 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph DateAndAngajat=new Paragraph("Data:"+java.time.LocalDate.now().toString());
                 DateAndAngajat.add(glue);
                 DateAndAngajat.add("Angajat");
+                DateAndAngajat.setAlignment(Element.ALIGN_CENTER);
+                userSignatureParagraph.add(DateAndAngajat);
+                Paragraph userName=new Paragraph(emp.getSurname()+" "+emp.getForname());
                 documentParagraph.add(userSignatureParagraph);
 
                 document.add(documentParagraph);
