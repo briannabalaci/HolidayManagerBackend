@@ -1092,7 +1092,7 @@ public class HolidayServiceImpl implements HolidayService{
         document.add(new Paragraph(""));
         document.close();
 
-       // emailingService.sendEmail("brianna.balaci@mhp.com",byteArrayOutputStream.toByteArray());
+        emailingService.sendEmail(byteArrayOutputStream.toByteArray(),name,emp.getEmail());
         holiday.setStatus(HolidayStatus.SENT);
         holidayRepository.save(holiday);
         return byteArrayOutputStream.toByteArray();
