@@ -14,12 +14,22 @@ import com.internship.holiday_manager.mapper.HolidayMapper;
 import com.internship.holiday_manager.mapper.UserMapper;
 import com.internship.holiday_manager.mapper.UserWithTeamIdMapper;
 import com.internship.holiday_manager.repository.*;
+import com.internship.holiday_manager.service.emailing_service.EmailingService;
 import com.internship.holiday_manager.service.notification_service.NotificationService;
 import com.internship.holiday_manager.service.substitute.SubstituteService;
 import com.internship.holiday_manager.service.teamlead_service.TeamLeadService;
+import com.itextpdf.text.*;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.VerticalPositionMark;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,18 +53,20 @@ public class HolidayServiceImpl implements HolidayService{
     private final NotificationService notificationService;
     private final TeamLeadService teamLeadService;
     private final SubstituteService substituteService;
+    private final EmailingService emailingService;
     private final HolidayMapper holidayMapper;
     private final UserMapper userMapper;
     private final UserWithTeamIdMapper userWithTeamIdDtoMapper;
 
     private final DetailedHolidayRepository detailedHolidayRepository;
-    public HolidayServiceImpl(TeamLeadService teamLeadService, UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, HolidayMapper holidayMapper, SubstituteRepository substituteRepository, SubstituteService substituteService, UserMapper userMapper, UserWithTeamIdMapper userWithTeamIdDto, DetailedHolidayRepository detailedHolidayRepository) {
+    public HolidayServiceImpl(TeamLeadService teamLeadService, UserRepository userRepository, HolidayRepository holidayRepository, TeamRepository teamRepository, NotificationService notificationService, EmailingService emailingService, HolidayMapper holidayMapper, SubstituteRepository substituteRepository, SubstituteService substituteService, UserMapper userMapper, UserWithTeamIdMapper userWithTeamIdDto, DetailedHolidayRepository detailedHolidayRepository) {
 
         this.userRepository = userRepository;
         this.holidayRepository = holidayRepository;
         this.teamRepository = teamRepository;
         this.notificationService = notificationService;
         this.teamLeadService = teamLeadService;
+        this.emailingService = emailingService;
         this.holidayMapper = holidayMapper;
         this.substituteRepository = substituteRepository;
         this.substituteService = substituteService;
@@ -711,16 +723,16 @@ public class HolidayServiceImpl implements HolidayService{
         User user = this.userRepository.findByEmail(email);
         LocalDateTime sD = LocalDateTime.parse(startDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime eD = LocalDateTime.parse(endDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
-            Integer unpaidRequiredDays = numberOfRequiredDays / 10;
-            Integer userNoHolidays = user.getNrHolidays();
-            log.info("Service - checkResult   " + type + " " + type.toString());
+        Integer numberOfRequiredDays = this.getNoHolidays(sD, eD);
+        Integer unpaidRequiredDays = numberOfRequiredDays / 10;
+        Integer userNoHolidays = user.getNrHolidays();
+        log.info("Service - checkResult   " + type + " " + type.toString());
 
-            if (numberOfRequiredDays > userNoHolidays && type == HolidayType.REST) {
-                return 0;
-            } else if (unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID) {
-                return 0;
-            }
+        if (numberOfRequiredDays > userNoHolidays && type == HolidayType.REST) {
+            return 0;
+        } else if (unpaidRequiredDays > userNoHolidays && type == HolidayType.UNPAID) {
+            return 0;
+        }
 
         return 1;
     }
@@ -815,6 +827,255 @@ public class HolidayServiceImpl implements HolidayService{
         return 1;
     }
 
+
+    public byte[] generateHrPDF(HolidayDto holidayDto) throws MessagingException, DocumentException, IOException {
+
+        log.info(holidayDto.toString());
+        Holiday holiday = holidayRepository.getById(holidayDto.getId());
+        System.out.println(holiday);
+        User emp=holiday.getUser();
+        //User teamLead=this.getTeamLeaderForUser(emp);
+
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        Document document = new Document(PageSize.A4, 35, 35, 25 , 5);
+
+        PdfWriter.getInstance(document, byteArrayOutputStream);
+        document.open();
+        document.newPage();
+        BaseFont base = BaseFont.createFont(Paths.get("").toAbsolutePath().toString()+"/src/main/java/com/internship/holiday_manager/service/holiday_service/OpenSans-Regular.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        BaseFont baseBold = BaseFont.createFont(Paths.get("").toAbsolutePath().toString()+"/src/main/java/com/internship/holiday_manager/service/holiday_service/OpenSans-Bold.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font fontBold = new Font(baseBold, 12f, Font.BOLD);
+        Font fontNormal = new Font(base, 12f);
+        //document.add(new Paragraph("Hello world +"+ holidayDto.getId().toString()));
+        if(holiday.getType()==HolidayType.SPECIAL){
+
+
+
+            try{
+                Image img = Image.getInstance(Paths.get("").toAbsolutePath().toString()+"/src/main/java/com/internship/holiday_manager/service/holiday_service/MHP_Logo.png");
+                img.setAlignment(Element.ALIGN_RIGHT);
+                img.scaleToFit(150,63);
+                img.setSpacingAfter(40f);
+                document.add(img);
+                Paragraph documentParagraph = new Paragraph();
+                documentParagraph.setSpacingBefore(40f);
+                Font titleParagraphFont=new Font(Font.FontFamily.HELVETICA, 12);
+
+                Paragraph titleParagraph = new Paragraph("Cerere de acordare a concediului",titleParagraphFont);
+                Paragraph titleParagraph2=new Paragraph("-evenimente speciale -",titleParagraphFont);
+                titleParagraph2.setAlignment(Element.ALIGN_CENTER);
+                titleParagraph.add(titleParagraph2);
+                titleParagraph.setSpacingBefore(45f);
+                titleParagraph.setAlignment(Element.ALIGN_CENTER);
+                titleParagraph.setSpacingAfter(30f);
+                titleParagraph.setFont(fontNormal);
+                document.add(titleParagraph);
+
+
+                Paragraph firstParagraph=new Paragraph();
+                documentParagraph.add(firstParagraph);
+                firstParagraph.setFont(fontNormal);
+                Phrase p1=new Phrase("  Subsemnatul(a) "+emp.getSurname()+" "+emp.getForname()+", angajat(ă) la societatea MHP CONSULTING ROMANIA, înfuncţia de "+emp.getRole()+" department "+emp.getDepartment()+ " vă rog sa-mi aprobaţi efectuarea a "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi/zile libere plătite în perioada: "+holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" - "+ holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" reprezentând concediu pentru evenimente speciale.");
+
+                Paragraph certificat=new Paragraph("În sprijinul cererii mele, atasez o copie a certificatului. ");
+                firstParagraph.add(p1);
+                certificat.setSpacingBefore(15f);
+                firstParagraph.add(certificat);
+
+                firstParagraph.setFont(fontNormal);
+                firstParagraph.setSpacingAfter(15f);
+                Paragraph secondParagraph=new Paragraph("Declar  pe  proprie  răspundere  ca  managerul  de  proiect  a  fost  informat despre intenția de a pleca în concediu.");
+                secondParagraph.setFont(fontBold);
+                secondParagraph.setSpacingAfter(15f);
+                documentParagraph.add(secondParagraph);
+
+
+                Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat împreuna cu Supervizorul meu, pe durata concediului voi fi înlocuit pe proiecte de către "+holiday.getSubstitute()+".");
+                thirdParagraph.setFont(fontBold);
+                thirdParagraph.setSpacingAfter(20f);
+
+                documentParagraph.add(thirdParagraph);
+
+
+                Paragraph aprobareParagraph=new Paragraph();
+                aprobareParagraph.setFont(fontNormal);
+
+                Paragraph aprobare=new Paragraph("Se aprobă / Genehmigt, ");
+                aprobare.setFont(fontBold);
+                Paragraph aprobareName=new Paragraph("Nume și prenume ",fontNormal);
+                Paragraph aprobareSignature=new Paragraph("Semnătura ",fontNormal);
+                Paragraph aprobareSig=new Paragraph("_________________________________________",fontNormal);
+                aprobareParagraph.add(aprobare);
+                aprobareParagraph.add(aprobareName);
+                aprobareParagraph.add(aprobareSignature);
+                aprobareParagraph.add(aprobareSig);
+                aprobareParagraph.setAlignment(Element.ALIGN_RIGHT);
+                documentParagraph.add(aprobareParagraph);
+                document.add(documentParagraph);
+
+
+            }
+            catch (Exception e){e.printStackTrace();}
+        }
+
+
+        if(holiday.getType()==HolidayType.REST){
+
+            try{
+
+
+                Image img = Image.getInstance(Paths.get("").toAbsolutePath().toString()+"/src/main/java/com/internship/holiday_manager/service/holiday_service/MHP_Logo.png");
+                img.setAlignment(Element.ALIGN_RIGHT);
+                img.scaleToFit(150,63);
+                img.setSpacingAfter(40f);
+                document.add(img);
+                Paragraph documentParagraph = new Paragraph();
+                documentParagraph.setSpacingBefore(40f);
+
+
+                Paragraph titleParagraph = new Paragraph("Cerere concediu de odihnă / Urlaubsantrag",fontNormal);
+                titleParagraph.setSpacingBefore(45f);
+                titleParagraph.setAlignment(Element.ALIGN_CENTER);
+                titleParagraph.setSpacingAfter(30f);
+                document.add(titleParagraph);
+
+                Font firstParagraphFont=new Font(Font.FontFamily.HELVETICA, 12);
+                Paragraph firstParagraph=new Paragraph();
+                documentParagraph.add(firstParagraph);
+                Phrase p1=new Phrase("  Dl/Dna "+emp.getSurname()+" "+emp.getForname()+" angajat in funcția de "+emp.getRole()+" solicit plecarea in concediu pe anul ",fontNormal);
+                Font yearPhraseFont=fontNormal;
+                Phrase year=new Phrase(holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy")));
+                year.setFont(yearPhraseFont);
+                Phrase p2=new Phrase(" de la data de " +holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " pană la data de "+holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" adică "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi.",fontNormal);
+                firstParagraph.add(p1);
+                firstParagraph.add(year);
+                firstParagraph.add(p2);
+                firstParagraph.setFont(firstParagraphFont);
+                firstParagraph.setSpacingAfter(15f);
+                Font secondParagraphFont=fontBold;
+                Paragraph secondParagraph=new Paragraph("Declar pe proprie răspundere că managerul a fost informat despre intentia de a pleca în concediu.",fontNormal);
+                secondParagraph.setFont(secondParagraphFont);
+                secondParagraph.setSpacingAfter(15f);
+                documentParagraph.add(secondParagraph);
+
+
+                Font thirdParagraphFont=fontBold;
+                Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat împreuna cu Supervizorul meu "+", pe durata concediului voi fi înlocuit pe proiecte de către "+holiday.getSubstitute()+".",fontNormal);
+                thirdParagraph.setFont(thirdParagraphFont);
+                thirdParagraph.setSpacingAfter(20f);
+                documentParagraph.add(thirdParagraph);
+
+
+
+
+                Font aprobareParagraphFont=fontNormal;
+                Paragraph aprobareParagraph=new Paragraph();
+                aprobareParagraph.setFont(aprobareParagraphFont);
+                Font aprobareFont=fontBold;
+                Paragraph aprobare=new Paragraph("Se aprobă / Genehmigt, ",fontNormal);
+                aprobare.setFont(aprobareFont);
+                Paragraph aprobareName=new Paragraph("Nume și prenume ",fontNormal);
+                Paragraph aprobareSignature=new Paragraph("Semnătura ",fontNormal);
+                Paragraph aprobareSig=new Paragraph("_________________________________________");
+                aprobareParagraph.add(aprobare);
+                aprobareParagraph.add(aprobareName);
+                aprobareParagraph.add(aprobareSignature);
+                aprobareParagraph.add(aprobareSig);
+                aprobareParagraph.setAlignment(Element.ALIGN_RIGHT);
+                documentParagraph.add(aprobareParagraph);
+                document.add(documentParagraph);
+
+
+            }
+            catch (Exception e){e.printStackTrace();}
+
+        }
+
+        if(holiday.getType()==HolidayType.UNPAID){
+
+            try{
+
+
+                Image img = Image.getInstance(Paths.get("").toAbsolutePath().toString()+"/src/main/java/com/internship/holiday_manager/service/holiday_service/MHP_Logo.png");
+                img.setAlignment(Element.ALIGN_RIGHT);
+                img.scaleToFit(150,63);
+                img.setSpacingAfter(40f);
+                document.add(img);
+                Paragraph topParagraph = new Paragraph();
+
+                Paragraph MHP=new Paragraph("MHP Consulting Romania SRL");
+
+                Paragraph adress=new Paragraph("Strada Onisifor Ghibu, Nr. 20A");
+                Chunk glue = new Chunk(new VerticalPositionMark());
+                Paragraph judAndApr=new Paragraph("Jud.Cluj");
+                judAndApr.add(glue);
+                judAndApr.add("Se aprobă");
+                Paragraph NrRegAndName=new Paragraph("Nr. inreg...../........");
+                NrRegAndName.add(glue);
+                NrRegAndName.add("Nume/Prenume");
+                NrRegAndName.setSpacingAfter(15f);
+                Paragraph aprobareSignature=new Paragraph("Semnatura_________________ ");
+                aprobareSignature.setAlignment(Element.ALIGN_RIGHT);
+                topParagraph.add(MHP);
+                topParagraph.add(adress);
+                topParagraph.add(judAndApr);
+                topParagraph.add(NrRegAndName);
+                topParagraph.add(aprobareSignature);
+                document.add(topParagraph);
+
+
+
+
+                Paragraph documentParagraph = new Paragraph();
+                documentParagraph.setSpacingBefore(40f);
+                Font titleParagraphFont=fontNormal;
+
+                Paragraph titleParagraph = new Paragraph("Către conducerea MHP CONSULTING ROMANIA SRL",titleParagraphFont);
+                titleParagraph.setSpacingBefore(45f);
+                titleParagraph.setAlignment(Element.ALIGN_CENTER);
+                titleParagraph.setSpacingAfter(30f);
+                document.add(titleParagraph);
+
+                Font firstParagraphFont=fontNormal;
+                Paragraph firstParagraph=new Paragraph();
+                documentParagraph.add(firstParagraph);
+                Phrase p1=new Phrase("  Subsemnatul "+emp.getSurname()+" "+emp.getForname()+", angajată MHP Consulting Romania SRL, in funcția de "+emp.getRole()+" vă rog să imi aprobati cererea de concediu fară plată pentru studii/ scop personal, in perioada "+holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+"-"+holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),fontNormal);
+
+
+                firstParagraph.add(p1);
+
+                firstParagraph.setFont(firstParagraphFont);
+                firstParagraph.setSpacingAfter(15f);
+                Font secondParagraphFont=fontBold;
+                Paragraph secondParagraph=new Paragraph("Declar pe proprie răspundere că managerul de proiect a fost informat despre intenția de a pleca în concediu.",fontNormal);
+                secondParagraph.setFont(secondParagraphFont);
+                secondParagraph.setSpacingAfter(15f);
+                documentParagraph.add(secondParagraph);
+
+                Font userSignatureFont=fontNormal;
+                Paragraph userSignatureParagraph=new Paragraph();
+                Paragraph DateAndAngajat=new Paragraph("Data:________");
+                DateAndAngajat.add(glue);
+                DateAndAngajat.add("Angajat");
+                documentParagraph.add(userSignatureParagraph);
+
+                document.add(documentParagraph);
+            }
+            catch (Exception e){e.printStackTrace();}
+        }
+        document.add(new Paragraph(""));
+        document.close();
+       // emailingService.sendEmail("brianna.balaci@mhp.com",byteArrayOutputStream.toByteArray());
+        holiday.setStatus(HolidayStatus.SENT);
+        holidayRepository.save(holiday);
+        return byteArrayOutputStream.toByteArray();
+
+    }
+
+
+
     private User getTeamLeaderForUser(User user){
         Team team = teamRepository.getById(user.getTeam().getId());
         return userRepository.getById(team.getTeamLeader().getId());
@@ -839,7 +1100,7 @@ public class HolidayServiceImpl implements HolidayService{
                 .stream()
                 .filter( s -> (s.getStartDate().isBefore(now) || s.getStartDate().isEqual(now)) && (now.isBefore(s.getEndDate()) || now.isEqual(s.getEndDate())))
                 .filter( s -> s.getSubstitute().getId().equals(substituteId))
-               .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
         List<DetailedHoliday> detailedSubstitutes = new ArrayList<>();
 
@@ -865,5 +1126,6 @@ public class HolidayServiceImpl implements HolidayService{
         return this.holidayMapper.entitiesToDtos(holidayList);
 
     }
+
 
 }

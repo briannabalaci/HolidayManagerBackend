@@ -92,12 +92,12 @@ public class TeamLeadServiceImpl implements TeamLeadService {
         Font tableHeadFont = new Font(Font.FontFamily.HELVETICA, 12);
         tableHeadFont.setColor(230, 132, 11);
         Font userDetailsParagraphFont = new Font(Font.FontFamily.HELVETICA, 20);
-        float[] pointColumnWidthsRequestsTable = {250f, 250f, 250f, 250f, 250f, 350f};
+        float[] pointColumnWidthsRequestsTable = {250f, 250f, 250f, 250f, 250f};
         members.forEach(user -> {
-                    if (!user.getType().name().equals("TEAMLEAD")) {
+
                         Paragraph userParagraph = new Paragraph();
 
-                        Paragraph userDetailsParagraph = new Paragraph(user.getForname() + " " + user.getSurname() + " - holiday days: " + user.getNrHolidays(), userDetailsParagraphFont);
+                        Paragraph userDetailsParagraph = new Paragraph(user.getForname() + " " + user.getSurname() + " - Vacation days left: " + user.getNrHolidays(), userDetailsParagraphFont);
                         userDetailsParagraph.setAlignment(Element.ALIGN_LEFT);
                         userDetailsParagraph.setIndentationLeft(140f);
                         userDetailsParagraph.setSpacingAfter(15f);
@@ -130,11 +130,7 @@ public class TeamLeadServiceImpl implements TeamLeadService {
                         c1.setBackgroundColor(new BaseColor(255, 227, 192));
                         c1.setPadding(10f);
                         requestsTable.addCell(c1);
-                        c1 = new PdfPCell(new Phrase("Details", tableHeadFont));
-                        c1.setBackgroundColor(new BaseColor(255, 227, 192));
-                        c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-                        c1.setPadding(10f);
-                        requestsTable.addCell(c1);
+
 
 
                         List<Holiday> holidays = new ArrayList<>();
@@ -176,15 +172,6 @@ public class TeamLeadServiceImpl implements TeamLeadService {
                                 requestsTable.addCell(typeCell);
                                 requestsTable.addCell(statusCell);
 
-                                if (h.getDetails() != null) {
-                                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance(h.getDetails()));
-                                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                                    requestsTable.addCell(detailsCell);
-                                } else {
-                                    PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
-                                    detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                                    requestsTable.addCell(detailsCell);
-                                }
                             }
                         }
                         if (i == 0) {
@@ -193,10 +180,9 @@ public class TeamLeadServiceImpl implements TeamLeadService {
                             PdfPCell substituteCell = new PdfPCell(Phrase.getInstance("-"));
                             PdfPCell typeCell = new PdfPCell(Phrase.getInstance("-"));
                             PdfPCell statusCell = new PdfPCell(Phrase.getInstance("-"));
-                            PdfPCell detailsCell = new PdfPCell(Phrase.getInstance("-"));
 
-                            detailsCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-                            requestsTable.addCell(detailsCell);
+
+
                             startDateCell.setPadding(7f);
                             endDateCell.setPadding(7f);
                             substituteCell.setPadding(7f);
@@ -225,9 +211,14 @@ public class TeamLeadServiceImpl implements TeamLeadService {
                         } catch (DocumentException e) {
                             e.printStackTrace();
                         }
-                    }
-                }
-        );
+
+
+
+
+                    });
+
+
+
         document.add(documentParagraph);
         //document.add(membersTable);
 
