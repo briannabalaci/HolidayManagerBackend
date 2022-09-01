@@ -834,7 +834,7 @@ public class HolidayServiceImpl implements HolidayService{
         Holiday holiday = holidayRepository.getById(holidayDto.getId());
         System.out.println(holiday);
         User emp=holiday.getUser();
-        String name = emp.getSurname() + " " +emp.getForname();
+        String name = emp.getSurname() + " "+ emp.getForname();
         //User teamLead=this.getTeamLeaderForUser(emp);
 
 
@@ -865,7 +865,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Font titleParagraphFont=new Font(Font.FontFamily.HELVETICA, 12);
 
                 Paragraph titleParagraph = new Paragraph("Cerere de acordare a concediului",titleParagraphFont);
-                Paragraph titleParagraph2=new Paragraph("-evenimente speciale -",titleParagraphFont);
+                Paragraph titleParagraph2=new Paragraph("- evenimente speciale -",titleParagraphFont);
                 titleParagraph2.setAlignment(Element.ALIGN_CENTER);
                 titleParagraph.add(titleParagraph2);
                 titleParagraph.setSpacingBefore(45f);
@@ -878,7 +878,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph firstParagraph=new Paragraph();
                 documentParagraph.add(firstParagraph);
                 firstParagraph.setFont(fontNormal);
-                Phrase p1=new Phrase("  Subsemnatul(a) "+emp.getSurname()+" "+emp.getForname()+", angajat(ă) la societatea MHP CONSULTING ROMANIA, înfuncţia de "+emp.getRole()+" department "+emp.getDepartment()+ " vă rog sa-mi aprobaţi efectuarea a "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi/zile libere plătite în perioada: "+holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" - "+ holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" reprezentând concediu pentru evenimente speciale.");
+                Phrase p1=new Phrase("  Subsemnatul(a) "+emp.getSurname()+" "+emp.getForname()+", angajat(ă) la societatea MHP CONSULTING ROMANIA, în funcţia de "+emp.getRole()+" department "+emp.getDepartment()+ " vă rog sa-mi aprobaţi efectuarea a "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi/zile libere plătite în perioada: "+holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" - "+ holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" reprezentând concediu pentru evenimente speciale.");
 
                 Paragraph certificat=new Paragraph("În sprijinul cererii mele, atasez o copie a certificatului. ");
                 firstParagraph.add(p1);
@@ -893,7 +893,7 @@ public class HolidayServiceImpl implements HolidayService{
                 documentParagraph.add(secondParagraph);
 
 
-                Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat împreuna cu Supervizorul meu, pe durata concediului voi fi înlocuit pe proiecte de către "+holiday.getSubstitute()+".");
+                Paragraph thirdParagraph=new Paragraph("Asa cum a fost agreat împreuna cu Supervizorul meu, pe durata concediului voi fi înlocuit pe proiecte de catre "+holiday.getSubstitute()+".");
                 thirdParagraph.setFont(fontBold);
                 thirdParagraph.setSpacingAfter(20f);
 
@@ -903,6 +903,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph multumesc=new Paragraph("Va multumesc!");
                 Paragraph userName=new Paragraph(emp.getSurname()+" "+emp.getForname());
                 userSignatureParagraph.add(multumesc);
+                userSignatureParagraph.add(new Paragraph("Nume si prenume"));
                 userSignatureParagraph.add(userName);
                 userSignatureParagraph.setSpacingAfter(20f);
                 documentParagraph.add(userSignatureParagraph);
@@ -911,7 +912,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph aprobareParagraph=new Paragraph();
                 aprobareParagraph.setFont(fontNormal);
 
-                Paragraph aprobare=new Paragraph("Se aprobă / Genehmigt, ");
+                Paragraph aprobare=new Paragraph("Se aproba / Genehmigt, ");
                 aprobare.setFont(fontBold);
                 Paragraph aprobareName=new Paragraph("Nume și prenume ",fontNormal);
                 Paragraph aprobareSignature=new Paragraph("Semnătura ",fontNormal);
@@ -957,7 +958,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Font yearPhraseFont=fontNormal;
                 Phrase year=new Phrase(holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy")));
                 year.setFont(yearPhraseFont);
-                Phrase p2=new Phrase(" de la data de " +holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " pană la data de "+holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" adică "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi.",fontNormal);
+                Phrase p2=new Phrase(" de la data de " +holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + " pana la data de "+holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+" adică "+this.getNoHolidays(holiday.getStartDate(),holiday.getEndDate())+" zi.",fontNormal);
                 firstParagraph.add(p1);
                 firstParagraph.add(year);
                 firstParagraph.add(p2);
@@ -980,6 +981,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph userSignatureParagraph=new Paragraph();
                 Paragraph userName=new Paragraph(emp.getSurname()+" "+emp.getForname());
 
+                userSignatureParagraph.add(new Paragraph("Nume si prenume"));
                 userSignatureParagraph.add(userName);
 
 
@@ -994,7 +996,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph aprobareParagraph=new Paragraph();
                 aprobareParagraph.setFont(aprobareParagraphFont);
                 Font aprobareFont=fontBold;
-                Paragraph aprobare=new Paragraph("Se aprobă / Genehmigt, ",fontNormal);
+                Paragraph aprobare=new Paragraph("Se aproba / Genehmigt, ",fontNormal);
                 aprobare.setFont(aprobareFont);
                 Paragraph aprobareName=new Paragraph("Nume și prenume ",fontNormal);
                 Paragraph aprobareSignature=new Paragraph("Semnătura ",fontNormal);
@@ -1032,7 +1034,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Chunk glue = new Chunk(new VerticalPositionMark());
                 Paragraph judAndApr=new Paragraph("Jud.Cluj");
                 judAndApr.add(glue);
-                judAndApr.add("Se aprobă");
+                judAndApr.add("Se aproba");
                 Paragraph NrRegAndName=new Paragraph("Nr. inreg...../........");
                 NrRegAndName.add(glue);
                 NrRegAndName.add("Nume/Prenume");
@@ -1062,7 +1064,7 @@ public class HolidayServiceImpl implements HolidayService{
                 Font firstParagraphFont=fontNormal;
                 Paragraph firstParagraph=new Paragraph();
                 documentParagraph.add(firstParagraph);
-                Phrase p1=new Phrase("  Subsemnatul "+emp.getSurname()+" "+emp.getForname()+", angajată MHP Consulting Romania SRL, in funcția de "+emp.getRole()+" vă rog să imi aprobati cererea de concediu fară plată pentru studii/ scop personal, in perioada "+holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+"-"+holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),fontNormal);
+                Phrase p1=new Phrase("  Subsemnatul "+emp.getSurname()+" "+emp.getForname()+", angajat a MHP Consulting Romania SRL, in funcția de "+emp.getRole()+" vă rog să imi aprobati cererea de concediu fară plată pentru studii/ scop personal, in perioada "+holiday.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))+"  -  "+holiday.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),fontNormal);
 
 
                 firstParagraph.add(p1);
@@ -1070,7 +1072,7 @@ public class HolidayServiceImpl implements HolidayService{
                 firstParagraph.setFont(firstParagraphFont);
                 firstParagraph.setSpacingAfter(15f);
                 Font secondParagraphFont=fontBold;
-                Paragraph secondParagraph=new Paragraph("Declar pe proprie răspundere că managerul de proiect a fost informat despre intenția de a pleca în concediu.",fontNormal);
+                Paragraph secondParagraph=new Paragraph("Declar pe proprie raspundere că managerul de proiect a fost informat despre intentia de a pleca în concediu.",fontNormal);
                 secondParagraph.setFont(secondParagraphFont);
                 secondParagraph.setSpacingAfter(15f);
                 documentParagraph.add(secondParagraph);
@@ -1079,10 +1081,12 @@ public class HolidayServiceImpl implements HolidayService{
                 Paragraph userSignatureParagraph=new Paragraph();
                 Paragraph DateAndAngajat=new Paragraph("Data:"+java.time.LocalDate.now().toString());
                 DateAndAngajat.add(glue);
-                DateAndAngajat.add("Angajat");
-                DateAndAngajat.setAlignment(Element.ALIGN_CENTER);
-                userSignatureParagraph.add(DateAndAngajat);
+                DateAndAngajat.add(new Paragraph("Angajat"));
+                DateAndAngajat.add(new Paragraph("Nume si prenume"));
                 Paragraph userName=new Paragraph(emp.getSurname()+" "+emp.getForname());
+                DateAndAngajat.add(userName);
+                DateAndAngajat.setAlignment(Element.ALIGN_RIGHT);
+                userSignatureParagraph.add(DateAndAngajat);
                 documentParagraph.add(userSignatureParagraph);
 
                 document.add(documentParagraph);

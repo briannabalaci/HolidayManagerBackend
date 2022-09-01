@@ -97,7 +97,7 @@ public class EmailingServiceImpl implements EmailingService{
         MimeBodyPart att = new MimeBodyPart();
         DataSource fds = new ByteArrayDataSource(pdf,"application/pdf");
         att.setDataHandler(new DataHandler(fds));
-        att.setFileName("CerereConcediu"+name+".pdf");
+        att.setFileName("CerereConcediu_"+name+".pdf");
 
         // Add the attachment to the message.
         msg.addBodyPart(att);
